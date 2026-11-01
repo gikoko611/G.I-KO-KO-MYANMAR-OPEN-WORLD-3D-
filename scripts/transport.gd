@@ -3,6 +3,7 @@ extends Spatial
 var vehicles = []
 var animation_time = 0.0
 var ride_phases = []
+var animated_wheels = []
 
 func _process(delta):
     animation_time += delta
@@ -11,6 +12,9 @@ func _process(delta):
             var phase = animation_time * (5.0 if vehicle.get_meta("ride_type") == "motorbike" else 2.2) + float(vehicle.get_meta("anim_phase", 0.0))
             vehicle.rotation.z = sin(phase) * 0.012
             vehicle.translation.y = max(0.0, sin(phase * 2.0)) * 0.025
+    for wheel in animated_wheels:
+        if is_instance_valid(wheel):
+            wheel.rotate_object_local(Vector3.UP, delta * float(wheel.get_meta("spin_speed", 2.0)))
 
 func _ready():
     _make_buffalo(Vector3(-8,0,18))
@@ -35,6 +39,19 @@ func _mesh(parent, mesh, pos, scale, color, rotation=Vector3.ZERO):
     n.material_override = _material(color)
     parent.add_child(n)
     return n
+
+func _animated_wheel(parent, pos, wheel_scale, color, rotation, spin_speed):
+    var mesh = CylinderMesh.new()
+    var wheel = MeshInstance.new()
+    wheel.mesh = mesh
+    wheel.translation = pos
+    wheel.scale = wheel_scale
+    wheel.rotation_degrees = rotation
+    wheel.material_override = _material(color)
+    wheel.set_meta("spin_speed", spin_speed)
+    parent.add_child(wheel)
+    animated_wheels.append(wheel)
+    return wheel
 
 func _new_ride(name, kind, pos, speed):
     var root = Spatial.new()
@@ -63,7 +80,7 @@ func _make_cart(pos):
     _mesh(root, CubeMesh.new(), Vector3(0,1.05,0.15), Vector3(2.2,0.22,2.7), Color(0.38,0.20,0.09))
     for side in [-1,1]:
         _mesh(root, CubeMesh.new(), Vector3(side*1.0,1.55,0.15), Vector3(0.12,0.9,2.5), Color(0.48,0.27,0.12))
-        _mesh(root, CylinderMesh.new(), Vector3(side*1.15,0.85,0.2), Vector3(0.16,1.55,1.55), Color(0.12,0.09,0.06), Vector3(0,0,90))
+        _animated_wheel(root, Vector3(side*1.15,0.85,0.2), Vector3(0.16,1.55,1.55), Color(0.12,0.09,0.06), Vector3(0,0,90), 1.8)
     _mesh(root, CubeMesh.new(), Vector3(0,2.45,0.15), Vector3(2.5,0.12,2.8), Color(0.66,0.40,0.18))
     for side in [-1,1]:
         var ox = Spatial.new()
@@ -105,7 +122,10 @@ func _make_elephant(pos):
 func _make_motorbike(pos):
     var root = _new_ride("RideableMyanmarMotorbike", "motorbike", pos, 11.0)
     for z in [-0.82,0.82]:
-        _mesh(root, CylinderMesh.new(), Vector3(0,0.42,z), Vector3(0.38,0.16,0.38), Color(0.05,0.05,0.05), Vector3(0,0,90))
+        _animated_wheel(root, Vector3(0,0.42,z), Vector3(0.38,0.16,0.38), Color(0.045,0.045,0.045), Vector3(90,0,0), 5.5)
+    _mesh(root, CylinderMesh.new(), Vector3(0,0.68,0), Vector3(0.12,0.16,0.72), Color(0.62,0.62,0.58), Vector3(90,0,0))
+    _mesh(root, CylinderMesh.new(), Vector3(0.22,0.62,0.38), Vector3(0.07,0.08,0.62), Color(0.48,0.48,0.46), Vector3(0,0,72))
+    _mesh(root, CubeMesh.new(), Vector3(0,1.04,0.02), Vector3(0.44,0.12,0.52), Color(0.12,0.12,0.12))
     _mesh(root, CubeMesh.new(), Vector3(0,0.88,0), Vector3(0.38,0.32,1.35), Color(0.72,0.08,0.06))
     _mesh(root, CubeMesh.new(), Vector3(0,1.13,0.28), Vector3(0.52,0.12,0.62), Color(0.08,0.08,0.08))
     _mesh(root, CylinderMesh.new(), Vector3(0,1.32,-0.72), Vector3(0.06,0.8,0.06), Color(0.48,0.48,0.48), Vector3(90,0,0))
