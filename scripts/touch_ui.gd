@@ -5,6 +5,7 @@ signal gender_selected(value)
 var status_label
 var coin_label
 var weather_label
+var dialogue_label
 var inventory_label
 var move_vector = Vector2.ZERO
 var dragging_move = false
@@ -23,6 +24,11 @@ func _ready():
     coin_label = _label(root, "Coins: 120", Vector2(18,58), Vector2(180,30), 18)
     weather_label = _label(root, "Sunny", Vector2(18,90), Vector2(180,28), 16)
     inventory_label = _label(root, "Bag: Rice 3 | Seed 8 | Water 2", Vector2(18,118), Vector2(520,28), 15)
+    dialogue_label = _label(root, "", Vector2(18,-92), Vector2(650,48), 16)
+    dialogue_label.anchor_top = 1
+    dialogue_label.anchor_bottom = 1
+    dialogue_label.autowrap = true
+    dialogue_label.add_color_override("font_color", Color(1.0,0.88,0.55))
     _button(root, "Boy", Vector2(18,158), "boy")
     _button(root, "Girl", Vector2(100,158), "girl")
     _button(root, "Sprint", Vector2(-360,-220), "sprint", true)
@@ -78,6 +84,14 @@ func set_status(message, coins, weather, inventory):
         coin_label.text = "Coins: " + str(coins)
         weather_label.text = "Weather: " + str(weather)
         inventory_label.text = "Bag: Rice " + str(inventory.get("Rice",0)) + " | Seed " + str(inventory.get("Seed",0)) + " | Water " + str(inventory.get("Water",0))
+
+func show_dialogue(message):
+    if dialogue_label:
+        dialogue_label.text = str(message)
+
+func hide_dialogue():
+    if dialogue_label:
+        dialogue_label.text = ""
 
 func _input(event):
     if event is InputEventScreenTouch:
