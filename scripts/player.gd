@@ -80,6 +80,20 @@ func _build_character():
     _part(body_root, CylinderMesh.new(), Vector3(0.17, 0.12, 0), Vector3(0.18, 0.38, 0.18), Color(0.25,0.2,0.17))
     _part(body_root, SphereMesh.new(), Vector3(-0.38, 1.12, 0), Vector3(0.16, 0.48, 0.16), skin)
     _part(body_root, SphereMesh.new(), Vector3(0.38, 1.12, 0), Vector3(0.16, 0.48, 0.16), skin)
+    if gender == "Girl":
+        _part(body_root, SphereMesh.new(), Vector3(0, 2.17, -0.12), Vector3(0.22, 0.18, 0.22), Color(0.08,0.06,0.05))
+        var htamein_trim = CylinderMesh.new()
+        htamein_trim.top_radius = 0.40
+        htamein_trim.bottom_radius = 0.44
+        htamein_trim.height = 0.09
+        _part(body_root, htamein_trim, Vector3(0, 0.82, 0), Vector3(1,1,1), Color(0.92,0.72,0.28))
+    else:
+        var longyi_band = CylinderMesh.new()
+        longyi_band.top_radius = 0.30
+        longyi_band.bottom_radius = 0.34
+        longyi_band.height = 0.10
+        _part(body_root, longyi_band, Vector3(0, 0.88, 0), Vector3(1,1,1), Color(0.76,0.68,0.42))
+        _part(body_root, SphereMesh.new(), Vector3(0, 2.12, -0.08), Vector3(0.30,0.12,0.30), Color(0.10,0.08,0.06))
 
 func _part(parent, mesh, pos, scale, color):
     var node = MeshInstance.new()
