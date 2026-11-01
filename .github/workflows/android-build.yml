@@ -122,7 +122,8 @@ jobs:
           set -euxo pipefail
           AAPT="$ANDROID_HOME/build-tools/30.0.3/aapt"
           APKSIGNER="$ANDROID_HOME/build-tools/30.0.3/apksigner"
-          "$AAPT" dump badging build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | head -n 8
+          "$AAPT" dump badging build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk > /tmp/apk-badging.txt
+          sed -n '1,8p' /tmp/apk-badging.txt
           "$APKSIGNER" verify build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
           unzip -Z1 build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | grep -E "^lib/armeabi-v7a/.*\\.so$" | tee /tmp/armv7-libs.txt
           test -s /tmp/armv7-libs.txt
