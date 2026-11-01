@@ -16,6 +16,7 @@ var mounted_offset = Vector3.ZERO
 var mounted_speed = 4.0
 var sprint_enabled = false
 var first_person = false
+var animation_clock = 0.0
 
 func _ready():
     _build_character()
@@ -34,6 +35,14 @@ func _ready():
     collision.shape = shape
     collision.translation.y = 0.85
     add_child(collision)
+
+func _process(delta):
+    animation_clock += delta
+    if body_root and is_instance_valid(body_root):
+        var moving = move_input.length() > 0.12 or (mounted_vehicle != null and is_instance_valid(mounted_vehicle))
+        var sway = sin(animation_clock * (10.0 if moving else 2.2))
+        body_root.rotation.z = lerp(body_root.rotation.z, sway * (0.055 if moving else 0.018), min(1.0, delta * 8.0))
+        body_root.rotation.x = lerp(body_root.rotation.x, (0.025 if moving else 0.0) + sin(animation_clock * 2.0) * 0.008, min(1.0, delta * 5.0))
 
 func _physics_process(delta):
     var input = move_input
