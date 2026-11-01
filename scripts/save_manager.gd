@@ -13,17 +13,21 @@ static func save_game(data):
     file.flush()
     file.close()
     var directory = Directory.new()
-    if directory.file_exists(BACKUP_PATH):
-        directory.remove(BACKUP_PATH)
     if directory.file_exists(PATH):
+        if directory.file_exists(BACKUP_PATH):
+            var remove_error = directory.remove(BACKUP_PATH)
+            if remove_error != OK:
+                directory.remove(TEMP_PATH)
+                return false
         var backup_error = directory.rename(PATH, BACKUP_PATH)
         if backup_error != OK:
             directory.remove(TEMP_PATH)
             return false
     var move_error = directory.rename(TEMP_PATH, PATH)
     if move_error != OK:
-        if directory.file_exists(BACKUP_PATH):
+        if not directory.file_exists(PATH) and directory.file_exists(BACKUP_PATH):
             directory.rename(BACKUP_PATH, PATH)
+        directory.remove(TEMP_PATH)
         return false
     return true
 
