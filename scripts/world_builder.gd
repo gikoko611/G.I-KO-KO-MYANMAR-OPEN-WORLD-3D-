@@ -112,6 +112,15 @@ func _hill(pos, radius):
     n.scale = Vector3(1.7,1,1.2)
     n.material_override = _mat(Color(0.20,0.37,0.22))
     add_child(n)
+    var ridge = MeshInstance.new()
+    var ridge_mesh = SphereMesh.new()
+    ridge_mesh.radius = radius * 0.72
+    ridge_mesh.height = radius * 0.92
+    ridge.mesh = ridge_mesh
+    ridge.translation = pos + Vector3(radius * 0.62, radius * 0.52, -radius * 0.16)
+    ridge.scale = Vector3(1.4,0.85,1.0)
+    ridge.material_override = _mat(Color(0.25,0.43,0.26))
+    add_child(ridge)
 
 func _farm(pos):
     for x in range(4):
@@ -167,14 +176,18 @@ func _tree_line():
         trunk.bottom_radius = 0.28
         trunk.height = 2.0
         _cylinder("TreeTrunk", trunk, Vector3(x,1,z), Color(0.28,0.16,0.08))
-        var crown = SphereMesh.new()
-        crown.radius = rand_range(1.0,1.8)
-        crown.height = crown.radius*1.7
-        var n = MeshInstance.new()
-        n.mesh = crown
-        n.translation = Vector3(x,3,z)
-        n.material_override = _mat(Color(0.12,rand_range(0.28,0.48),0.16))
-        add_child(n)
+        var crown_radius = rand_range(1.0,1.55)
+        var leaf_color = Color(rand_range(0.08,0.16),rand_range(0.30,0.48),rand_range(0.12,0.22))
+        for layer in range(3):
+            var crown = SphereMesh.new()
+            crown.radius = crown_radius * (1.0 if layer == 0 else 0.72)
+            crown.height = crown.radius * 1.45
+            var n = MeshInstance.new()
+            n.mesh = crown
+            n.translation = Vector3(x,2.8 + layer * 0.72,z)
+            n.scale = Vector3(1.15,0.82,1.0)
+            n.material_override = _mat(leaf_color.lightened(layer * 0.045))
+            add_child(n)
 
 func _villager(pos, shirt_color, label):
     var root = Spatial.new()
