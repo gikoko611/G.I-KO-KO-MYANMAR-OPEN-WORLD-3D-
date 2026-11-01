@@ -11,6 +11,9 @@ var pitch = -12.0
 var camera_pivot
 var camera
 var body_root
+var mounted_vehicle = null
+var mounted_offset = Vector3.ZERO
+var mounted_speed = 4.0
 
 func _ready():
     _build_character()
@@ -38,6 +41,16 @@ func _physics_process(delta):
     if Input.is_action_pressed("ui_right"): input.x += 1
     input = input.normalized()
     var direction = Vector3(input.x, 0, input.y).rotated(Vector3.UP, yaw)
+    if mounted_vehicle != null and is_instance_valid(mounted_vehicle):
+        mounted_vehicle.translation += direction * mounted_speed * delta
+        global_transform.origin = mounted_vehicle.global_transform.xform(mounted_offset)
+        velocity = Vector3.ZERO
+        yaw -= look_delta.x * 0.004
+        pitch = clamp(pitch - look_delta.y * 0.12, -35, 18)
+        rotation.y = yaw
+        camera_pivot.rotation_degrees.x = pitch
+        look_delta = Vector2.ZERO
+        return
     velocity.x = direction.x * speed
     velocity.z = direction.z * speed
     velocity.y -= gravity * delta
@@ -52,6 +65,22 @@ func _physics_process(delta):
 
 func set_move(value):
     move_input = value
+
+func mount_vehicle(vehicle, offset, vehicle_speed):
+    mounted_vehicle = vehicle
+    mounted_offset = offset
+    mounted_speed = vehicle_speed
+    velocity = Vector3.ZERO
+    global_transform.origin = vehicle.global_transform.xform(mounted_offset)
+
+func dismount_vehicle():
+    if mounted_vehicle != null and is_instance_valid(mounted_vehicle):
+        global_transform.origin = mounted_vehicle.global_transform.origin + Vector3(1.8,0.2,0)
+    mounted_vehicle = null
+    move_input = Vector2.ZERO
+
+func is_mounted():
+    return mounted_vehicle != null and is_instance_valid(mounted_vehicle)
 
 func add_look(value):
     look_delta += value
