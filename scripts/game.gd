@@ -199,7 +199,9 @@ func _on_action(action):
             quest_stage = 2
             mission_text = "Mission: စပါးရရှိပါပြီ။ ဈေးသည်ဆီသို့ သွားရောက်ရောင်းချပါ။"
     elif action == "buy_seed":
-        if coins >= 10:
+        if player.global_transform.origin.distance_to(Vector3(8,0,18)) >= 9.0:
+            mission_text = "မျိုးစေ့ဝယ်ရန် ဈေးသည်အနီးသို့ သွားပါ။"
+        elif coins >= 10:
             coins -= 10
             inventory["Seed"] = int(inventory.get("Seed",0)) + 1
             mission_text = "မျိုးစေ့ ၁ ထုပ် ဝယ်ပြီးပါပြီ။"
@@ -212,12 +214,12 @@ func _on_action(action):
             mission_text = "ရွာရေတွင်းမှ ရေ ၃ ခွက် အခမဲ့ ဖြည့်ပြီးပါပြီ။"
             ui.show_dialogue("ရေတွင်း: ရေသန့်သန့်လေး ရပါပြီ။ လယ်ကွင်းကို သွားပြီး စပါးခင်းကို ရေလောင်းနိုင်ပါပြီ။")
             dialogue_timer = 5.0
-        elif coins >= 5:
+        elif player_pos.distance_to(Vector3(8,0,18)) < 9.0 and coins >= 5:
             coins -= 5
             inventory["Water"] = int(inventory.get("Water",0)) + 2
             mission_text = "Coins 5 ဖြင့် ရေ ၂ ခွက် ဝယ်ပြီးပါပြီ။"
         else:
-            mission_text = "ရေဖြည့်ရန် ရွာရေတွင်းသို့ သွားပါ။ (သို့) Coins 5 လိုအပ်ပါတယ်။"
+            mission_text = "ရေတွင်းမှာ အခမဲ့ဖြည့်ပါ၊ သို့မဟုတ် ဈေးသည်အနီးမှာ Coins 5 ဖြင့် ဝယ်ပါ။"
     elif action == "sell":
         var player_pos = player.global_transform.origin
         if player_pos.distance_to(Vector3(8,0,18)) >= 9.0:
