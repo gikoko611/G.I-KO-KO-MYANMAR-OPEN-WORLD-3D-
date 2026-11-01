@@ -10,15 +10,45 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: barichello/godot-ci:3.5.2
+    env:
+      ANDROID_HOME: /usr/lib/android-sdk
+      ANDROID_SDK_ROOT: /usr/lib/android-sdk
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Prepare output
-        run: mkdir -p build
-      - name: Export Android debug APK
+
+      - name: Install Godot 3.5.2 export templates
+        shell: bash
         run: |
+          set -euxo pipefail
+          mkdir -p "$HOME/.local/share/godot/templates/3.5.2.stable"
+          wget -q https://downloads.tuxfamily.org/godotengine/3.5.2/Godot_v3.5.2-stable_export_templates.tpz -O /tmp/godot-templates.tpz
+          unzip -o /tmp/godot-templates.tpz -d /tmp/godot-templates
+          find /tmp/godot-templates -type f
+          cp /tmp/godot-templates/templates/android_debug.apk "$HOME/.local/share/godot/templates/3.5.2.stable/"
+          cp /tmp/godot-templates/templates/android_release.apk "$HOME/.local/share/godot/templates/3.5.2.stable/"
+
+      - name: Validate project and scripts
+        shell: bash
+        run: |
+          set -euxo pipefail
           godot --version
+          godot --headless --path . --editor --quit --verbose
+
+      - name: Export Android ARMv7 debug APK
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p build
           godot --headless --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
+          test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
+          APK_SIZE=$(stat -c%s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk)
+          echo "APK_SIZE_BYTES=$APK_SIZE"
+          if [ "$APK_SIZE" -gt 314572800 ]; then
+            echo "APK exceeds 300 MB target"
+            exit 1
+          fi
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
