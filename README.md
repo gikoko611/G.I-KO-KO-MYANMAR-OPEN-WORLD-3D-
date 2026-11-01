@@ -27,6 +27,7 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Vehicle steering now turns the mounted vehicle toward the movement direction, and dismounting aligns the player heading with the vehicle
 - Extended the river crossing with a solid approach road joined to the village path and a full-width bridge deck with collision
 - Added invisible river-edge collision barriers while preserving the bridge opening, preventing the player from walking directly into the river
+- Matched the bridge deck collision height to the approach road so the player can cross without a raised collision step
 - Kept wandering animals within a small home area and on their original river bank; moved the goat spawn onto safe ground
 - Save restoration now clamps player and vehicle positions to the playable world bounds and normalizes vehicle rotation
 - Reduced mobile UI work by refreshing the live map only while it is open, at half-second intervals
