@@ -27,7 +27,7 @@ func _ready():
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
     ui.connect("gender_selected", self, "_on_gender")
-    ui.set_status(mission_text, coins, weather)
+    ui.set_status(mission_text, coins, weather, inventory)
     _apply_environment()
 
 func _process(delta):
@@ -56,6 +56,14 @@ func _on_action(action):
     elif action == "farm":
         inventory["Rice"] = int(inventory.get("Rice", 0)) + 1
         mission_text = "စပါးရိတ်သိမ်းပြီးပါပြီ။ +1 Rice"
+    elif action == "sell":
+        var rice_count = int(inventory.get("Rice", 0))
+        if rice_count > 0:
+            inventory["Rice"] = rice_count - 1
+            coins += 25
+            mission_text = "စပါး ၁ ထုပ် ရောင်းပြီး Coins +25 ရရှိပါပြီ။"
+        else:
+            mission_text = "ရောင်းရန် စပါးမရှိသေးပါ။ လယ်ကွင်းမှာ စိုက်ပျိုးပါ။"
     elif action == "weather":
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
