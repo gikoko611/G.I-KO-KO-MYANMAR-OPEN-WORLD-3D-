@@ -12,7 +12,7 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Procedural Myanmar countryside: village, rice fields, river, hills, bridge, monastery/stupa landmark
 - First-person / third-person camera toggle, sprint, jump and touch-friendly controls with keyboard fallback
 - Boy: Myanmar shirt + longyi; Girl: Myanmar blouse + htamein
-- Rideable Myanmar water buffalo, traditional two-ox bullock cart, horse, elephant and river boat
+- Rideable Myanmar water buffalo, traditional two-ox bullock cart, horse, elephant, river boat and rideable Myanmar motorbike
 - Rice farming loop: buy seeds and water, go to the rice field, plant crops, water, wait for growth, harvest and sell rice
 - Quest progression: meet village elder, harvest rice, sell the required amount and claim a reward
 - Expanded countryside props: monastery, stilt house, lotus pond, bamboo grove, village well and rural animals
