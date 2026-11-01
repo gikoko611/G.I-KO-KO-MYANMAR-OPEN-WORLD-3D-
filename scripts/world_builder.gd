@@ -45,7 +45,8 @@ func build_world():
     _box("RiverBankLeft", Vector3(11.7,-0.12,0), Vector3(0.65,0.18,150), Color(0.42,0.38,0.22))
     _box("RiverBankRight", Vector3(20.3,-0.12,0), Vector3(0.65,0.18,150), Color(0.42,0.38,0.22))
     _river_rocks()
-    _box("Bridge", Vector3(11,-0.02,7), Vector3(11,0.5,3), Color(0.40,0.23,0.12))
+    _box("BridgeApproach", Vector3(5,-0.12,7), Vector3(10,0.18,3), Color(0.58,0.42,0.25))
+    _box("Bridge", Vector3(16,-0.02,7), Vector3(12,0.5,3), Color(0.40,0.23,0.12))
     for i in range(12):
         var x = -25 + (i % 4) * 13
         var z = -24 + int(i / 4) * 19
@@ -89,7 +90,7 @@ func _box(label, pos, size, color):
     n.translation = pos
     n.material_override = _mat(color)
     add_child(n)
-    if label == "Earth" or label == "VillagePath" or label == "Bridge" or label == "MyanmarHouse" or label == "MonasteryWoodHall" or label == "StiltHouseWall" or label == "MarketTable":
+    if label == "Earth" or label == "VillagePath" or label == "BridgeApproach" or label == "Bridge" or label == "MyanmarHouse" or label == "MonasteryWoodHall" or label == "StiltHouseWall" or label == "MarketTable":
         var body = StaticBody.new()
         body.translation = pos
         var collision = CollisionShape.new()
