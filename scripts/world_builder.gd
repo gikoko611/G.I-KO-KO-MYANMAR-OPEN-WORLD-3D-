@@ -1,5 +1,26 @@
 extends Spatial
 
+var wandering_animals = []
+
+func _process(delta):
+    for animal in wandering_animals:
+        if not is_instance_valid(animal):
+            continue
+        var timer = float(animal.get_meta("wander_timer", 0.0)) - delta
+        var direction = animal.get_meta("wander_direction", Vector3.ZERO)
+        if timer <= 0.0:
+            var angle = rand_range(-PI, PI)
+            direction = Vector3(cos(angle), 0, sin(angle))
+            timer = rand_range(1.5, 4.0)
+            animal.set_meta("wander_direction", direction)
+        animal.set_meta("wander_timer", timer)
+        var next_position = animal.translation + direction * delta * float(animal.get_meta("wander_speed", 0.7))
+        next_position.x = clamp(next_position.x, -68.0, 68.0)
+        next_position.z = clamp(next_position.z, -68.0, 68.0)
+        animal.translation = next_position
+        if direction.length() > 0.1:
+            animal.rotation.y = atan2(direction.x, direction.z)
+
 func build_world():
     _box("Earth", Vector3(0,-0.7,0), Vector3(260,1,260), Color(0.25,0.42,0.20))
     _box("VillagePath", Vector3(0,-0.12,0), Vector3(5,0.18,135), Color(0.62,0.48,0.30))
@@ -160,7 +181,11 @@ func _animal(pos, color, label):
     n.translation = pos + Vector3(0,0.5,0)
     n.scale = Vector3(1.5,0.8,0.8)
     n.material_override = _mat(color)
+    n.set_meta("wander_timer", rand_range(0.2, 2.0))
+    n.set_meta("wander_direction", Vector3(rand_range(-1.0,1.0),0,rand_range(-1.0,1.0)).normalized())
+    n.set_meta("wander_speed", rand_range(0.35,0.85))
     add_child(n)
+    wandering_animals.append(n)
 
 func _monastery(pos):
     _box("MonasteryWoodHall", pos + Vector3(0,1.5,0), Vector3(12,3,9), Color(0.48,0.27,0.12))
