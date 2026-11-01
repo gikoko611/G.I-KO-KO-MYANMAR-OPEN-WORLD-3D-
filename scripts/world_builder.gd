@@ -66,7 +66,9 @@ func build_world():
 func _mat(color):
     var m = SpatialMaterial.new()
     m.albedo_color = color
-    m.roughness = 1.0
+    m.roughness = 0.84
+    m.metallic = 0.42 if color.r > 0.76 and color.g > 0.42 and color.b < 0.48 else 0.0
+    m.specular = 0.52
     return m
 
 func _box(label, pos, size, color):
@@ -94,7 +96,11 @@ func _house(pos, index):
     _box("MyanmarHouse", pos + Vector3(0,1.1,0), Vector3(5,2.2,4), wall)
     _box("WoodenFloor", pos + Vector3(0,0.1,0), Vector3(5.5,0.25,4.5), Color(0.34,0.20,0.10))
     _box("ThatchedRoof", pos + Vector3(0,2.55,0), Vector3(6.2,0.35,5.2), Color(0.38,0.19,0.08))
+    _box("RoofFrontTrim", pos + Vector3(0,2.38,2.52), Vector3(6.25,0.16,0.14), Color(0.24,0.12,0.06))
+    _box("RoofBackTrim", pos + Vector3(0,2.38,-2.52), Vector3(6.25,0.16,0.14), Color(0.24,0.12,0.06))
     _box("Door", pos + Vector3(0,0.9,2.03), Vector3(0.9,1.8,0.12), Color(0.24,0.12,0.06))
+    _box("WindowLeft", pos + Vector3(-1.55,1.35,2.04), Vector3(0.72,0.58,0.10), Color(0.18,0.34,0.38))
+    _box("WindowRight", pos + Vector3(1.55,1.35,2.04), Vector3(0.72,0.58,0.10), Color(0.18,0.34,0.38))
 
 func _hill(pos, radius):
     var n = MeshInstance.new()
@@ -129,6 +135,19 @@ func _pagoda(pos):
     spire.bottom_radius = 0.7
     spire.height = 2.8
     _cylinder("StupaSpire", spire, pos + Vector3(0,4.8,0), Color(0.98,0.78,0.25))
+    var ring_mesh = CylinderMesh.new()
+    ring_mesh.top_radius = 0.78
+    ring_mesh.bottom_radius = 0.92
+    ring_mesh.height = 0.16
+    _cylinder("StupaGoldBand", ring_mesh, pos + Vector3(0,3.35,0), Color(1.0,0.82,0.32))
+    var finial = SphereMesh.new()
+    finial.radius = 0.22
+    finial.height = 0.44
+    var finial_node = MeshInstance.new()
+    finial_node.mesh = finial
+    finial_node.translation = pos + Vector3(0,6.22,0)
+    finial_node.material_override = _mat(Color(1.0,0.84,0.38))
+    add_child(finial_node)
 
 func _cylinder(label, mesh, pos, color):
     var n = MeshInstance.new()
