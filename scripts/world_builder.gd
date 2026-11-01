@@ -55,7 +55,7 @@ func build_world():
     _river_collision_barriers()
     _river_rocks()
     _box("BridgeApproach", Vector3(5,-0.12,7), Vector3(10,0.18,3), Color(0.58,0.42,0.25))
-    _box("Bridge", Vector3(16,-0.02,7), Vector3(12,0.5,3), Color(0.40,0.23,0.12))
+    _box("Bridge", Vector3(16,-0.12,7), Vector3(12,0.18,3), Color(0.40,0.23,0.12))
     for i in range(12):
         var x = -25 + (i % 4) * 13
         var z = -24 + int(i / 4) * 19
