@@ -171,12 +171,18 @@ func _on_action(action):
         else:
             mission_text = "မျိုးစေ့ဝယ်ရန် Coins 10 လိုအပ်ပါတယ်။"
     elif action == "buy_water":
-        if coins >= 5:
+        var player_pos = player.global_transform.origin
+        if player_pos.distance_to(Vector3(3,0,28)) < 7.0:
+            inventory["Water"] = int(inventory.get("Water",0)) + 3
+            mission_text = "ရွာရေတွင်းမှ ရေ ၃ ခွက် အခမဲ့ ဖြည့်ပြီးပါပြီ။"
+            ui.show_dialogue("ရေတွင်း: ရေသန့်သန့်လေး ရပါပြီ။ လယ်ကွင်းကို သွားပြီး စပါးခင်းကို ရေလောင်းနိုင်ပါပြီ။")
+            dialogue_timer = 5.0
+        elif coins >= 5:
             coins -= 5
             inventory["Water"] = int(inventory.get("Water",0)) + 2
-            mission_text = "ရေ ၂ ခွက် ဖြည့်ပြီးပါပြီ။"
+            mission_text = "Coins 5 ဖြင့် ရေ ၂ ခွက် ဝယ်ပြီးပါပြီ။"
         else:
-            mission_text = "ရေဖြည့်ရန် Coins 5 လိုအပ်ပါတယ်။"
+            mission_text = "ရေဖြည့်ရန် ရွာရေတွင်းသို့ သွားပါ။ (သို့) Coins 5 လိုအပ်ပါတယ်။"
     elif action == "sell":
         var player_pos = player.global_transform.origin
         if player_pos.distance_to(Vector3(8,0,18)) >= 9.0:
