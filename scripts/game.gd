@@ -300,3 +300,5 @@ func _apply_graphics_quality():
         sun.shadow_enabled = graphics_level >= 2
     if get_viewport():
         get_viewport().msaa = Viewport.MSAA_DISABLED
+    if player and player.camera:
+        player.camera.far = [85.0, 125.0, 180.0][clamp(graphics_level, 0, 2)]
