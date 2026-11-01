@@ -17,18 +17,18 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Story Chapters 1–2: meet the village elder, farm and trade rice, visit the pagoda, then deliver water to the monastery
 - NPC trading: rice sales, seed purchases, paid water purchases and free well refills; proximity checks at village NPCs
 - World map panel with player coordinates, nearest landmark marker and mission objective
-- Game settings: Low / Balanced / High graphics presets with configurable shadow distance and camera draw distance, mobile MSAA disabled, and background music / sound toggles
-- Original synthesized ambient background music generated locally in-game; no external music download required
+- Game settings: Low / Balanced / High graphics presets with configurable shadow distance and camera draw distance, mobile MSAA disabled, and music/audio mute toggles
+- Original synthesized ambient background music generated locally in-game; no external music download required. Separate sound effects are not implemented yet
 - More complete local saves: inventory, currency, quest state, crop growth, weather, time, player position and camera orientation, graphics/audio preferences, and vehicle positions; backup recovery on interrupted saves
 - Expanded countryside props: monastery, stilt house, lotus pond, bamboo grove, village well and rural animals with modeled heads, muzzles, ears, legs and tails
 - Day/night cycle, weather toggle, animal wandering with lightweight leg gait and idle animation, NPC idle animation, and procedural vehicle body motion
 - Animated cart and motorbike wheels that rotate in response to vehicle movement, with parked wheels remaining still
-- Character gender and outfit colors selectable in the start screen
+- Character gender and outfit colors selectable through in-game HUD buttons
 
 ## Build
 Open with Godot 3.5.2. For Android, install matching export templates and Android SDK/JDK, configure the Android export preset, then export the Android preset.
 
-GitHub Actions workflow: Android ARMv7 Build (manual workflow dispatch). It produces a debug APK artifact when the workflow succeeds; the current source changes still require a fresh build and runtime validation.
+GitHub Actions workflow: Android ARMv7 Build (manual workflow dispatch). It exports a debug APK, checks the 300 MB size target, verifies that ARMv7 native libraries are present and ARM64 libraries are absent, and verifies the APK signature before uploading the APK and source ZIP. The current source changes still require a fresh build and runtime validation.
 
 ## Important
 This is an actively developed game foundation, not a claim of AAA production quality. Replace procedural placeholder meshes with optimized authored assets in later content passes. Always test FPS, memory, touch controls and APK size on the target phone.
