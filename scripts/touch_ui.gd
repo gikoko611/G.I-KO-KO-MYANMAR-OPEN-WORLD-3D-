@@ -147,8 +147,16 @@ func set_map_info(position, visible, mission):
     if map_label:
         map_label.visible = visible
         if visible:
-            var locations = "ELDER (-5,-13) | MARKET (8,18) | FARM (-18,24) | WELL (3,28) | PAGODA (28,-22)"
-            map_label.text = "WORLD MAP\nX: " + str(int(position.x)) + "  Z: " + str(int(position.z)) + "\n" + locations + "\nObjective: " + str(mission)
+            var locations = [["Elder",Vector2(-5,-13)],["Market",Vector2(8,18)],["Farm",Vector2(-18,24)],["Well",Vector2(3,28)],["Pagoda",Vector2(28,-22)],["Monastery",Vector2(-34,-30)]]
+            var nearest_name = "Unknown"
+            var nearest_distance = 99999.0
+            for location in locations:
+                var distance = Vector2(position.x, position.z).distance_to(location[1])
+                if distance < nearest_distance:
+                    nearest_distance = distance
+                    nearest_name = str(location[0])
+            var marker_text = "📍 Nearest: " + nearest_name + " (" + str(int(nearest_distance)) + "m)"
+            map_label.text = "WORLD MAP\nX: " + str(int(position.x)) + "  Z: " + str(int(position.z)) + "\n" + marker_text + "\nELDER • MARKET • FARM • WELL\nPAGODA • MONASTERY\nObjective: " + str(mission)
 
 func set_settings_info(visible, quality, music, sound):
     if settings_label:
