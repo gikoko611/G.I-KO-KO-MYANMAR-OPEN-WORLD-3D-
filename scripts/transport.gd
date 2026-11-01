@@ -8,6 +8,7 @@ func _ready():
     _make_horse(Vector3(-24,0,8))
     _make_elephant(Vector3(34,0,12))
     _make_boat(Vector3(16,0,-18))
+    _make_motorbike(Vector3(-10,0,3))
 
 func _material(color):
     var m = SpatialMaterial.new()
@@ -90,6 +91,15 @@ func _make_elephant(pos):
             _mesh(root, CylinderMesh.new(), Vector3(x,0.65,z), Vector3(0.34,1.25,0.34), grey)
     _mesh(root, CubeMesh.new(), Vector3(0,2.25,0.05), Vector3(1.0,0.16,1.1), Color(0.55,0.18,0.12))
 
+func _make_motorbike(pos):
+    var root = _new_ride("RideableMyanmarMotorbike", "motorbike", pos, 11.0)
+    for z in [-0.82,0.82]:
+        _mesh(root, CylinderMesh.new(), Vector3(0,0.42,z), Vector3(0.38,0.16,0.38), Color(0.05,0.05,0.05), Vector3(0,0,90))
+    _mesh(root, CubeMesh.new(), Vector3(0,0.88,0), Vector3(0.38,0.32,1.35), Color(0.72,0.08,0.06))
+    _mesh(root, CubeMesh.new(), Vector3(0,1.13,0.28), Vector3(0.52,0.12,0.62), Color(0.08,0.08,0.08))
+    _mesh(root, CylinderMesh.new(), Vector3(0,1.32,-0.72), Vector3(0.06,0.8,0.06), Color(0.48,0.48,0.48), Vector3(90,0,0))
+    _mesh(root, SphereMesh.new(), Vector3(0,1.15,-0.92), Vector3(0.2,0.18,0.18), Color(0.96,0.86,0.48))
+
 func _make_boat(pos):
     var root = _new_ride("MyanmarRiverBoat", "boat", pos, 6.0)
     _mesh(root, CubeMesh.new(), Vector3(0,0.45,0), Vector3(1.65,0.35,4.8), Color(0.36,0.18,0.08), Vector3(0,0,0))
@@ -112,13 +122,15 @@ func toggle_ride(player):
     if nearest != null and nearest_distance < 8.0:
         var ride_type = str(nearest.get_meta("ride_type"))
         var offset = Vector3(0,1.25,0.15)
-        if ride_type == "boat":
+        if ride_type == "motorbike":
+            offset = Vector3(0,1.25,0.15)
+        elif ride_type == "boat":
             offset = Vector3(0,1.3,0)
         elif ride_type == "elephant":
             offset = Vector3(0,2.5,0.0)
         elif ride_type == "horse":
             offset = Vector3(0,1.5,0.0)
         player.mount_vehicle(nearest, offset, float(nearest.get_meta("ride_speed")))
-        var names = {"buffalo":"ကျွဲ", "bullock_cart":"နွားလှည်း", "horse":"မြင်း", "elephant":"ဆင်", "boat":"လှေ"}
+        var names = {"buffalo":"ကျွဲ", "bullock_cart":"နွားလှည်း", "horse":"မြင်း", "elephant":"ဆင်", "boat":"လှေ", "motorbike":"ဆိုင်ကယ်"}
         return str(names.get(ride_type,"ယာဉ်")) + " စီးပြီးပါပြီ။"
-    return "ကျွဲ၊ နွားလှည်း၊ မြင်း၊ ဆင် သို့မဟုတ် လှေအနီးကို သွားပြီး Ride ကိုနှိပ်ပါ။"
+    return "ကျွဲ၊ နွားလှည်း၊ မြင်း၊ ဆင်၊ လှေ သို့မဟုတ် ဆိုင်ကယ်အနီးကို သွားပြီး Ride ကိုနှိပ်ပါ။"
