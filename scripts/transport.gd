@@ -190,7 +190,11 @@ func load_save_data(saved):
         if is_instance_valid(vehicle) and saved.has(vehicle.name):
             var values = saved[vehicle.name]
             if typeof(values) == TYPE_ARRAY and values.size() >= 4:
-                vehicle.translation = Vector3(float(values[0]), float(values[1]), float(values[2]))
-                vehicle.rotation.y = float(values[3])
+                vehicle.translation = Vector3(
+                    clamp(float(values[0]), -70.0, 70.0),
+                    clamp(float(values[1]), 0.0, 8.0),
+                    clamp(float(values[2]), -70.0, 70.0)
+                )
+                vehicle.rotation.y = fposmod(float(values[3]), TAU)
                 vehicle.set_meta("last_position", vehicle.translation)
                 vehicle.set_meta("wheel_motion", 0.0)
