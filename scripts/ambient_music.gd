@@ -21,7 +21,7 @@ func _ready():
 func _process(_delta):
     if playback == null:
         return
-    var frames = 256
+    var frames = 768
     if not playback.can_push_buffer(frames):
         return
     var buffer = PoolVector2Array()
