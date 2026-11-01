@@ -52,9 +52,9 @@ func _ready():
     _button(root, "Quality", Vector2(-560,-110), "quality", true)
     _button(root, "Music", Vector2(-560,-165), "music", true)
     _button(root, "Sound", Vector2(-560,-220), "sound", true)
-    map_label = _label(root, "", Vector2(18,154), Vector2(300,120), 14)
+    map_label = _label(root, "", Vector2(18,205), Vector2(390,145), 14)
     map_label.autowrap = true
-    settings_label = _label(root, "", Vector2(330,154), Vector2(330,100), 14)
+    settings_label = _label(root, "", Vector2(420,205), Vector2(330,130), 14)
     settings_label.autowrap = true
     map_label.visible = false
     settings_label.visible = false
