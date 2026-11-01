@@ -117,6 +117,7 @@ func set_gender(value):
 func _build_character():
     body_root = Spatial.new()
     body_root.name = "MyanmarOutfit"
+    body_root.visible = not first_person
     add_child(body_root)
     var skin = Color(0.72, 0.48, 0.32)
     var shirt_color = Color(0.12, 0.38, 0.30) if gender == "Boy" else Color(0.68, 0.18, 0.28)
