@@ -23,6 +23,7 @@ func _ready():
     _button(root, "Girl", Vector2(100,158), "girl")
     _button(root, "Sprint", Vector2(-360,-220), "sprint", true)
     _button(root, "Jump", Vector2(-360,-165), "jump", true)
+    _button(root, "View", Vector2(-460,-220), "view", true)
     _button(root, "Ride", Vector2(-260,-220), "ride", true)
     _button(root, "Interact", Vector2(-160,-220), "interact", true)
     _button(root, "Plant", Vector2(-160,-165), "plant", true)
