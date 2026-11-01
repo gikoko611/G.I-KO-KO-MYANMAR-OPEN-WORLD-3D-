@@ -138,8 +138,8 @@ func _build_character():
     cloth.bottom_radius = 0.43
     cloth.height = 0.9
     _part(body_root, cloth, Vector3(0, 0.52, 0), Vector3(1, 1, 1), cloth_color)
-    _part(body_root, CylinderMesh.new(), Vector3(-0.17, 0.12, 0), Vector3(0.18, 0.38, 0.18), Color(0.25,0.2,0.17))
-    _part(body_root, CylinderMesh.new(), Vector3(0.17, 0.12, 0), Vector3(0.18, 0.38, 0.18), Color(0.25,0.2,0.17))
+    _part(body_root, CylinderMesh.new(), Vector3(-0.17, 0.25, 0), Vector3(0.18, 0.25, 0.18), Color(0.25,0.2,0.17))
+    _part(body_root, CylinderMesh.new(), Vector3(0.17, 0.25, 0), Vector3(0.18, 0.25, 0.18), Color(0.25,0.2,0.17))
     _part(body_root, SphereMesh.new(), Vector3(-0.38, 1.12, 0), Vector3(0.16, 0.48, 0.16), skin)
     _part(body_root, SphereMesh.new(), Vector3(0.38, 1.12, 0), Vector3(0.16, 0.48, 0.16), skin)
     var eye_white = Color(0.96,0.91,0.80)
