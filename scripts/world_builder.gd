@@ -45,7 +45,7 @@ func _box(label, pos, size, color):
     n.translation = pos
     n.material_override = _mat(color)
     add_child(n)
-    if label == "Earth" or label == "VillagePath" or label == "Bridge":
+    if label == "Earth" or label == "VillagePath" or label == "Bridge" or label == "MyanmarHouse" or label == "MonasteryWoodHall" or label == "StiltHouseWall" or label == "MarketTable":
         var body = StaticBody.new()
         body.translation = pos
         var collision = CollisionShape.new()
