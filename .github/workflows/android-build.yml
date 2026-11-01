@@ -25,8 +25,12 @@ jobs:
           curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/3.5.2-stable/Godot_v3.5.2-stable_export_templates.tpz -o /tmp/godot-templates.tpz
           unzip -o /tmp/godot-templates.tpz -d /tmp/godot-templates
           find /tmp/godot-templates -type f
-          find /tmp/godot-templates -name android_debug.apk -exec cp {} "$HOME/.local/share/godot/templates/3.5.2.stable/" \\\;
-          find /tmp/godot-templates -name android_release.apk -exec cp {} "$HOME/.local/share/godot/templates/3.5.2.stable/" \\\;
+          DEBUG_TEMPLATE=$(find /tmp/godot-templates -name android_debug.apk -print -quit)
+          RELEASE_TEMPLATE=$(find /tmp/godot-templates -name android_release.apk -print -quit)
+          test -n "$DEBUG_TEMPLATE"
+          test -n "$RELEASE_TEMPLATE"
+          cp "$DEBUG_TEMPLATE" "$HOME/.local/share/godot/templates/3.5.2.stable/android_debug.apk"
+          cp "$RELEASE_TEMPLATE" "$HOME/.local/share/godot/templates/3.5.2.stable/android_release.apk"
           test -s "$HOME/.local/share/godot/templates/3.5.2.stable/android_debug.apk"
           test -s "$HOME/.local/share/godot/templates/3.5.2.stable/android_release.apk"
 
