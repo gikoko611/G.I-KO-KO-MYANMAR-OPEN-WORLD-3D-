@@ -337,7 +337,11 @@ func _on_action(action):
             day_time = fposmod(float(data.get("day_time", day_time)), 1.0)
             var loaded_weather = str(data.get("weather", weather))
             weather = "Rainy" if loaded_weather == "Rainy" else "Sunny"
-            player.translation = Vector3(float(data.get("player_x", 0)), float(data.get("player_y", 0.1)), float(data.get("player_z", 9)))
+            player.translation = Vector3(
+                clamp(float(data.get("player_x", 0)), -70.0, 70.0),
+                clamp(float(data.get("player_y", 0.1)), 0.1, 10.0),
+                clamp(float(data.get("player_z", 9)), -70.0, 70.0)
+            )
             player.rotation.y = float(data.get("player_yaw", player.rotation.y))
             player.yaw = player.rotation.y
             player.camera_pivot.rotation_degrees.x = float(data.get("player_pitch", player.camera_pivot.rotation_degrees.x))
