@@ -142,8 +142,25 @@ func _build_character():
     _part(body_root, CylinderMesh.new(), Vector3(0.17, 0.12, 0), Vector3(0.18, 0.38, 0.18), Color(0.25,0.2,0.17))
     _part(body_root, SphereMesh.new(), Vector3(-0.38, 1.12, 0), Vector3(0.16, 0.48, 0.16), skin)
     _part(body_root, SphereMesh.new(), Vector3(0.38, 1.12, 0), Vector3(0.16, 0.48, 0.16), skin)
+    var eye_white = Color(0.96,0.91,0.80)
+    var eye_dark = Color(0.08,0.06,0.05)
+    _part(body_root, SphereMesh.new(), Vector3(-0.145,1.98,0.355), Vector3(0.075,0.085,0.035), eye_white)
+    _part(body_root, SphereMesh.new(), Vector3(0.145,1.98,0.355), Vector3(0.075,0.085,0.035), eye_white)
+    _part(body_root, SphereMesh.new(), Vector3(-0.145,1.98,0.385), Vector3(0.035,0.05,0.018), eye_dark)
+    _part(body_root, SphereMesh.new(), Vector3(0.145,1.98,0.385), Vector3(0.035,0.05,0.018), eye_dark)
+    _part(body_root, SphereMesh.new(), Vector3(0,1.83,0.39), Vector3(0.055,0.07,0.05), skin)
+    _part(body_root, SphereMesh.new(), Vector3(0,1.72,0.36), Vector3(0.11,0.025,0.025), Color(0.38,0.12,0.12))
+    _part(body_root, SphereMesh.new(), Vector3(0,2.19,-0.02), Vector3(0.34,0.20,0.34), Color(0.10,0.07,0.045))
+    var belt = CylinderMesh.new()
+    belt.top_radius = 0.34
+    belt.bottom_radius = 0.35
+    belt.height = 0.07
+    _part(body_root, belt, Vector3(0,0.91,0), Vector3(1,1,1), Color(0.78,0.65,0.32))
     if gender == "Girl":
         _part(body_root, SphereMesh.new(), Vector3(0, 2.17, -0.12), Vector3(0.22, 0.18, 0.22), Color(0.08,0.06,0.05))
+        _part(body_root, SphereMesh.new(), Vector3(0,2.12,0.20), Vector3(0.31,0.24,0.20), Color(0.10,0.06,0.045))
+        _part(body_root, SphereMesh.new(), Vector3(-0.27,1.82,-0.02), Vector3(0.10,0.27,0.12), Color(0.10,0.06,0.045))
+        _part(body_root, SphereMesh.new(), Vector3(0.27,1.82,-0.02), Vector3(0.10,0.27,0.12), Color(0.10,0.06,0.045))
         var htamein_trim = CylinderMesh.new()
         htamein_trim.top_radius = 0.40
         htamein_trim.bottom_radius = 0.44
