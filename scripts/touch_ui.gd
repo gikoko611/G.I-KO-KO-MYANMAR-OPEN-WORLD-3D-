@@ -110,13 +110,13 @@ func _input(event):
     if event is InputEventScreenTouch:
         if event.pressed:
             var screen_size = get_viewport().size
-            if event.position.x < screen_size.x * 0.38 and event.position.y > screen_size.y * 0.28 and move_touch_index == -1:
+            if event.position.x < screen_size.x * 0.38 and event.position.y > screen_size.y * 0.52 and move_touch_index == -1:
                 move_touch_index = event.index
                 move_origin = event.position
                 move_vector = Vector2.ZERO
                 dragging_move = true
                 _send_move()
-            elif event.position.x >= screen_size.x * 0.38 and event.position.y < screen_size.y * 0.78 and look_touch_index == -1:
+            elif event.position.x >= screen_size.x * 0.38 and event.position.y > screen_size.y * 0.46 and event.position.y < screen_size.y * 0.64 and look_touch_index == -1:
                 look_touch_index = event.index
                 last_touch = event.position
                 dragging_look = true
