@@ -145,3 +145,20 @@ func toggle_ride(player):
         var names = {"buffalo":"ကျွဲ", "bullock_cart":"နွားလှည်း", "horse":"မြင်း", "elephant":"ဆင်", "boat":"လှေ", "motorbike":"ဆိုင်ကယ်"}
         return str(names.get(ride_type,"ယာဉ်")) + " စီးပြီးပါပြီ။"
     return "ကျွဲ၊ နွားလှည်း၊ မြင်း၊ ဆင်၊ လှေ သို့မဟုတ် ဆိုင်ကယ်အနီးကို သွားပြီး Ride ကိုနှိပ်ပါ။"
+
+func get_save_data():
+    var saved = {}
+    for vehicle in vehicles:
+        if is_instance_valid(vehicle):
+            saved[vehicle.name] = [vehicle.translation.x, vehicle.translation.y, vehicle.translation.z, vehicle.rotation.y]
+    return saved
+
+func load_save_data(saved):
+    if typeof(saved) != TYPE_DICTIONARY:
+        return
+    for vehicle in vehicles:
+        if is_instance_valid(vehicle) and saved.has(vehicle.name):
+            var values = saved[vehicle.name]
+            if typeof(values) == TYPE_ARRAY and values.size() >= 4:
+                vehicle.translation = Vector3(float(values[0]), float(values[1]), float(values[2]))
+                vehicle.rotation.y = float(values[3])
