@@ -24,6 +24,9 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Day/night cycle, weather toggle, animal wandering with lightweight leg gait and idle animation, NPC idle animation, and procedural vehicle body motion
 - Animated cart and motorbike wheels that rotate in response to vehicle movement, with parked wheels remaining still
 - Corrected wheel spin axes so the cart and motorbike wheels rotate around their axles rather than the wheel faces
+- Vehicle steering now turns the mounted vehicle toward the movement direction, and dismounting aligns the player heading with the vehicle
+- Extended the river crossing with a solid approach road joined to the village path and a full-width bridge deck with collision
+- Reduced mobile UI work by refreshing the live map only while it is open, at half-second intervals
 - Vehicle dismount now uses the vehicle's rotated side direction; saving while mounted records a safe on-foot return position, and loading resets wheel-motion state
 - Save loading now bounds-checks currency, inventory counts, quest progress, graphics quality, time, weather and crop state to avoid invalid saved values breaking gameplay
 - Harvest quest progression now advances only when a successful harvest actually adds rice to inventory
