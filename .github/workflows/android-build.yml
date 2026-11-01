@@ -69,14 +69,16 @@ jobs:
         run: |
           set -euxo pipefail
           godot --version
-          xvfb-run -a godot --path . --editor --quit --verbose
+          xvfb-run -a godot --help > /tmp/godot-help.log 2>&1 || true
+          head -100 /tmp/godot-help.log
+          xvfb-run -a godot --path . --editor --quit --verbose > /tmp/godot-validation.log 2>&1 || { cat /tmp/godot-validation.log; exit 1; }
 
       - name: Export Android ARMv7 debug APK
         shell: bash
         run: |
           set -euxo pipefail
           mkdir -p build
-          xvfb-run -a godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
+          xvfb-run -a godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk > /tmp/godot-export.log 2>&1 || { cat /tmp/godot-export.log; exit 1; }
           test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
           APK_SIZE=$(stat -c%s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk)
           echo "APK_SIZE_BYTES=$APK_SIZE"
