@@ -12,9 +12,16 @@ func _process(delta):
             var phase = animation_time * (5.0 if vehicle.get_meta("ride_type") == "motorbike" else 2.2) + float(vehicle.get_meta("anim_phase", 0.0))
             vehicle.rotation.z = sin(phase) * 0.012
             vehicle.translation.y = max(0.0, sin(phase * 2.0)) * 0.025
+            var last_position = vehicle.get_meta("last_position", vehicle.translation)
+            var horizontal_distance = Vector2(vehicle.translation.x - last_position.x, vehicle.translation.z - last_position.z).length()
+            var horizontal_speed = horizontal_distance / max(delta, 0.001)
+            vehicle.set_meta("wheel_motion", clamp(horizontal_speed / max(float(vehicle.get_meta("ride_speed", 1.0)), 0.1), 0.0, 1.0))
+            vehicle.set_meta("last_position", vehicle.translation)
     for wheel in animated_wheels:
         if is_instance_valid(wheel):
-            wheel.rotate_object_local(Vector3.UP, delta * float(wheel.get_meta("spin_speed", 2.0)))
+            var vehicle_parent = wheel.get_parent()
+            var motion = float(vehicle_parent.get_meta("wheel_motion", 0.0)) if vehicle_parent else 0.0
+            wheel.rotate_object_local(Vector3.UP, delta * float(wheel.get_meta("spin_speed", 2.0)) * motion)
 
 func _ready():
     _make_buffalo(Vector3(-8,0,18))
@@ -59,6 +66,8 @@ func _new_ride(name, kind, pos, speed):
     root.translation = pos
     root.set_meta("ride_type", kind)
     root.set_meta("ride_speed", speed)
+    root.set_meta("last_position", pos)
+    root.set_meta("wheel_motion", 0.0)
     root.set_meta("anim_phase", rand_range(0.0, 6.28))
     add_child(root)
     vehicles.append(root)
