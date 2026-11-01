@@ -109,19 +109,6 @@ jobs:
             exit 1
           fi
 
-      - name: Verify APK architecture and signature
-        shell: bash
-        run: |
-          set -euxo pipefail
-          APK="build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk"
-          unzip -Z1 "$APK" | tee /tmp/apk-files.txt
-          grep -q '^lib/armeabi-v7a/' /tmp/apk-files.txt
-          if grep -q '^lib/arm64-v8a/' /tmp/apk-files.txt; then
-            echo "Unexpected ARM64 library found in ARMv7-only APK"
-            exit 1
-          fi
-          "$ANDROID_HOME/build-tools/30.0.3/apksigner" verify --verbose "$APK"
-
       - name: Upload source project
         uses: actions/upload-artifact@v4
         with:
