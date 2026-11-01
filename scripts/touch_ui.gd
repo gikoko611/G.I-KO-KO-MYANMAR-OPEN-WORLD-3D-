@@ -32,6 +32,8 @@ func _ready():
     _button(root, "Weather", Vector2(-360,-110), "weather", true)
     _button(root, "Save", Vector2(-160,-55), "save", true)
     _button(root, "Load", Vector2(-260,-55), "load", true)
+    _button(root, "Buy Seed", Vector2(-360,-55), "buy_seed", true)
+    _button(root, "Buy Water", Vector2(-360,-165), "buy_water", true)
     var hint = _label(root, "ဘယ်ဘက်: လှုပ်ရှား  |  ညာဘက်: ကင်မရာလှည့်", Vector2(18,-42), Vector2(460,28), 14)
     hint.modulate = Color(1,1,1,0.8)
 
