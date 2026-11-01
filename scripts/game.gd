@@ -84,7 +84,7 @@ func _update_crop_visuals():
     for crop in crop_visuals:
         crop.visible = height > 0.0
         crop.scale = Vector3(1,height,1)
-        crop.translation.y = height * 0.5
+        crop.translation.y = 0.12 + height * 0.5
         var mat = crop.material_override as SpatialMaterial
         if mat:
             mat.albedo_color = crop_color
