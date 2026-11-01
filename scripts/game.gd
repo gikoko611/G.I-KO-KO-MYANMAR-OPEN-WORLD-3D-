@@ -263,7 +263,7 @@ func _on_action(action):
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
     elif action == "save":
-        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person})
+        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data()})
         mission_text = "Game သိမ်းပြီးပါပြီ။" if saved else "Save မအောင်မြင်ပါ။ Storage permission နှင့် နေရာလွတ်ကို စစ်ပါ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -277,6 +277,10 @@ func _on_action(action):
             day_time = float(data.get("day_time", day_time))
             weather = str(data.get("weather", weather))
             player.translation = Vector3(float(data.get("player_x", 0)), float(data.get("player_y", 0.1)), float(data.get("player_z", 9)))
+            player.rotation.y = float(data.get("player_yaw", player.rotation.y))
+            player.yaw = player.rotation.y
+            player.camera_pivot.rotation_degrees.x = float(data.get("player_pitch", player.camera_pivot.rotation_degrees.x))
+            transport.load_save_data(data.get("vehicle_state", {}))
             farming.phase = str(data.get("crop_phase", "empty"))
             farming.growth_seconds = float(data.get("crop_growth", 0.0))
             quest_stage = int(data.get("quest_stage", quest_stage))
