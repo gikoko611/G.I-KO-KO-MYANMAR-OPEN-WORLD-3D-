@@ -20,6 +20,7 @@ var mission_text = "ရွာလူကြီးကို သွားတွေ�
 var quest_stage = 0
 var quest_sell_remaining = 4
 var hud_refresh = 0.0
+var crop_visuals = []
 
 func _ready():
     randomize()
@@ -34,6 +35,7 @@ func _ready():
     transport.name = "Transport"
     add_child(transport)
     farming = Farming.new()
+    _create_crop_visuals()
     ui = UI.new()
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
@@ -43,6 +45,7 @@ func _ready():
 
 func _process(delta):
     farming.tick(delta)
+    _update_crop_visuals()
     hud_refresh += delta
     if hud_refresh >= 0.5:
         hud_refresh = 0.0
@@ -50,6 +53,41 @@ func _process(delta):
             ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     _apply_environment()
+
+func _create_crop_visuals():
+    for i in range(4):
+        var crop = MeshInstance.new()
+        var mesh = CylinderMesh.new()
+        mesh.top_radius = 0.025
+        mesh.bottom_radius = 0.055
+        mesh.height = 1.0
+        crop.mesh = mesh
+        var mat = SpatialMaterial.new()
+        mat.albedo_color = Color(0.20,0.62,0.18)
+        crop.material_override = mat
+        crop.translation = Vector3(-20.5 + i*1.6, 0.08, 24.0)
+        crop.scale = Vector3(1,0.08,1)
+        crop.visible = false
+        add_child(crop)
+        crop_visuals.append(crop)
+
+func _update_crop_visuals():
+    var height = 0.0
+    var crop_color = Color(0.20,0.62,0.18)
+    if farming.phase == "planted":
+        height = 0.18
+    elif farming.phase == "growing":
+        height = 0.18 + 0.65 * clamp(farming.growth_seconds / farming.growth_required, 0.0, 1.0)
+    elif farming.phase == "ready":
+        height = 0.95
+        crop_color = Color(0.82,0.68,0.20)
+    for crop in crop_visuals:
+        crop.visible = height > 0.0
+        crop.scale = Vector3(1,height,1)
+        crop.translation.y = height * 0.5
+        var mat = crop.material_override as SpatialMaterial
+        if mat:
+            mat.albedo_color = crop_color
 
 func _apply_environment():
     var sun = get_node_or_null("Sun")
