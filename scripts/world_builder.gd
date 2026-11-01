@@ -1,8 +1,15 @@
 extends Spatial
 
 var wandering_animals = []
+var animated_npcs = []
 
 func _process(delta):
+    for npc in animated_npcs:
+        if is_instance_valid(npc):
+            var phase = float(npc.get_meta("idle_phase", 0.0)) + delta
+            npc.set_meta("idle_phase", phase)
+            npc.rotation.y = sin(phase * 0.55) * 0.035
+            npc.translation.y = sin(phase * 1.8) * 0.025
     for animal in wandering_animals:
         if not is_instance_valid(animal):
             continue
@@ -145,15 +152,34 @@ func _tree_line():
         add_child(n)
 
 func _villager(pos, shirt_color, label):
+    var root = Spatial.new()
+    root.name = label.replace(" ", "")
+    root.translation = pos
+    root.set_meta("idle_phase", rand_range(0.0, 6.0))
+    add_child(root)
     var skin = Color(0.68,0.43,0.29)
-    _box(label + "Body", pos + Vector3(0,1.05,0), Vector3(0.55,0.85,0.32), shirt_color)
+    var body = MeshInstance.new()
+    body.mesh = CapsuleMesh.new()
+    body.translation = Vector3(0,1.05,0)
+    body.scale = Vector3(0.34,0.52,0.24)
+    body.material_override = _mat(shirt_color)
+    root.add_child(body)
     var head = MeshInstance.new()
     head.mesh = SphereMesh.new()
-    head.translation = pos + Vector3(0,1.85,0)
+    head.translation = Vector3(0,1.85,0)
     head.scale = Vector3(0.28,0.32,0.28)
     head.material_override = _mat(skin)
-    add_child(head)
-    _box(label + "Longyi", pos + Vector3(0,0.48,0), Vector3(0.58,0.75,0.38), Color(0.22,0.24,0.38))
+    root.add_child(head)
+    var longyi = MeshInstance.new()
+    var cloth = CylinderMesh.new()
+    cloth.top_radius = 0.28
+    cloth.bottom_radius = 0.34
+    cloth.height = 0.75
+    longyi.mesh = cloth
+    longyi.translation = Vector3(0,0.48,0)
+    longyi.material_override = _mat(Color(0.22,0.24,0.38))
+    root.add_child(longyi)
+    animated_npcs.append(root)
 
 func _market_stall(pos):
     _box("MarketTable", pos + Vector3(0,0.8,0), Vector3(3,0.18,1.2), Color(0.35,0.20,0.10))
