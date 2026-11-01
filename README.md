@@ -23,6 +23,9 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Expanded countryside props: monastery, stilt house, lotus pond, bamboo grove, village well and rural animals with modeled heads, muzzles, ears, legs and tails
 - Day/night cycle, weather toggle, animal wandering with lightweight leg gait and idle animation, NPC idle animation, and procedural vehicle body motion
 - Animated cart and motorbike wheels that rotate in response to vehicle movement, with parked wheels remaining still
+- Corrected wheel spin axes so the cart and motorbike wheels rotate around their axles rather than the wheel faces
+- Refined touch gesture zones so lower-left movement and right-side camera swipes do not overlap the HUD action buttons
+- Android workflow now runs a Godot editor/import validation pass before export, then checks APK metadata, signature, ARMv7 native libraries, and absence of ARM64 libraries
 - Character gender and outfit colors selectable through in-game HUD buttons
 
 ## Build
