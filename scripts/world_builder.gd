@@ -24,6 +24,14 @@ func _process(delta):
             animal.set_meta("wander_direction", direction)
         animal.set_meta("wander_timer", timer)
         var next_position = animal.translation + direction * delta * float(animal.get_meta("wander_speed", 0.7))
+        var home = animal.get_meta("home_position", animal.translation)
+        next_position.x = clamp(next_position.x, home.x - 6.0, home.x + 6.0)
+        next_position.z = clamp(next_position.z, home.z - 6.0, home.z + 6.0)
+        # Keep each animal on the same river bank where it spawned.
+        if home.x < 12.0:
+            next_position.x = min(next_position.x, 11.0)
+        elif home.x > 20.0:
+            next_position.x = max(next_position.x, 21.0)
         next_position.x = clamp(next_position.x, -68.0, 68.0)
         next_position.z = clamp(next_position.z, -68.0, 68.0)
         animal.translation = next_position
@@ -44,6 +52,7 @@ func build_world():
     _box("River", Vector3(16,-0.25,0), Vector3(8,0.12,150), Color(0.12,0.48,0.68))
     _box("RiverBankLeft", Vector3(11.7,-0.12,0), Vector3(0.65,0.18,150), Color(0.42,0.38,0.22))
     _box("RiverBankRight", Vector3(20.3,-0.12,0), Vector3(0.65,0.18,150), Color(0.42,0.38,0.22))
+    _river_collision_barriers()
     _river_rocks()
     _box("BridgeApproach", Vector3(5,-0.12,7), Vector3(10,0.18,3), Color(0.58,0.42,0.25))
     _box("Bridge", Vector3(16,-0.02,7), Vector3(12,0.5,3), Color(0.40,0.23,0.12))
@@ -67,7 +76,7 @@ func build_world():
     _stilt_house(Vector3(38,0,-38))
     _village_well(Vector3(3,0,28))
     _animal(Vector3(6,0,28), Color(0.18,0.12,0.09), "VillageDog")
-    _animal(Vector3(12,0,-12), Color(0.72,0.70,0.62), "VillageGoat")
+    _animal(Vector3(7.5,0,-12), Color(0.72,0.70,0.62), "VillageGoat")
     _animal(Vector3(-17,0,-8), Color(0.90,0.88,0.82), "VillageDuck")
     _animal(Vector3(22,0,25), Color(0.62,0.38,0.32), "VillagePig")
 
@@ -111,6 +120,20 @@ func _house(pos, index):
     _box("Door", pos + Vector3(0,0.9,2.03), Vector3(0.9,1.8,0.12), Color(0.24,0.12,0.06))
     _box("WindowLeft", pos + Vector3(-1.55,1.35,2.04), Vector3(0.72,0.58,0.10), Color(0.18,0.34,0.38))
     _box("WindowRight", pos + Vector3(1.55,1.35,2.04), Vector3(0.72,0.58,0.10), Color(0.18,0.34,0.38))
+
+func _river_collision_barriers():
+    # Leave the bridge opening clear between z=5.5 and z=8.5.
+    for x in [11.65, 20.35]:
+        for segment in [[-34.75,80.5],[41.75,66.5]]:
+            var barrier = StaticBody.new()
+            barrier.name = "RiverEdgeBarrier"
+            barrier.translation = Vector3(x,0.8,segment[0])
+            var collision = CollisionShape.new()
+            var shape = BoxShape.new()
+            shape.extents = Vector3(0.30,1.0,float(segment[1]) * 0.5)
+            collision.shape = shape
+            barrier.add_child(collision)
+            add_child(barrier)
 
 func _hill(pos, radius):
     var n = MeshInstance.new()
@@ -317,6 +340,7 @@ func _animal(pos, color, label):
     elif label == "VillageDog" or label == "VillageGoat":
         head.scale = Vector3(0.31,0.31,0.31)
     n.set_meta("base_y", 0.5)
+    n.set_meta("home_position", n.translation)
     n.set_meta("anim_phase", rand_range(0.0, 6.28))
     n.set_meta("wander_timer", rand_range(0.2, 2.0))
     n.set_meta("wander_direction", Vector3(rand_range(-1.0,1.0),0,rand_range(-1.0,1.0)).normalized())
