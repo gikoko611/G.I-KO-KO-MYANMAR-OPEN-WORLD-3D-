@@ -16,6 +16,10 @@ func build_world():
     _tree_line()
     _animal(Vector3(-7,0,12), Color(0.42,0.28,0.16), "Buffalo")
     _animal(Vector3(4,0,-7), Color(0.92,0.88,0.72), "Chicken")
+    _villager(Vector3(-5,0,-13), Color(0.10,0.34,0.28), "Village Elder")
+    _villager(Vector3(8,0,18), Color(0.60,0.16,0.22), "Market Seller")
+    _market_stall(Vector3(10,0,16))
+    _motorbike(Vector3(-10,0,3))
 
 func _mat(color):
     var m = SpatialMaterial.new()
@@ -32,6 +36,15 @@ func _box(label, pos, size, color):
     n.translation = pos
     n.material_override = _mat(color)
     add_child(n)
+    if label == "Earth" or label == "VillagePath" or label == "Bridge":
+        var body = StaticBody.new()
+        body.translation = pos
+        var collision = CollisionShape.new()
+        var shape = BoxShape.new()
+        shape.extents = size * 0.5
+        collision.shape = shape
+        body.add_child(collision)
+        add_child(body)
     return n
 
 func _house(pos, index):
@@ -101,6 +114,33 @@ func _tree_line():
         n.translation = Vector3(x,3,z)
         n.material_override = _mat(Color(0.12,rand_range(0.28,0.48),0.16))
         add_child(n)
+
+func _villager(pos, shirt_color, label):
+    var skin = Color(0.68,0.43,0.29)
+    _box(label + "Body", pos + Vector3(0,1.05,0), Vector3(0.55,0.85,0.32), shirt_color)
+    var head = MeshInstance.new()
+    head.mesh = SphereMesh.new()
+    head.translation = pos + Vector3(0,1.85,0)
+    head.scale = Vector3(0.28,0.32,0.28)
+    head.material_override = _mat(skin)
+    add_child(head)
+    _box(label + "Longyi", pos + Vector3(0,0.48,0), Vector3(0.58,0.75,0.38), Color(0.22,0.24,0.38))
+
+func _market_stall(pos):
+    _box("MarketTable", pos + Vector3(0,0.8,0), Vector3(3,0.18,1.2), Color(0.35,0.20,0.10))
+    _box("MarketAwning", pos + Vector3(0,2.1,0), Vector3(3.5,0.18,1.8), Color(0.65,0.18,0.16))
+    for i in range(5):
+        _box("MarketPost", pos + Vector3(-1.5 + i*0.75,1.45,-0.7), Vector3(0.08,1.3,0.08), Color(0.25,0.14,0.08))
+
+func _motorbike(pos):
+    var wheel = CylinderMesh.new()
+    wheel.top_radius = 0.42
+    wheel.bottom_radius = 0.42
+    wheel.height = 0.16
+    _cylinder("MotorbikeFrontWheel", wheel, pos + Vector3(0,0.42,-0.9), Color(0.06,0.06,0.06))
+    _cylinder("MotorbikeRearWheel", wheel, pos + Vector3(0,0.42,0.9), Color(0.06,0.06,0.06))
+    _box("MotorbikeFrame", pos + Vector3(0,0.85,0), Vector3(0.35,0.28,1.5), Color(0.72,0.08,0.06))
+    _box("MotorbikeSeat", pos + Vector3(0,1.1,0.2), Vector3(0.5,0.12,0.65), Color(0.08,0.08,0.08))
 
 func _animal(pos, color, label):
     var n = MeshInstance.new()
