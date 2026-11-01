@@ -132,4 +132,4 @@ func _on_action(action):
             farming.phase = str(data.get("crop_phase", "empty"))
             farming.growth_seconds = float(data.get("crop_growth", 0.0))
             quest_stage = int(data.get("quest_stage", quest_stage))
-    ui.set_status(mission_text, coins, weather, inventory)
+    ui.set_status(mission_text + " | " + farming.get_status(), coins, weather, inventory)
