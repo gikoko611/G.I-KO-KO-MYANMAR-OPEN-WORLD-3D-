@@ -232,11 +232,13 @@ func _on_action(action):
         else:
             mission_text = "စပါးခင်းထဲသို့ သွားပြီး Water နှိပ်ပါ။"
     elif action == "harvest":
+        var rice_before = int(inventory.get("Rice",0))
         if player.global_transform.origin.distance_to(Vector3(-18,0,24)) < 15.0:
             mission_text = farming.harvest(inventory)
         else:
             mission_text = "စပါးခင်းထဲသို့ သွားပြီး Harvest နှိပ်ပါ။"
-        if quest_stage == 1 and int(inventory.get("Rice",0)) >= 4:
+        var rice_after = int(inventory.get("Rice",0))
+        if quest_stage == 1 and rice_after > rice_before and rice_after >= 4:
             quest_stage = 2
             mission_text = "Mission: စပါးရရှိပါပြီ။ ဈေးသည်ဆီသို့ သွားရောက်ရောင်းချပါ။"
     elif action == "buy_seed":
@@ -311,6 +313,8 @@ func _on_action(action):
     elif action == "load":
         var data = SaveManager.load_game()
         if not data.empty():
+            if player.is_mounted():
+                player.dismount_vehicle()
             coins = int(data.get("coins", coins))
             inventory = data.get("inventory", inventory)
             mission_text = str(data.get("mission", mission_text))
