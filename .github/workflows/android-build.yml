@@ -1,0 +1,27 @@
+name: Android ARMv7 Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:3.5.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Prepare output
+        run: mkdir -p build
+      - name: Export Android debug APK
+        run: |
+          godot --version
+          godot --headless --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-ARMv7-APK
+          path: build/*.apk
+          if-no-files-found: error
