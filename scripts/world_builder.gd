@@ -19,7 +19,6 @@ func build_world():
     _villager(Vector3(-5,0,-13), Color(0.10,0.34,0.28), "Village Elder")
     _villager(Vector3(8,0,18), Color(0.60,0.16,0.22), "Market Seller")
     _market_stall(Vector3(10,0,16))
-    _motorbike(Vector3(-10,0,3))
     _monastery(Vector3(-34,0,-30))
     _lotus_pond(Vector3(42,0,35))
     _bamboo_grove(Vector3(-58,0,18))
