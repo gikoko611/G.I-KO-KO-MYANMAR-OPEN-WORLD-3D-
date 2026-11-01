@@ -21,7 +21,7 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Original synthesized ambient background music generated locally in-game; no external music download required
 - More complete local saves: inventory, currency, quest state, crop growth, weather, time, player position and camera orientation, graphics/audio preferences, and vehicle positions; backup recovery on interrupted saves
 - Expanded countryside props: monastery, stilt house, lotus pond, bamboo grove, village well and rural animals with modeled heads, muzzles, ears, legs and tails
-- Day/night cycle, weather toggle, animal wandering and idle animation, NPC idle animation, and procedural vehicle body motion
+- Day/night cycle, weather toggle, animal wandering with lightweight leg gait and idle animation, NPC idle animation, and procedural vehicle body motion
 - Animated cart and motorbike wheels that rotate in response to vehicle movement, with parked wheels remaining still
 - Character gender and outfit colors selectable in the start screen
 
