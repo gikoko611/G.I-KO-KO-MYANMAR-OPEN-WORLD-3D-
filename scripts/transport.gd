@@ -192,3 +192,5 @@ func load_save_data(saved):
             if typeof(values) == TYPE_ARRAY and values.size() >= 4:
                 vehicle.translation = Vector3(float(values[0]), float(values[1]), float(values[2]))
                 vehicle.rotation.y = float(values[3])
+                vehicle.set_meta("last_position", vehicle.translation)
+                vehicle.set_meta("wheel_motion", 0.0)
