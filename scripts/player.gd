@@ -14,6 +14,7 @@ var body_root
 var mounted_vehicle = null
 var mounted_offset = Vector3.ZERO
 var mounted_speed = 4.0
+var sprint_enabled = false
 
 func _ready():
     _build_character()
@@ -51,8 +52,9 @@ func _physics_process(delta):
         camera_pivot.rotation_degrees.x = pitch
         look_delta = Vector2.ZERO
         return
-    velocity.x = direction.x * speed
-    velocity.z = direction.z * speed
+    var current_speed = speed * (1.65 if sprint_enabled else 1.0)
+    velocity.x = direction.x * current_speed
+    velocity.z = direction.z * current_speed
     velocity.y -= gravity * delta
     if is_on_floor() and Input.is_action_just_pressed("ui_accept"):
         velocity.y = 8.0
@@ -65,6 +67,14 @@ func _physics_process(delta):
 
 func set_move(value):
     move_input = value
+
+func jump_now():
+    if not is_mounted() and is_on_floor():
+        velocity.y = 8.0
+
+func toggle_sprint():
+    sprint_enabled = not sprint_enabled
+    return sprint_enabled
 
 func mount_vehicle(vehicle, offset, vehicle_speed):
     mounted_vehicle = vehicle
