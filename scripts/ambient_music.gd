@@ -22,6 +22,8 @@ func _process(_delta):
     if playback == null:
         return
     var frames = 256
+    if not playback.can_push_buffer(frames):
+        return
     var buffer = PoolVector2Array()
     buffer.resize(frames)
     var gain = 0.10 if music_enabled and sound_enabled else 0.0
