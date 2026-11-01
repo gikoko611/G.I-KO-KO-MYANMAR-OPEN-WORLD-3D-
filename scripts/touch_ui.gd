@@ -56,6 +56,8 @@ func _ready():
     map_label.autowrap = true
     settings_label = _label(root, "", Vector2(330,154), Vector2(330,100), 14)
     settings_label.autowrap = true
+    map_label.visible = false
+    settings_label.visible = false
     var hint = _label(root, "ဘယ်ဘက်: လှုပ်ရှား  |  ညာဘက်: ကင်မရာလှည့်", Vector2(18,-42), Vector2(460,28), 14)
     hint.modulate = Color(1,1,1,0.8)
 
