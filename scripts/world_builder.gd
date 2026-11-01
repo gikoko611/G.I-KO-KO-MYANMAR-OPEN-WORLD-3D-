@@ -38,6 +38,9 @@ func build_world():
     _box("Earth", Vector3(0,-0.7,0), Vector3(260,1,260), Color(0.25,0.42,0.20))
     _box("VillagePath", Vector3(0,-0.12,0), Vector3(5,0.18,135), Color(0.62,0.48,0.30))
     _box("River", Vector3(16,-0.25,0), Vector3(8,0.12,150), Color(0.12,0.48,0.68))
+    _box("RiverBankLeft", Vector3(11.7,-0.12,0), Vector3(0.65,0.18,150), Color(0.42,0.38,0.22))
+    _box("RiverBankRight", Vector3(20.3,-0.12,0), Vector3(0.65,0.18,150), Color(0.42,0.38,0.22))
+    _river_rocks()
     _box("Bridge", Vector3(11,-0.02,7), Vector3(11,0.5,3), Color(0.40,0.23,0.12))
     for i in range(12):
         var x = -25 + (i % 4) * 13
@@ -66,9 +69,11 @@ func build_world():
 func _mat(color):
     var m = SpatialMaterial.new()
     m.albedo_color = color
-    m.roughness = 0.84
-    m.metallic = 0.42 if color.r > 0.76 and color.g > 0.42 and color.b < 0.48 else 0.0
-    m.specular = 0.52
+    var is_water = color.b > color.r and color.b > color.g * 1.08
+    var is_gold = color.r > 0.76 and color.g > 0.42 and color.b < 0.48
+    m.roughness = 0.28 if is_water else (0.48 if is_gold else 0.88)
+    m.metallic = 0.16 if is_water else (0.42 if is_gold else 0.0)
+    m.specular = 0.82 if is_water else 0.58
     return m
 
 func _box(label, pos, size, color):
@@ -121,6 +126,20 @@ func _hill(pos, radius):
     ridge.scale = Vector3(1.4,0.85,1.0)
     ridge.material_override = _mat(Color(0.25,0.43,0.26))
     add_child(ridge)
+
+func _river_rocks():
+    for i in range(12):
+        var side = -1.0 if i % 2 == 0 else 1.0
+        var z = -62.0 + i * 10.5 + rand_range(-2.0,2.0)
+        var rock = MeshInstance.new()
+        var rock_mesh = SphereMesh.new()
+        rock_mesh.radius = rand_range(0.28,0.58)
+        rock_mesh.height = rock_mesh.radius * 0.9
+        rock.mesh = rock_mesh
+        rock.translation = Vector3(16.0 + side * rand_range(4.6,5.5),0.05,z)
+        rock.scale = Vector3(1.35,0.7,0.9)
+        rock.material_override = _mat(Color(0.34,0.37,0.34))
+        add_child(rock)
 
 func _farm(pos):
     for x in range(4):
