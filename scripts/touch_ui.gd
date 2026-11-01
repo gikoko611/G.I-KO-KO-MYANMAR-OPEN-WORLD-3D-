@@ -21,6 +21,7 @@ func _ready():
     inventory_label = _label(root, "Bag: Rice 3 | Seed 8 | Water 2", Vector2(18,118), Vector2(420,28), 15)
     _button(root, "Boy", Vector2(18,158), "boy")
     _button(root, "Girl", Vector2(100,140), "girl")
+    _button(root, "Ride", Vector2(-260,-220), "ride", true)
     _button(root, "Interact", Vector2(-160,-220), "interact", true)
     _button(root, "Farm", Vector2(-160,-165), "farm", true)
     _button(root, "Sell Rice", Vector2(-260,-165), "sell", true)
