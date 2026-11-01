@@ -1,0 +1,22 @@
+; Engine configuration file.
+config_version=4
+
+[application]
+config/name="G.I KO KO - Myanmar Open World 3D"
+run/main_scene="res://scenes/main.tscn"
+config/description="Explore Myanmar countryside, farm, meet villagers and live a rural adventure."
+
+[rendering]
+quality/driver/driver_name="GLES2"
+environment/default_clear_color=Color(0.48, 0.72, 0.88, 1)
+quality/intended_usage/framebuffer_allocation=0
+quality/intended_usage/framebuffer_allocation.mobile=0
+quality/2d/batching/use_batching=true
+
+[physics]
+3d/default_gravity=24.0
+
+[display]
+window/size/width=1280
+window/size/height=720
+window/handheld/orientation=landscape
