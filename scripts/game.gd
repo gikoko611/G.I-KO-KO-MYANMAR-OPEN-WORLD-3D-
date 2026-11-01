@@ -20,6 +20,7 @@ var mission_text = "ရွာလူကြီးကို သွားတွေ�
 var quest_stage = 0
 var quest_sell_remaining = 4
 var hud_refresh = 0.0
+var environment_refresh = 0.0
 var dialogue_timer = 0.0
 var crop_visuals = []
 var music_controller
@@ -67,7 +68,10 @@ func _process(delta):
         if ui:
             ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
-    _apply_environment()
+    environment_refresh += delta
+    if environment_refresh >= 0.25:
+        environment_refresh = 0.0
+        _apply_environment()
     if ui and player:
         ui.set_map_info(player.global_transform.origin, map_visible, mission_text)
 
