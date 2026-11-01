@@ -15,6 +15,7 @@ var mounted_vehicle = null
 var mounted_offset = Vector3.ZERO
 var mounted_speed = 4.0
 var sprint_enabled = false
+var first_person = false
 
 func _ready():
     _build_character()
@@ -75,6 +76,18 @@ func jump_now():
 func toggle_sprint():
     sprint_enabled = not sprint_enabled
     return sprint_enabled
+
+func toggle_camera_mode():
+    first_person = not first_person
+    if first_person:
+        camera.translation = Vector3(0,0.12,0.02)
+        camera.rotation_degrees.x = 0
+        body_root.visible = false
+    else:
+        camera.translation = Vector3(0,1.1,4.2)
+        camera.rotation_degrees.x = -10
+        body_root.visible = true
+    return first_person
 
 func mount_vehicle(vehicle, offset, vehicle_speed):
     mounted_vehicle = vehicle
