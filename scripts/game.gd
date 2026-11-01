@@ -292,6 +292,8 @@ func _on_action(action):
             if music_controller:
                 music_controller.set_music_enabled(music_enabled)
                 music_controller.set_sound_enabled(sound_enabled)
+            ui.set_settings_info(settings_visible, graphics_level, music_enabled, sound_enabled)
+            ui.set_map_info(player.global_transform.origin, map_visible, mission_text)
     ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
 
 func _apply_graphics_quality():
