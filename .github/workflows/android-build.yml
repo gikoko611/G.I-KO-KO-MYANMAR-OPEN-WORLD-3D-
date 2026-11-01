@@ -69,14 +69,14 @@ jobs:
         run: |
           set -euxo pipefail
           godot --version
-          godot --headless --path . --editor --quit --verbose
+          godot --no-window --path . --editor --quit --verbose
 
       - name: Export Android ARMv7 debug APK
         shell: bash
         run: |
           set -euxo pipefail
           mkdir -p build
-          godot --headless --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
+          godot --no-window --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
           test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
           APK_SIZE=$(stat -c%s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk)
           echo "APK_SIZE_BYTES=$APK_SIZE"
