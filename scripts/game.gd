@@ -47,7 +47,7 @@ func _process(delta):
     if hud_refresh >= 0.5:
         hud_refresh = 0.0
         if ui:
-            ui.set_status(mission_text + " | " + farming.get_status(), coins, weather, inventory)
+            ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     _apply_environment()
 
@@ -139,7 +139,7 @@ func _on_action(action):
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
     elif action == "save":
-        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining})
+        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person})
         mission_text = "Game သိမ်းပြီးပါပြီ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -148,6 +148,8 @@ func _on_action(action):
             inventory = data.get("inventory", inventory)
             mission_text = str(data.get("mission", mission_text))
             player.set_gender(str(data.get("gender", "Boy")))
+            if bool(data.get("first_person", false)) != player.first_person:
+                player.toggle_camera_mode()
             day_time = float(data.get("day_time", day_time))
             weather = str(data.get("weather", weather))
             player.translation = Vector3(float(data.get("player_x", 0)), float(data.get("player_y", 0.1)), float(data.get("player_z", 9)))
