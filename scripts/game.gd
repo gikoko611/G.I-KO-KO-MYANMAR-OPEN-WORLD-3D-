@@ -21,6 +21,7 @@ var quest_stage = 0
 var quest_sell_remaining = 4
 var hud_refresh = 0.0
 var environment_refresh = 0.0
+var map_refresh = 0.0
 var dialogue_timer = 0.0
 var crop_visuals = []
 var music_controller
@@ -72,8 +73,11 @@ func _process(delta):
     if environment_refresh >= 0.25:
         environment_refresh = 0.0
         _apply_environment()
-    if ui and player:
-        ui.set_map_info(player.global_transform.origin, map_visible, mission_text)
+    if ui and player and map_visible:
+        map_refresh += delta
+        if map_refresh >= 0.5:
+            map_refresh = 0.0
+            ui.set_map_info(player.global_transform.origin, true, mission_text)
 
 
 func _create_crop_visuals():
