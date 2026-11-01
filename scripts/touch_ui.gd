@@ -14,6 +14,8 @@ var last_touch = Vector2.ZERO
 var move_origin = Vector2.ZERO
 var move_touch_index = -1
 var look_touch_index = -1
+var map_label
+var settings_label
 
 func _ready():
     var root = Control.new()
@@ -45,6 +47,15 @@ func _ready():
     _button(root, "Load", Vector2(-260,-55), "load", true)
     _button(root, "Buy Seed", Vector2(-360,-55), "buy_seed", true)
     _button(root, "Buy Water", Vector2(-460,-165), "buy_water", true)
+    _button(root, "Map", Vector2(-460,-55), "map", true)
+    _button(root, "Settings", Vector2(-560,-55), "settings", true)
+    _button(root, "Quality", Vector2(-560,-110), "quality", true)
+    _button(root, "Music", Vector2(-560,-165), "music", true)
+    _button(root, "Sound", Vector2(-560,-220), "sound", true)
+    map_label = _label(root, "", Vector2(18,154), Vector2(300,120), 14)
+    map_label.autowrap = true
+    settings_label = _label(root, "", Vector2(330,154), Vector2(330,100), 14)
+    settings_label.autowrap = true
     var hint = _label(root, "ဘယ်ဘက်: လှုပ်ရှား  |  ညာဘက်: ကင်မရာလှည့်", Vector2(18,-42), Vector2(460,28), 14)
     hint.modulate = Color(1,1,1,0.8)
 
@@ -129,3 +140,16 @@ func _input(event):
 func _send_move():
     var p = get_parent().get_node_or_null("Player")
     if p: p.set_move(move_vector)
+
+func set_map_info(position, visible, mission):
+    if map_label:
+        map_label.visible = visible
+        if visible:
+            var locations = "ELDER (-5,-13) | MARKET (8,18) | FARM (-18,24) | WELL (3,28) | PAGODA (28,-22)"
+            map_label.text = "WORLD MAP\nX: " + str(int(position.x)) + "  Z: " + str(int(position.z)) + "\n" + locations + "\nObjective: " + str(mission)
+
+func set_settings_info(visible, quality, music, sound):
+    if settings_label:
+        settings_label.visible = visible
+        if visible:
+            settings_label.text = "GAME SETTINGS\nGraphics: " + ["Low","Balanced","High"][int(quality)] + "\nBackground Music: " + ("ON" if music else "OFF") + "\nSound: " + ("ON" if sound else "OFF") + "\nTap Quality / Music / Sound to change"
