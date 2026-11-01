@@ -32,6 +32,10 @@ func _process(delta):
         var base_y = float(animal.get_meta("base_y", 0.5))
         var moving = direction.length() > 0.1 and timer > 0.0
         animal.translation.y = base_y + abs(sin(animal_animation_clock * 5.0 + float(animal.get_meta("anim_phase", 0.0)))) * (0.045 if moving else 0.012)
+        var gait_phase = animal_animation_clock * (7.0 if moving else 2.0) + float(animal.get_meta("anim_phase", 0.0))
+        for part in animal.get_children():
+            if part is MeshInstance and bool(part.get_meta("is_animal_leg", false)):
+                part.rotation.x = sin(gait_phase + float(part.get_meta("leg_phase", 0.0))) * (0.28 if moving else 0.035)
         animal.rotation.z = sin(animal_animation_clock * 3.0 + float(animal.get_meta("anim_phase", 0.0))) * 0.025
 
 func build_world():
@@ -292,6 +296,8 @@ func _animal(pos, color, label):
             leg.translation = Vector3(side*0.36,-0.35,front_back*0.34)
             leg.scale = Vector3(0.13,0.62,0.13)
             leg.material_override = _mat(color.darkened(0.16))
+            leg.set_meta("is_animal_leg", true)
+            leg.set_meta("leg_phase", 0.0 if (side * front_back) > 0 else PI)
             n.add_child(leg)
     var tail = MeshInstance.new()
     tail.mesh = CylinderMesh.new()
