@@ -1,6 +1,16 @@
 extends Spatial
 
 var vehicles = []
+var animation_time = 0.0
+var ride_phases = []
+
+func _process(delta):
+    animation_time += delta
+    for vehicle in vehicles:
+        if is_instance_valid(vehicle):
+            var phase = animation_time * (5.0 if vehicle.get_meta("ride_type") == "motorbike" else 2.2) + float(vehicle.get_meta("anim_phase", 0.0))
+            vehicle.rotation.z = sin(phase) * 0.012
+            vehicle.translation.y = max(0.0, sin(phase * 2.0)) * 0.025
 
 func _ready():
     _make_buffalo(Vector3(-8,0,18))
@@ -32,6 +42,7 @@ func _new_ride(name, kind, pos, speed):
     root.translation = pos
     root.set_meta("ride_type", kind)
     root.set_meta("ride_speed", speed)
+    root.set_meta("anim_phase", rand_range(0.0, 6.28))
     add_child(root)
     vehicles.append(root)
     return root
