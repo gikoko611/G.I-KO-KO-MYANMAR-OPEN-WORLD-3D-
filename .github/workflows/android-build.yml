@@ -2,8 +2,6 @@ name: Android ARMv7 Build
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   export:
