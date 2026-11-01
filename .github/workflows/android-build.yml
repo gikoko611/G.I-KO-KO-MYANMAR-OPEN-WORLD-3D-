@@ -56,7 +56,13 @@ jobs:
           chmod +x "$GODOT_BIN"
           mv "$GODOT_BIN" "$HOME/godot/godot"
           echo "$HOME/godot" >> "$GITHUB_PATH"
-          "$HOME/godot/godot" --version
+          VERSION_OUTPUT=$("$HOME/godot/godot" --version 2>&1) || VERSION_STATUS=$?
+          printf '%s\\n' "$VERSION_OUTPUT"
+          if [[ "$VERSION_OUTPUT" != *"3.5.2.stable.official"* ]]; then
+            echo "Godot 3.5.2 version check failed"
+            exit 1
+          fi
+          echo "Godot version confirmed; continuing to project validation."
 
       - name: Install Godot 3.5.2 export templates
         shell: bash
