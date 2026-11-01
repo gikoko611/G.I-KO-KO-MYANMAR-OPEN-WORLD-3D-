@@ -107,9 +107,13 @@ func mount_vehicle(vehicle, offset, vehicle_speed):
 
 func dismount_vehicle():
     if mounted_vehicle != null and is_instance_valid(mounted_vehicle):
-        global_transform.origin = mounted_vehicle.global_transform.origin + Vector3(1.8,0.2,0)
+        var vehicle_basis = mounted_vehicle.global_transform.basis
+        var side_offset = vehicle_basis.xform(Vector3(2.0,0.0,0.0))
+        global_transform.origin = mounted_vehicle.global_transform.origin + side_offset + Vector3(0,0.2,0)
     mounted_vehicle = null
+    mounted_offset = Vector3.ZERO
     move_input = Vector2.ZERO
+    velocity = Vector3.ZERO
 
 func is_mounted():
     return mounted_vehicle != null and is_instance_valid(mounted_vehicle)
