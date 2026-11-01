@@ -90,7 +90,7 @@ func _make_cart(pos):
     _mesh(root, CubeMesh.new(), Vector3(0,1.05,0.15), Vector3(2.2,0.22,2.7), Color(0.38,0.20,0.09))
     for side in [-1,1]:
         _mesh(root, CubeMesh.new(), Vector3(side*1.0,1.55,0.15), Vector3(0.12,0.9,2.5), Color(0.48,0.27,0.12))
-        _animated_wheel(root, Vector3(side*1.15,0.85,0.2), Vector3(0.16,1.55,1.55), Color(0.12,0.09,0.06), Vector3(0,0,90), 1.8, Vector3.RIGHT)
+        _animated_wheel(root, Vector3(side*1.15,0.85,0.2), Vector3(1.55,0.16,1.55), Color(0.12,0.09,0.06), Vector3(0,0,90), 1.8, Vector3.UP)
     _mesh(root, CubeMesh.new(), Vector3(0,2.45,0.15), Vector3(2.5,0.12,2.8), Color(0.66,0.40,0.18))
     for side in [-1,1]:
         var ox = Spatial.new()
@@ -132,7 +132,7 @@ func _make_elephant(pos):
 func _make_motorbike(pos):
     var root = _new_ride("RideableMyanmarMotorbike", "motorbike", pos, 11.0)
     for z in [-0.82,0.82]:
-        _animated_wheel(root, Vector3(0,0.42,z), Vector3(0.38,0.16,0.38), Color(0.045,0.045,0.045), Vector3(90,0,0), 5.5, Vector3.BACK)
+        _animated_wheel(root, Vector3(0,0.42,z), Vector3(0.38,0.16,0.38), Color(0.045,0.045,0.045), Vector3(90,0,0), 5.5, Vector3.UP)
     _mesh(root, CylinderMesh.new(), Vector3(0,0.68,0), Vector3(0.12,0.16,0.72), Color(0.62,0.62,0.58), Vector3(90,0,0))
     _mesh(root, CylinderMesh.new(), Vector3(0.22,0.62,0.38), Vector3(0.07,0.08,0.62), Color(0.48,0.48,0.46), Vector3(0,0,72))
     _mesh(root, CubeMesh.new(), Vector3(0,1.04,0.02), Vector3(0.44,0.12,0.52), Color(0.12,0.12,0.12))
