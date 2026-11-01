@@ -53,7 +53,10 @@ func _physics_process(delta):
     input = input.normalized()
     var direction = Vector3(input.x, 0, input.y).rotated(Vector3.UP, yaw)
     if mounted_vehicle != null and is_instance_valid(mounted_vehicle):
-        mounted_vehicle.translation += direction * mounted_speed * delta
+        if input.length() > 0.05:
+            var target_heading = atan2(-direction.x, -direction.z)
+            mounted_vehicle.rotation.y = lerp_angle(mounted_vehicle.rotation.y, target_heading, min(1.0, delta * 7.0))
+            mounted_vehicle.translation += direction * mounted_speed * delta
         global_transform.origin = mounted_vehicle.global_transform.xform(mounted_offset)
         velocity = Vector3.ZERO
         yaw -= look_delta.x * 0.004
@@ -110,6 +113,8 @@ func dismount_vehicle():
         var vehicle_basis = mounted_vehicle.global_transform.basis
         var side_offset = vehicle_basis.xform(Vector3(2.0,0.0,0.0))
         global_transform.origin = mounted_vehicle.global_transform.origin + side_offset + Vector3(0,0.2,0)
+        yaw = mounted_vehicle.rotation.y
+        rotation.y = yaw
     mounted_vehicle = null
     mounted_offset = Vector3.ZERO
     move_input = Vector2.ZERO
