@@ -319,14 +319,20 @@ func _on_action(action):
         if not data.empty():
             if player.is_mounted():
                 player.dismount_vehicle()
-            coins = int(data.get("coins", coins))
-            inventory = data.get("inventory", inventory)
+            coins = max(0, int(data.get("coins", coins)))
+            var loaded_inventory = data.get("inventory", inventory)
+            if typeof(loaded_inventory) == TYPE_DICTIONARY:
+                inventory = loaded_inventory
+            for item_name in ["Rice", "Seed", "Water"]:
+                inventory[item_name] = max(0, int(inventory.get(item_name, 0)))
             mission_text = str(data.get("mission", mission_text))
-            player.set_gender(str(data.get("gender", "Boy")))
+            var loaded_gender = str(data.get("gender", "Boy"))
+            player.set_gender("Girl" if loaded_gender == "Girl" else "Boy")
             if bool(data.get("first_person", false)) != player.first_person:
                 player.toggle_camera_mode()
-            day_time = float(data.get("day_time", day_time))
-            weather = str(data.get("weather", weather))
+            day_time = fposmod(float(data.get("day_time", day_time)), 1.0)
+            var loaded_weather = str(data.get("weather", weather))
+            weather = "Rainy" if loaded_weather == "Rainy" else "Sunny"
             player.translation = Vector3(float(data.get("player_x", 0)), float(data.get("player_y", 0.1)), float(data.get("player_z", 9)))
             player.rotation.y = float(data.get("player_yaw", player.rotation.y))
             player.yaw = player.rotation.y
@@ -334,9 +340,9 @@ func _on_action(action):
             transport.load_save_data(data.get("vehicle_state", {}))
             farming.phase = str(data.get("crop_phase", "empty"))
             farming.growth_seconds = float(data.get("crop_growth", 0.0))
-            quest_stage = int(data.get("quest_stage", quest_stage))
-            quest_sell_remaining = int(data.get("quest_sell_remaining", quest_sell_remaining))
-            graphics_level = int(data.get("graphics_level", graphics_level))
+            quest_stage = clamp(int(data.get("quest_stage", quest_stage)), 0, 6)
+            quest_sell_remaining = clamp(int(data.get("quest_sell_remaining", quest_sell_remaining)), 0, 4)
+            graphics_level = clamp(int(data.get("graphics_level", graphics_level)), 0, 2)
             music_enabled = bool(data.get("music_enabled", music_enabled))
             sound_enabled = bool(data.get("sound_enabled", sound_enabled))
             _apply_graphics_quality()
