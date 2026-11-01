@@ -10,15 +10,19 @@ var move_vector = Vector2.ZERO
 var dragging_move = false
 var dragging_look = false
 var last_touch = Vector2.ZERO
+var move_origin = Vector2.ZERO
+var move_touch_index = -1
+var look_touch_index = -1
 
 func _ready():
     var root = Control.new()
     root.set_anchors_and_margins_preset(Control.PRESET_WIDE)
     add_child(root)
-    status_label = _label(root, "ရွာကိုလေ့လာပြီး လယ်ကွင်းကိုရှာပါ", Vector2(18,18), Vector2(600,36), 20)
+    status_label = _label(root, "ရွာကိုလေ့လာပြီး လယ်ကွင်းကိုရှာပါ", Vector2(18,18), Vector2(760,52), 17)
+    status_label.autowrap = true
     coin_label = _label(root, "Coins: 120", Vector2(18,58), Vector2(180,30), 18)
     weather_label = _label(root, "Sunny", Vector2(18,90), Vector2(180,28), 16)
-    inventory_label = _label(root, "Bag: Rice 3 | Seed 8 | Water 2", Vector2(18,118), Vector2(420,28), 15)
+    inventory_label = _label(root, "Bag: Rice 3 | Seed 8 | Water 2", Vector2(18,118), Vector2(520,28), 15)
     _button(root, "Boy", Vector2(18,158), "boy")
     _button(root, "Girl", Vector2(100,158), "girl")
     _button(root, "Sprint", Vector2(-360,-220), "sprint", true)
@@ -78,23 +82,35 @@ func set_status(message, coins, weather, inventory):
 func _input(event):
     if event is InputEventScreenTouch:
         if event.pressed:
-            last_touch = event.position
-            dragging_move = event.position.x < get_viewport().size.x * 0.38
-            dragging_look = not dragging_move and event.position.y < get_viewport().size.y * 0.78
+            var screen_size = get_viewport().size
+            if event.position.x < screen_size.x * 0.38 and event.position.y > screen_size.y * 0.28 and move_touch_index == -1:
+                move_touch_index = event.index
+                move_origin = event.position
+                move_vector = Vector2.ZERO
+                dragging_move = true
+                _send_move()
+            elif event.position.x >= screen_size.x * 0.38 and event.position.y < screen_size.y * 0.78 and look_touch_index == -1:
+                look_touch_index = event.index
+                last_touch = event.position
+                dragging_look = true
         else:
-            dragging_move = false
-            dragging_look = false
-            move_vector = Vector2.ZERO
-            _send_move()
+            if event.index == move_touch_index:
+                move_touch_index = -1
+                dragging_move = false
+                move_vector = Vector2.ZERO
+                _send_move()
+            if event.index == look_touch_index:
+                look_touch_index = -1
+                dragging_look = false
     elif event is InputEventScreenDrag:
-        var delta = event.position - last_touch
-        if dragging_move:
-            move_vector = Vector2(clamp(delta.x/70.0,-1,1), clamp(delta.y/70.0,-1,1))
+        if event.index == move_touch_index:
+            var delta = event.position - move_origin
+            move_vector = Vector2(clamp(delta.x/85.0,-1,1), clamp(delta.y/85.0,-1,1))
             _send_move()
-        elif dragging_look:
+        elif event.index == look_touch_index:
             var p = get_parent().get_node_or_null("Player")
-            if p: p.add_look(delta)
-        last_touch = event.position
+            if p:
+                p.add_look(event.relative)
 
 func _send_move():
     var p = get_parent().get_node_or_null("Player")
