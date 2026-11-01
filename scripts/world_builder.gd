@@ -2,8 +2,10 @@ extends Spatial
 
 var wandering_animals = []
 var animated_npcs = []
+var animal_animation_clock = 0.0
 
 func _process(delta):
+    animal_animation_clock += delta
     for npc in animated_npcs:
         if is_instance_valid(npc):
             var phase = float(npc.get_meta("idle_phase", 0.0)) + delta
@@ -27,6 +29,10 @@ func _process(delta):
         animal.translation = next_position
         if direction.length() > 0.1:
             animal.rotation.y = atan2(direction.x, direction.z)
+        var base_y = float(animal.get_meta("base_y", 0.5))
+        var moving = direction.length() > 0.1 and timer > 0.0
+        animal.translation.y = base_y + abs(sin(animal_animation_clock * 5.0 + float(animal.get_meta("anim_phase", 0.0)))) * (0.045 if moving else 0.012)
+        animal.rotation.z = sin(animal_animation_clock * 3.0 + float(animal.get_meta("anim_phase", 0.0))) * 0.025
 
 func build_world():
     _box("Earth", Vector3(0,-0.7,0), Vector3(260,1,260), Color(0.25,0.42,0.20))
@@ -207,6 +213,8 @@ func _animal(pos, color, label):
     n.translation = pos + Vector3(0,0.5,0)
     n.scale = Vector3(1.5,0.8,0.8)
     n.material_override = _mat(color)
+    n.set_meta("base_y", 0.5)
+    n.set_meta("anim_phase", rand_range(0.0, 6.28))
     n.set_meta("wander_timer", rand_range(0.2, 2.0))
     n.set_meta("wander_direction", Vector3(rand_range(-1.0,1.0),0,rand_range(-1.0,1.0)).normalized())
     n.set_meta("wander_speed", rand_range(0.35,0.85))
