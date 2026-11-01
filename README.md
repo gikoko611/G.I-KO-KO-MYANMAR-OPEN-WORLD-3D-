@@ -26,6 +26,9 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Corrected wheel spin axes so the cart and motorbike wheels rotate around their axles rather than the wheel faces
 - Vehicle steering now turns the mounted vehicle toward the movement direction, and dismounting aligns the player heading with the vehicle
 - Extended the river crossing with a solid approach road joined to the village path and a full-width bridge deck with collision
+- Added invisible river-edge collision barriers while preserving the bridge opening, preventing the player from walking directly into the river
+- Kept wandering animals within a small home area and on their original river bank; moved the goat spawn onto safe ground
+- Save restoration now clamps player and vehicle positions to the playable world bounds and normalizes vehicle rotation
 - Reduced mobile UI work by refreshing the live map only while it is open, at half-second intervals
 - Vehicle dismount now uses the vehicle's rotated side direction; saving while mounted records a safe on-foot return position, and loading resets wheel-motion state
 - Save loading now bounds-checks currency, inventory counts, quest progress, graphics quality, time, weather and crop state to avoid invalid saved values breaking gameplay
