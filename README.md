@@ -14,9 +14,14 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Boy: Myanmar shirt + longyi; Girl: Myanmar blouse + htamein
 - Rideable Myanmar water buffalo, traditional two-ox bullock cart, horse, elephant, river boat and rideable Myanmar motorbike
 - Rice farming loop: buy seeds and water, go to the rice field, plant crops, water, wait for growth, harvest and sell rice
-- Quest progression: meet village elder, harvest rice, sell the required amount and claim a reward
+- Story Chapters 1–2: meet the village elder, farm and trade rice, visit the pagoda, then deliver water to the monastery
+- NPC trading: rice sales, seed purchases, paid water purchases and free well refills; proximity checks at village NPCs
+- World map panel with player coordinates, nearest landmark marker and mission objective
+- Game settings: Low / Balanced / High draw distance, mobile MSAA disabled, and background music / sound toggles
+- Original synthesized ambient background music generated locally in-game; no external music download required
+- More complete local saves: inventory, currency, quest state, crop growth, weather, time, player position and camera orientation, graphics/audio preferences, and vehicle positions; backup recovery on interrupted saves
 - Expanded countryside props: monastery, stilt house, lotus pond, bamboo grove, village well and rural animals
-- Day/night cycle, weather toggle, simple farming/interactions, missions, inventory and local save data
+- Day/night cycle, weather toggle, animal wandering and idle animation, NPC idle animation, and subtle vehicle motion animation
 - Character gender and outfit colors selectable in the start screen
 
 ## Build
