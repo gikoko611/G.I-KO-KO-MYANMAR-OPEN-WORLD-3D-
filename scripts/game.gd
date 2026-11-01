@@ -65,7 +65,7 @@ func _create_crop_visuals():
         var mat = SpatialMaterial.new()
         mat.albedo_color = Color(0.20,0.62,0.18)
         crop.material_override = mat
-        crop.translation = Vector3(-20.5 + i*1.6, 0.08, 24.0)
+        crop.translation = Vector3(-17.2 + i*1.6, 0.08, 24.0)
         crop.scale = Vector3(1,0.08,1)
         crop.visible = false
         add_child(crop)
@@ -97,8 +97,9 @@ func _apply_environment():
         sun.rotation_degrees = Vector3(-48, -32, 0)
         add_child(sun)
     var daylight = 0.35 + 0.65 * max(0.0, sin(day_time * PI * 2.0))
-    sun.light_energy = daylight
-    sun.light_color = Color(1.0, 0.78, 0.55).linear_interpolate(Color(1, 1, 1), daylight)
+    sun.light_energy = daylight * (0.58 if weather == "Rainy" else 1.0)
+    var target_sky = Color(0.55,0.60,0.66) if weather == "Rainy" else Color(1,1,1)
+    sun.light_color = Color(1.0, 0.78, 0.55).linear_interpolate(target_sky, daylight)
 
 func _on_gender(value):
     if player:
