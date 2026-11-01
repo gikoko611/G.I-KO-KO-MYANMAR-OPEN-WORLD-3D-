@@ -136,7 +136,13 @@ func _on_action(action):
         mission_text = "First Person View" if first_person else "Third Person View"
     elif action == "interact":
         var player_pos = player.global_transform.origin
-        if quest_stage == 0 and player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
+        if quest_stage == 3 and player_pos.distance_to(Vector3(28,0,-22)) < 9.0:
+            quest_stage = 4
+            coins += 40
+            ui.show_dialogue("ဘုရားစေတီ: ရွာအတွက် ကူညီပေးမှုအတွက် ကျေးဇူးတင်ပါတယ်။ Chapter 1 ပြီးဆုံးပါပြီ။ Coins +40")
+            dialogue_timer = 7.0
+            mission_text = "Chapter 1 ပြီးဆုံးပါပြီ။ Chapter 2 အတွက် ရွာပတ်ဝန်းကျင်ကို စူးစမ်းပါ။"
+        elif quest_stage == 0 and player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
             quest_stage = 1
             ui.show_dialogue("ရွာလူကြီး: မင်္ဂလာပါ။ ဒီရွာရဲ့ လယ်ယာကို ကူညီပေးပါ။ စပါးစိုက်ပြီး ရိတ်သိမ်းကာ ဈေးမှာ ၄ ထုပ် ရောင်းပေးပါ။")
             dialogue_timer = 7.0
@@ -148,7 +154,7 @@ func _on_action(action):
             dialogue_timer = 7.0
             quest_stage = 3
             coins += 50
-            mission_text = "ဈေးသည်ထံ စပါးပို့ဆောင်မှု အောင်မြင်ပါပြီ။ Mission ပြီးဆုံး! +50 Coins"
+            mission_text = "စပါးပို့ဆောင်မှု အောင်မြင်ပါပြီ။ ဘုရားစေတီသို့ သွားပြီး Interact လုပ်ပါ။ +50 Coins"
         elif player_pos.distance_to(Vector3(8,0,18)) < 8.0:
             ui.show_dialogue("ဈေးသည်: စပါးတစ်ထုပ်ကို Coins 25 နဲ့ ဝယ်ပါတယ်။ Sell Rice ကိုနှိပ်ပြီး ရောင်းနိုင်ပါတယ်။")
             dialogue_timer = 6.0
