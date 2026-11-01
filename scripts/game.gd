@@ -4,10 +4,12 @@ const WorldBuilder = preload("res://scripts/world_builder.gd")
 const PlayerScript = preload("res://scripts/player.gd")
 const UI = preload("res://scripts/touch_ui.gd")
 const SaveManager = preload("res://scripts/save_manager.gd")
+const Transport = preload("res://scripts/transport.gd")
 
 var player
 var ui
 var world
+var transport
 var day_time = 0.32
 var weather = "Sunny"
 var coins = 120
@@ -23,6 +25,9 @@ func _ready():
     player.name = "Player"
     add_child(player)
     player.translation = Vector3(0, 0.1, 9)
+    transport = Transport.new()
+    transport.name = "Transport"
+    add_child(transport)
     ui = UI.new()
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
@@ -50,7 +55,9 @@ func _on_gender(value):
         player.set_gender(value)
 
 func _on_action(action):
-    if action == "interact":
+    if action == "ride":
+        mission_text = transport.toggle_ride(player)
+    elif action == "interact":
         mission_text = "အနီးအနားက အရာဝတ္ထုကို စစ်ဆေးပြီးပါပြီ။"
         coins += 5
     elif action == "farm":
