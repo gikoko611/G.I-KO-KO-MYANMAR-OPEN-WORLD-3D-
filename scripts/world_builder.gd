@@ -139,7 +139,7 @@ func _cylinder(label, mesh, pos, color):
     add_child(n)
 
 func _tree_line():
-    for i in range(55):
+    for i in range(34):
         var x = rand_range(-65,65)
         var z = rand_range(-65,65)
         if abs(x) < 8 and abs(z) < 20: continue
@@ -231,7 +231,7 @@ func _monastery(pos):
 
 func _lotus_pond(pos):
     _box("LotusPondWater", pos + Vector3(0,0.02,0), Vector3(16,0.08,12), Color(0.12,0.43,0.48))
-    for i in range(12):
+    for i in range(8):
         var x = rand_range(-6,6)
         var z = rand_range(-4,4)
         var leaf = CylinderMesh.new()
@@ -248,7 +248,7 @@ func _lotus_pond(pos):
         add_child(n)
 
 func _bamboo_grove(pos):
-    for i in range(24):
+    for i in range(14):
         var x = rand_range(-9,9)
         var z = rand_range(-9,9)
         var stalk = CylinderMesh.new()
