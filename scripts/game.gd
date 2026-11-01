@@ -76,6 +76,20 @@ func _on_action(action):
         mission_text = farming.water(inventory)
     elif action == "harvest":
         mission_text = farming.harvest(inventory)
+    elif action == "buy_seed":
+        if coins >= 10:
+            coins -= 10
+            inventory["Seed"] = int(inventory.get("Seed",0)) + 1
+            mission_text = "မျိုးစေ့ ၁ ထုပ် ဝယ်ပြီးပါပြီ။"
+        else:
+            mission_text = "မျိုးစေ့ဝယ်ရန် Coins 10 လိုအပ်ပါတယ်။"
+    elif action == "buy_water":
+        if coins >= 5:
+            coins -= 5
+            inventory["Water"] = int(inventory.get("Water",0)) + 2
+            mission_text = "ရေ ၂ ခွက် ဖြည့်ပြီးပါပြီ။"
+        else:
+            mission_text = "ရေဖြည့်ရန် Coins 5 လိုအပ်ပါတယ်။"
     elif action == "sell":
         var rice_count = int(inventory.get("Rice", 0))
         if rice_count > 0:
@@ -88,7 +102,7 @@ func _on_action(action):
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
     elif action == "save":
-        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z})
+        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds})
         mission_text = "Game သိမ်းပြီးပါပြီ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -100,4 +114,6 @@ func _on_action(action):
             day_time = float(data.get("day_time", day_time))
             weather = str(data.get("weather", weather))
             player.translation = Vector3(float(data.get("player_x", 0)), float(data.get("player_y", 0.1)), float(data.get("player_z", 9)))
+            farming.phase = str(data.get("crop_phase", "empty"))
+            farming.growth_seconds = float(data.get("crop_growth", 0.0))
     ui.set_status(mission_text, coins, weather, inventory)
