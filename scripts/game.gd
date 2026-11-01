@@ -141,7 +141,22 @@ func _on_action(action):
             coins += 40
             ui.show_dialogue("ဘုရားစေတီ: ရွာအတွက် ကူညီပေးမှုအတွက် ကျေးဇူးတင်ပါတယ်။ Chapter 1 ပြီးဆုံးပါပြီ။ Coins +40")
             dialogue_timer = 7.0
-            mission_text = "Chapter 1 ပြီးဆုံးပါပြီ။ Chapter 2 အတွက် ရွာပတ်ဝန်းကျင်ကို စူးစမ်းပါ။"
+            mission_text = "Chapter 1 ပြီးဆုံးပါပြီ။ ရွာလူကြီးထံမှ နောက်တာဝန်ကို ရယူပါ။"
+        elif quest_stage == 4 and player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
+            quest_stage = 5
+            ui.show_dialogue("ရွာလူကြီး: ဘုန်းကြီးကျောင်းအတွက် ရေ ၃ ခွက် ပို့ပေးပါ။ ရေတွင်းမှာ အခမဲ့ ဖြည့်နိုင်ပါတယ်။")
+            dialogue_timer = 7.0
+            mission_text = "Chapter 2: ရေတွင်းမှ ရေ ၃ ခွက်ယူပြီး ဘုန်းကြီးကျောင်းသို့ ပို့ပါ။"
+        elif quest_stage == 5 and player_pos.distance_to(Vector3(-34,0,-30)) < 12.0:
+            if int(inventory.get("Water",0)) >= 3:
+                inventory["Water"] = int(inventory.get("Water",0)) - 3
+                quest_stage = 6
+                coins += 60
+                ui.show_dialogue("ဘုန်းကြီးကျောင်း: ရေ ၃ ခွက် လက်ခံရရှိပါပြီ။ ကူညီမှုအတွက် Coins +60")
+                dialogue_timer = 7.0
+                mission_text = "Chapter 2 ပြီးဆုံးပါပြီ။ နောက်ထပ်ရွာလုပ်ငန်းများကို စူးစမ်းပါ။"
+            else:
+                mission_text = "ဘုန်းကြီးကျောင်းသို့ ရေ ၃ ခွက် ယူလာပါ။ လက်ရှိရေ: " + str(int(inventory.get("Water",0)))
         elif quest_stage == 0 and player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
             quest_stage = 1
             ui.show_dialogue("ရွာလူကြီး: မင်္ဂလာပါ။ ဒီရွာရဲ့ လယ်ယာကို ကူညီပေးပါ။ စပါးစိုက်ပြီး ရိတ်သိမ်းကာ ဈေးမှာ ၄ ထုပ် ရောင်းပေးပါ။")
