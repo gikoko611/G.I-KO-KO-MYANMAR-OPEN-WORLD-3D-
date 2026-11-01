@@ -57,6 +57,12 @@ func _on_gender(value):
 func _on_action(action):
     if action == "ride":
         mission_text = transport.toggle_ride(player)
+    elif action == "jump":
+        player.jump_now()
+        mission_text = "ခုန်လိုက်ပါပြီ။"
+    elif action == "sprint":
+        var active = player.toggle_sprint()
+        mission_text = "ပြေးနှုန်းမြှင့်ထားသည်။" if active else "ပုံမှန်လမ်းလျှောက်နှုန်း။"
     elif action == "interact":
         mission_text = "အနီးအနားက အရာဝတ္ထုကို စစ်ဆေးပြီးပါပြီ။"
         coins += 5
@@ -75,7 +81,7 @@ func _on_action(action):
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
     elif action == "save":
-        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender})
+        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z})
         mission_text = "Game သိမ်းပြီးပါပြီ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -84,4 +90,7 @@ func _on_action(action):
             inventory = data.get("inventory", inventory)
             mission_text = str(data.get("mission", mission_text))
             player.set_gender(str(data.get("gender", "Boy")))
+            day_time = float(data.get("day_time", day_time))
+            weather = str(data.get("weather", weather))
+            player.translation = Vector3(float(data.get("player_x", 0)), float(data.get("player_y", 0.1)), float(data.get("player_z", 9)))
     ui.set_status(mission_text, coins, weather, inventory)
