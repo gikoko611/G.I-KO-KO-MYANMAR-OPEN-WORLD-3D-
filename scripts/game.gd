@@ -22,6 +22,12 @@ var quest_sell_remaining = 4
 var hud_refresh = 0.0
 var dialogue_timer = 0.0
 var crop_visuals = []
+var music_controller
+var graphics_level = 0
+var music_enabled = true
+var sound_enabled = true
+var map_visible = false
+var settings_visible = false
 
 func _ready():
     randomize()
@@ -43,6 +49,9 @@ func _ready():
     ui.connect("gender_selected", self, "_on_gender")
     ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
+    var MusicScript = preload("res://scripts/ambient_music.gd")
+    music_controller = MusicScript.new()
+    add_child(music_controller)
 
 func _process(delta):
     if dialogue_timer > 0.0:
@@ -58,6 +67,9 @@ func _process(delta):
             ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     _apply_environment()
+    if ui and player:
+        ui.set_map_info(player.global_transform.origin, map_visible, mission_text)
+
 
 func _create_crop_visuals():
     for i in range(4):
@@ -203,11 +215,34 @@ func _on_action(action):
                     mission_text = "စပါး ၄ ထုပ်လုံး ပို့ပြီးပါပြီ။ ဈေးသည်ကို Interact လုပ်ပြီး ဆုယူပါ။"
             else:
                 mission_text = "ရောင်းရန် စပါးမရှိသေးပါ။ လယ်ကွင်းမှာ စိုက်ပျိုးပါ။"
+    elif action == "map":
+        map_visible = not map_visible
+        ui.set_map_info(player.global_transform.origin, map_visible, mission_text)
+        mission_text = "မြေပုံဖွင့်ထားသည်။" if map_visible else "မြေပုံပိတ်ထားသည်။"
+    elif action == "settings":
+        settings_visible = not settings_visible
+        ui.set_settings_info(settings_visible, graphics_level, music_enabled, sound_enabled)
+        mission_text = "Game Settings ဖွင့်ထားသည်။" if settings_visible else "Game Settings ပိတ်ထားသည်။"
+    elif action == "quality":
+        graphics_level = (graphics_level + 1) % 3
+        _apply_graphics_quality()
+        ui.set_settings_info(settings_visible, graphics_level, music_enabled, sound_enabled)
+        mission_text = "Graphics Quality: " + ["Low","Balanced","High"][graphics_level]
+    elif action == "music":
+        music_enabled = not music_enabled
+        if music_controller: music_controller.set_music_enabled(music_enabled)
+        ui.set_settings_info(settings_visible, graphics_level, music_enabled, sound_enabled)
+        mission_text = "Background Music: " + ("ON" if music_enabled else "OFF")
+    elif action == "sound":
+        sound_enabled = not sound_enabled
+        if music_controller: music_controller.set_sound_enabled(sound_enabled)
+        ui.set_settings_info(settings_visible, graphics_level, music_enabled, sound_enabled)
+        mission_text = "Sound: " + ("ON" if sound_enabled else "OFF")
     elif action == "weather":
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
     elif action == "save":
-        var saved = SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person})
+        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person})
         mission_text = "Game သိမ်းပြီးပါပြီ။" if saved else "Save မအောင်မြင်ပါ။ Storage permission နှင့် နေရာလွတ်ကို စစ်ပါ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -225,4 +260,18 @@ func _on_action(action):
             farming.growth_seconds = float(data.get("crop_growth", 0.0))
             quest_stage = int(data.get("quest_stage", quest_stage))
             quest_sell_remaining = int(data.get("quest_sell_remaining", quest_sell_remaining))
+            graphics_level = int(data.get("graphics_level", graphics_level))
+            music_enabled = bool(data.get("music_enabled", music_enabled))
+            sound_enabled = bool(data.get("sound_enabled", sound_enabled))
+            _apply_graphics_quality()
+            if music_controller:
+                music_controller.set_music_enabled(music_enabled)
+                music_controller.set_sound_enabled(sound_enabled)
     ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
+
+func _apply_graphics_quality():
+    var sun = get_node_or_null("Sun")
+    if sun:
+        sun.shadow_enabled = graphics_level >= 2
+    if get_viewport():
+        get_viewport().msaa = Viewport.MSAA_DISABLED
