@@ -18,6 +18,8 @@ var coins = 120
 var inventory = {"Rice": 3, "Seed": 8, "Water": 2}
 var mission_text = "ရွာလူကြီးကို သွားတွေ့ပါ။"
 var quest_stage = 0
+var quest_sell_remaining = 4
+var hud_refresh = 0.0
 
 func _ready():
     randomize()
@@ -36,11 +38,16 @@ func _ready():
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
     ui.connect("gender_selected", self, "_on_gender")
-    ui.set_status(mission_text + " | " + farming.get_status(), coins, weather, inventory)
+    ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
 
 func _process(delta):
     farming.tick(delta)
+    hud_refresh += delta
+    if hud_refresh >= 0.5:
+        hud_refresh = 0.0
+        if ui:
+            ui.set_status(mission_text + " | " + farming.get_status(), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     _apply_environment()
 
@@ -68,13 +75,17 @@ func _on_action(action):
     elif action == "sprint":
         var active = player.toggle_sprint()
         mission_text = "ပြေးနှုန်းမြှင့်ထားသည်။" if active else "ပုံမှန်လမ်းလျှောက်နှုန်း။"
+    elif action == "view":
+        var first_person = player.toggle_camera_mode()
+        mission_text = "First Person View" if first_person else "Third Person View"
     elif action == "interact":
         var player_pos = player.global_transform.origin
         if quest_stage == 0 and player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
             quest_stage = 1
+            quest_sell_remaining = 4
             coins += 30
             mission_text = "ရွာလူကြီးက စပါး ၄ ထုပ် စိုက်ပျိုးရိတ်သိမ်းဖို့ တာဝန်ပေးလိုက်ပါတယ်။ Coins +30"
-        elif quest_stage == 2 and player_pos.distance_to(Vector3(8,0,18)) < 8.0:
+        elif quest_stage == 2 and player_pos.distance_to(Vector3(8,0,18)) < 8.0 and quest_sell_remaining <= 0:
             quest_stage = 3
             coins += 50
             mission_text = "ဈေးသည်ထံ စပါးပို့ဆောင်မှု အောင်မြင်ပါပြီ။ Mission ပြီးဆုံး! +50 Coins"
@@ -83,11 +94,20 @@ func _on_action(action):
         else:
             mission_text = "ရွာလူကြီးနားသို့ သွားပြီး Interact နှိပ်ပါ။"
     elif action == "plant":
-        mission_text = farming.plant(inventory)
+        if player.global_transform.origin.distance_to(Vector3(-18,0,24)) < 15.0:
+            mission_text = farming.plant(inventory)
+        else:
+            mission_text = "စပါးခင်းထဲသို့ သွားပြီး Plant နှိပ်ပါ။"
     elif action == "water":
-        mission_text = farming.water(inventory)
+        if player.global_transform.origin.distance_to(Vector3(-18,0,24)) < 15.0:
+            mission_text = farming.water(inventory)
+        else:
+            mission_text = "စပါးခင်းထဲသို့ သွားပြီး Water နှိပ်ပါ။"
     elif action == "harvest":
-        mission_text = farming.harvest(inventory)
+        if player.global_transform.origin.distance_to(Vector3(-18,0,24)) < 15.0:
+            mission_text = farming.harvest(inventory)
+        else:
+            mission_text = "စပါးခင်းထဲသို့ သွားပြီး Harvest နှိပ်ပါ။"
         if quest_stage == 1 and int(inventory.get("Rice",0)) >= 4:
             quest_stage = 2
             mission_text = "Mission: စပါးရရှိပါပြီ။ ဈေးသည်ဆီသို့ သွားရောက်ရောင်းချပါ။"
@@ -110,6 +130,8 @@ func _on_action(action):
         if rice_count > 0:
             inventory["Rice"] = rice_count - 1
             coins += 25
+            if quest_stage == 2 and quest_sell_remaining > 0:
+                quest_sell_remaining -= 1
             mission_text = "စပါး ၁ ထုပ် ရောင်းပြီး Coins +25 ရရှိပါပြီ။"
         else:
             mission_text = "ရောင်းရန် စပါးမရှိသေးပါ။ လယ်ကွင်းမှာ စိုက်ပျိုးပါ။"
@@ -117,7 +139,7 @@ func _on_action(action):
         weather = "Rainy" if weather == "Sunny" else "Sunny"
         mission_text = "ရာသီဥတု: " + weather
     elif action == "save":
-        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage})
+        SaveManager.save_game({"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": player.translation.x, "player_y": player.translation.y, "player_z": player.translation.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining})
         mission_text = "Game သိမ်းပြီးပါပြီ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -132,4 +154,5 @@ func _on_action(action):
             farming.phase = str(data.get("crop_phase", "empty"))
             farming.growth_seconds = float(data.get("crop_growth", 0.0))
             quest_stage = int(data.get("quest_stage", quest_stage))
+            quest_sell_remaining = int(data.get("quest_sell_remaining", quest_sell_remaining))
     ui.set_status(mission_text + " | " + farming.get_status(), coins, weather, inventory)
