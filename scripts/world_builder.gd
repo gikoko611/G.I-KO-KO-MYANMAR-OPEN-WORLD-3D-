@@ -255,15 +255,60 @@ func _motorbike(pos):
     _box("MotorbikeSeat", pos + Vector3(0,1.1,0.2), Vector3(0.5,0.12,0.65), Color(0.08,0.08,0.08))
 
 func _animal(pos, color, label):
-    var n = MeshInstance.new()
+    var n = Spatial.new()
     n.name = label
-    var mesh = SphereMesh.new()
-    mesh.radius = 0.55
-    mesh.height = 0.9
-    n.mesh = mesh
     n.translation = pos + Vector3(0,0.5,0)
-    n.scale = Vector3(1.5,0.8,0.8)
-    n.material_override = _mat(color)
+    var body_mesh = SphereMesh.new()
+    body_mesh.radius = 0.55
+    body_mesh.height = 0.9
+    var body = MeshInstance.new()
+    body.mesh = body_mesh
+    body.scale = Vector3(1.5,0.8,0.8)
+    body.material_override = _mat(color)
+    n.add_child(body)
+    var head = MeshInstance.new()
+    head.mesh = SphereMesh.new()
+    head.translation = Vector3(0,0.12,-0.62)
+    head.scale = Vector3(0.38,0.38,0.38)
+    head.material_override = _mat(color.darkened(0.04))
+    n.add_child(head)
+    var muzzle = MeshInstance.new()
+    muzzle.mesh = SphereMesh.new()
+    muzzle.translation = Vector3(0,-0.02,-0.91)
+    muzzle.scale = Vector3(0.22,0.17,0.18)
+    muzzle.material_override = _mat(color.lightened(0.12))
+    n.add_child(muzzle)
+    for side in [-1,1]:
+        var ear = MeshInstance.new()
+        ear.mesh = SphereMesh.new()
+        ear.translation = Vector3(side*0.29,0.34,-0.57)
+        ear.scale = Vector3(0.13,0.22,0.10)
+        ear.material_override = _mat(color.darkened(0.12))
+        n.add_child(ear)
+    for side in [-1,1]:
+        for front_back in [-1,1]:
+            var leg = MeshInstance.new()
+            leg.mesh = CylinderMesh.new()
+            leg.translation = Vector3(side*0.36,-0.35,front_back*0.34)
+            leg.scale = Vector3(0.13,0.62,0.13)
+            leg.material_override = _mat(color.darkened(0.16))
+            n.add_child(leg)
+    var tail = MeshInstance.new()
+    tail.mesh = CylinderMesh.new()
+    tail.translation = Vector3(0,0.08,0.69)
+    tail.rotation_degrees.x = 28
+    tail.scale = Vector3(0.055,0.42,0.055)
+    tail.material_override = _mat(color.darkened(0.18))
+    n.add_child(tail)
+    if label == "Chicken" or label == "VillageDuck":
+        head.scale = Vector3(0.25,0.27,0.25)
+        muzzle.scale = Vector3(0.13,0.10,0.16)
+        body.scale = Vector3(0.92,0.82,0.82)
+        for child in n.get_children():
+            if child is MeshInstance and child.mesh is CylinderMesh:
+                child.scale *= 0.72
+    elif label == "VillageDog" or label == "VillageGoat":
+        head.scale = Vector3(0.31,0.31,0.31)
     n.set_meta("base_y", 0.5)
     n.set_meta("anim_phase", rand_range(0.0, 6.28))
     n.set_meta("wander_timer", rand_range(0.2, 2.0))
