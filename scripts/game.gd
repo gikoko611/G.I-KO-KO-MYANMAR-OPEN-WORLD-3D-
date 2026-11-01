@@ -23,7 +23,7 @@ var hud_refresh = 0.0
 var dialogue_timer = 0.0
 var crop_visuals = []
 var music_controller
-var graphics_level = 0
+var graphics_level = 1
 var music_enabled = true
 var sound_enabled = true
 var map_visible = false
@@ -49,6 +49,7 @@ func _ready():
     ui.connect("gender_selected", self, "_on_gender")
     ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
+    _apply_graphics_quality()
     var MusicScript = preload("res://scripts/ambient_music.gd")
     music_controller = MusicScript.new()
     add_child(music_controller)
@@ -148,6 +149,11 @@ func _apply_environment():
     if world_environment.environment:
         world_environment.environment.fog_color = Color(0.40,0.48,0.55) if weather == "Rainy" else Color(0.62,0.72,0.78)
         world_environment.environment.ambient_light_energy = 0.52 if weather == "Rainy" else 0.72
+        var active_sky = world_environment.environment.background_sky as ProceduralSky
+        if active_sky:
+            var sunset_mix = clamp(1.0 - daylight, 0.0, 1.0)
+            active_sky.sky_top_color = Color(0.12,0.32,0.58).linear_interpolate(Color(0.12,0.12,0.24), sunset_mix)
+            active_sky.sky_horizon_color = Color(0.72,0.82,0.91).linear_interpolate(Color(0.92,0.42,0.22), sunset_mix)
 
 func _on_gender(value):
     if player:
