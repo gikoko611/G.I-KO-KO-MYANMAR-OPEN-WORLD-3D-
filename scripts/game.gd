@@ -20,6 +20,7 @@ var mission_text = "ရွာလူကြီးကို သွားတွေ�
 var quest_stage = 0
 var quest_sell_remaining = 4
 var hud_refresh = 0.0
+var dialogue_timer = 0.0
 var crop_visuals = []
 
 func _ready():
@@ -44,6 +45,10 @@ func _ready():
     _apply_environment()
 
 func _process(delta):
+    if dialogue_timer > 0.0:
+        dialogue_timer -= delta
+        if dialogue_timer <= 0.0 and ui:
+            ui.hide_dialogue()
     farming.tick(delta)
     _update_crop_visuals()
     hud_refresh += delta
@@ -121,17 +126,25 @@ func _on_action(action):
         var player_pos = player.global_transform.origin
         if quest_stage == 0 and player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
             quest_stage = 1
+            ui.show_dialogue("ရွာလူကြီး: မင်္ဂလာပါ။ ဒီရွာရဲ့ လယ်ယာကို ကူညီပေးပါ။ စပါးစိုက်ပြီး ရိတ်သိမ်းကာ ဈေးမှာ ၄ ထုပ် ရောင်းပေးပါ။")
+            dialogue_timer = 7.0
             quest_sell_remaining = 4
             coins += 30
             mission_text = "ရွာလူကြီးက စပါး ၄ ထုပ် စိုက်ပျိုးရိတ်သိမ်းဖို့ တာဝန်ပေးလိုက်ပါတယ်။ Coins +30"
         elif quest_stage == 2 and player_pos.distance_to(Vector3(8,0,18)) < 8.0 and quest_sell_remaining <= 0:
+            ui.show_dialogue("ဈေးသည်: အရမ်းကောင်းပါတယ်။ စပါး ၄ ထုပ်လုံး လက်ခံရရှိပါပြီ။ ဒီမှာ ဆုကြေး Coins 50 ယူပါ။")
+            dialogue_timer = 7.0
             quest_stage = 3
             coins += 50
             mission_text = "ဈေးသည်ထံ စပါးပို့ဆောင်မှု အောင်မြင်ပါပြီ။ Mission ပြီးဆုံး! +50 Coins"
         elif player_pos.distance_to(Vector3(8,0,18)) < 8.0:
-            mission_text = "ဈေးသည်: စပါးကို ရောင်းဝယ်နိုင်ပါတယ်။"
+            ui.show_dialogue("ဈေးသည်: စပါးတစ်ထုပ်ကို Coins 25 နဲ့ ဝယ်ပါတယ်။ Sell Rice ကိုနှိပ်ပြီး ရောင်းနိုင်ပါတယ်။")
+            dialogue_timer = 6.0
+            mission_text = "ဈေးသည်နဲ့ စကားပြောပြီးပါပြီ။"
         else:
-            mission_text = "ရွာလူကြီးနားသို့ သွားပြီး Interact နှိပ်ပါ။"
+            ui.show_dialogue("ရွာလူကြီး: လယ်ကွင်းဘက်ကို သွားပါ။ Plant → Water → အချိန်စောင့် → Harvest လုပ်ပါ။")
+            dialogue_timer = 6.0
+            mission_text = "ရွာလူကြီးနဲ့ စကားပြောပြီးပါပြီ။"
     elif action == "plant":
         if player.global_transform.origin.distance_to(Vector3(-18,0,24)) < 15.0:
             mission_text = farming.plant(inventory)
