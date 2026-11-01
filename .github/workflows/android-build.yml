@@ -34,6 +34,22 @@ jobs:
           test -s "$HOME/.local/share/godot/templates/3.5.2.stable/android_debug.apk"
           test -s "$HOME/.local/share/godot/templates/3.5.2.stable/android_release.apk"
 
+      - name: Package Godot source project
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p build
+          zip -qr build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-source.zip . -x ".git/*" "build/*"
+          test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-source.zip
+
+      - name: Upload source project
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Godot-Source
+          path: build/*-source.zip
+          if-no-files-found: error
+
       - name: Validate project and scripts
         shell: bash
         run: |
@@ -56,6 +72,7 @@ jobs:
           fi
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-ARMv7-APK
