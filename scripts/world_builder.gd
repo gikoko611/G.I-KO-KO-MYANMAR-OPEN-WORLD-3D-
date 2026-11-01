@@ -1,9 +1,9 @@
 extends Spatial
 
 func build_world():
-    _box("Earth", Vector3(0,-0.7,0), Vector3(180,1,180), Color(0.25,0.42,0.20))
-    _box("VillagePath", Vector3(0,-0.12,0), Vector3(5,0.18,85), Color(0.62,0.48,0.30))
-    _box("River", Vector3(16,-0.25,0), Vector3(8,0.12,100), Color(0.12,0.48,0.68))
+    _box("Earth", Vector3(0,-0.7,0), Vector3(260,1,260), Color(0.25,0.42,0.20))
+    _box("VillagePath", Vector3(0,-0.12,0), Vector3(5,0.18,135), Color(0.62,0.48,0.30))
+    _box("River", Vector3(16,-0.25,0), Vector3(8,0.12,150), Color(0.12,0.48,0.68))
     _box("Bridge", Vector3(11,-0.02,7), Vector3(11,0.5,3), Color(0.40,0.23,0.12))
     for i in range(12):
         var x = -25 + (i % 4) * 13
@@ -20,6 +20,15 @@ func build_world():
     _villager(Vector3(8,0,18), Color(0.60,0.16,0.22), "Market Seller")
     _market_stall(Vector3(10,0,16))
     _motorbike(Vector3(-10,0,3))
+    _monastery(Vector3(-34,0,-30))
+    _lotus_pond(Vector3(42,0,35))
+    _bamboo_grove(Vector3(-58,0,18))
+    _stilt_house(Vector3(38,0,-38))
+    _village_well(Vector3(3,0,28))
+    _animal(Vector3(6,0,28), Color(0.18,0.12,0.09), "VillageDog")
+    _animal(Vector3(12,0,-12), Color(0.72,0.70,0.62), "VillageGoat")
+    _animal(Vector3(-17,0,-8), Color(0.90,0.88,0.82), "VillageDuck")
+    _animal(Vector3(22,0,25), Color(0.62,0.38,0.32), "VillagePig")
 
 func _mat(color):
     var m = SpatialMaterial.new()
@@ -153,3 +162,63 @@ func _animal(pos, color, label):
     n.scale = Vector3(1.5,0.8,0.8)
     n.material_override = _mat(color)
     add_child(n)
+
+func _monastery(pos):
+    _box("MonasteryWoodHall", pos + Vector3(0,1.5,0), Vector3(12,3,9), Color(0.48,0.27,0.12))
+    _box("MonasteryVeranda", pos + Vector3(0,0.55,5), Vector3(14,0.25,2), Color(0.34,0.19,0.10))
+    for i in range(5):
+        _box("MonasteryPillar", pos + Vector3(-5+i*2.5,1.5,4.1), Vector3(0.22,3,0.22), Color(0.24,0.14,0.08))
+    _box("MonasteryRoof", pos + Vector3(0,3.35,0), Vector3(13,0.35,10), Color(0.30,0.16,0.10))
+    _box("MonasteryGoldTrim", pos + Vector3(0,3.58,0), Vector3(12,0.08,9), Color(0.82,0.62,0.22))
+
+func _lotus_pond(pos):
+    _box("LotusPondWater", pos + Vector3(0,0.02,0), Vector3(16,0.08,12), Color(0.12,0.43,0.48))
+    for i in range(12):
+        var x = rand_range(-6,6)
+        var z = rand_range(-4,4)
+        var leaf = CylinderMesh.new()
+        leaf.top_radius = 0.42
+        leaf.bottom_radius = 0.42
+        leaf.height = 0.05
+        _cylinder("LotusLeaf", leaf, pos + Vector3(x,0.12,z), Color(0.12,0.42,0.20))
+        var flower = SphereMesh.new()
+        var n = MeshInstance.new()
+        n.mesh = flower
+        n.scale = Vector3(0.18,0.12,0.18)
+        n.translation = pos + Vector3(x,0.28,z)
+        n.material_override = _mat(Color(0.92,0.58,0.70))
+        add_child(n)
+
+func _bamboo_grove(pos):
+    for i in range(24):
+        var x = rand_range(-9,9)
+        var z = rand_range(-9,9)
+        var stalk = CylinderMesh.new()
+        stalk.top_radius = 0.08
+        stalk.bottom_radius = 0.12
+        stalk.height = rand_range(5,8)
+        _cylinder("BambooStalk", stalk, pos + Vector3(x,stalk.height*0.5,z), Color(0.30,0.48,0.18))
+        for h in range(2,6,2):
+            _box("BambooNode", pos + Vector3(x,float(h),z), Vector3(0.22,0.08,0.22), Color(0.48,0.62,0.26))
+
+func _stilt_house(pos):
+    for x in [-2.2,2.2]:
+        for z in [-2.0,2.0]:
+            _box("StiltHousePost", pos + Vector3(x,1.3,z), Vector3(0.22,2.6,0.22), Color(0.30,0.17,0.08))
+    _box("StiltHouseFloor", pos + Vector3(0,2.65,0), Vector3(5.5,0.25,5), Color(0.40,0.25,0.13))
+    _box("StiltHouseWall", pos + Vector3(0,3.8,0), Vector3(4.8,2.1,4.2), Color(0.72,0.55,0.34))
+    _box("StiltHouseRoof", pos + Vector3(0,5.0,0), Vector3(6,0.35,5.4), Color(0.36,0.20,0.10))
+    _box("StiltHouseStairs", pos + Vector3(0,1.35,3.0), Vector3(1.2,2.5,0.8), Color(0.36,0.22,0.12))
+
+func _village_well(pos):
+    var ring = CylinderMesh.new()
+    ring.top_radius = 1.0
+    ring.bottom_radius = 1.0
+    ring.height = 0.8
+    _cylinder("VillageWell", ring, pos + Vector3(0,0.4,0), Color(0.48,0.46,0.40))
+    var water = CylinderMesh.new()
+    water.top_radius = 0.72
+    water.bottom_radius = 0.72
+    water.height = 0.05
+    _cylinder("WellWater", water, pos + Vector3(0,0.78,0), Color(0.12,0.42,0.58))
+    _box("WellBeam", pos + Vector3(0,2.1,0), Vector3(2.4,0.12,0.12), Color(0.28,0.16,0.08))
