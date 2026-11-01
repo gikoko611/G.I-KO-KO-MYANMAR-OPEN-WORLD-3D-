@@ -85,6 +85,16 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
+      - name: Validate Godot project and import resources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          godot --path . --editor --quit > /tmp/godot-validation.log 2>&1 || { cat /tmp/godot-validation.log; exit 1; }
+          if grep -E "(Parse Error|SCRIPT ERROR|ERROR:.*(parse|load))" /tmp/godot-validation.log; then
+            cat /tmp/godot-validation.log
+            exit 1
+          fi
+
       - name: Export Android ARMv7 debug APK
         shell: bash
         run: |
@@ -118,6 +128,21 @@ jobs:
           name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Godot-Source
           path: build/*-source.zip
           if-no-files-found: error
+
+      - name: Verify APK package, signature, and ARMv7 ABI
+        shell: bash
+        run: |
+          set -euxo pipefail
+          AAPT="$ANDROID_HOME/build-tools/30.0.3/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/30.0.3/apksigner"
+          "$AAPT" dump badging build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | head -n 8
+          "$APKSIGNER" verify build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
+          unzip -Z1 build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | grep -E "^lib/armeabi-v7a/.*\\.so$" | tee /tmp/armv7-libs.txt
+          test -s /tmp/armv7-libs.txt
+          if unzip -Z1 build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | grep -q "^lib/arm64-v8a/"; then
+            echo "Unexpected ARM64 libraries found in ARMv7-only APK"
+            exit 1
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
