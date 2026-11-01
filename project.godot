@@ -19,4 +19,4 @@ quality/2d/batching/use_batching=true
 [display]
 window/size/width=1280
 window/size/height=720
-window/handheld/orientation=landscape
+window/handheld/orientation="landscape"
