@@ -5,11 +5,13 @@ const PlayerScript = preload("res://scripts/player.gd")
 const UI = preload("res://scripts/touch_ui.gd")
 const SaveManager = preload("res://scripts/save_manager.gd")
 const Transport = preload("res://scripts/transport.gd")
+const Farming = preload("res://scripts/farming.gd")
 
 var player
 var ui
 var world
 var transport
+var farming
 var day_time = 0.32
 var weather = "Sunny"
 var coins = 120
@@ -28,14 +30,16 @@ func _ready():
     transport = Transport.new()
     transport.name = "Transport"
     add_child(transport)
+    farming = Farming.new()
     ui = UI.new()
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
     ui.connect("gender_selected", self, "_on_gender")
-    ui.set_status(mission_text, coins, weather, inventory)
+    ui.set_status(mission_text + " | " + farming.get_status(), coins, weather, inventory)
     _apply_environment()
 
 func _process(delta):
+    farming.tick(delta)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     _apply_environment()
 
@@ -66,9 +70,12 @@ func _on_action(action):
     elif action == "interact":
         mission_text = "အနီးအနားက အရာဝတ္ထုကို စစ်ဆေးပြီးပါပြီ။"
         coins += 5
-    elif action == "farm":
-        inventory["Rice"] = int(inventory.get("Rice", 0)) + 1
-        mission_text = "စပါးရိတ်သိမ်းပြီးပါပြီ။ +1 Rice"
+    elif action == "plant":
+        mission_text = farming.plant(inventory)
+    elif action == "water":
+        mission_text = farming.water(inventory)
+    elif action == "harvest":
+        mission_text = farming.harvest(inventory)
     elif action == "sell":
         var rice_count = int(inventory.get("Rice", 0))
         if rice_count > 0:
