@@ -338,8 +338,9 @@ func _on_action(action):
             player.yaw = player.rotation.y
             player.camera_pivot.rotation_degrees.x = float(data.get("player_pitch", player.camera_pivot.rotation_degrees.x))
             transport.load_save_data(data.get("vehicle_state", {}))
-            farming.phase = str(data.get("crop_phase", "empty"))
-            farming.growth_seconds = float(data.get("crop_growth", 0.0))
+            var loaded_crop_phase = str(data.get("crop_phase", "empty"))
+            farming.phase = loaded_crop_phase if loaded_crop_phase in ["empty", "planted", "growing", "ready"] else "empty"
+            farming.growth_seconds = clamp(float(data.get("crop_growth", 0.0)), 0.0, farming.growth_required)
             quest_stage = clamp(int(data.get("quest_stage", quest_stage)), 0, 6)
             quest_sell_remaining = clamp(int(data.get("quest_sell_remaining", quest_sell_remaining)), 0, 4)
             graphics_level = clamp(int(data.get("graphics_level", graphics_level)), 0, 2)
