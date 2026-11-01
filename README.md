@@ -12,6 +12,7 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Procedural Myanmar countryside: village, rice fields, river, hills, bridge, monastery/stupa landmark
 - Third-person player with touch-friendly controls and keyboard fallback
 - Boy: Myanmar shirt + longyi; Girl: Myanmar blouse + htamein
+- Rideable Myanmar water buffalo and traditional two-ox bullock cart with a Ride/Dismount control
 - Day/night cycle, weather toggle, simple farming/interactions, missions, inventory and local save data
 - Character gender and outfit colors selectable in the start screen
 
