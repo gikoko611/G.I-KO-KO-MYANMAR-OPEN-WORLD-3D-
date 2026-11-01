@@ -112,11 +112,42 @@ func _apply_environment():
         sun = DirectionalLight.new()
         sun.name = "Sun"
         sun.rotation_degrees = Vector3(-48, -32, 0)
+        sun.shadow_enabled = true
+        sun.directional_shadow_mode = DirectionalLight.SHADOW_ORTHOGONAL
+        sun.directional_shadow_max_distance = 90.0
+        sun.shadow_bias = 0.08
         add_child(sun)
+    var world_environment = get_node_or_null("WorldEnvironment")
+    if world_environment == null:
+        world_environment = WorldEnvironment.new()
+        world_environment.name = "WorldEnvironment"
+        var environment = Environment.new()
+        environment.background_mode = Environment.BG_SKY
+        var sky = ProceduralSky.new()
+        sky.sky_top_color = Color(0.12, 0.32, 0.58)
+        sky.sky_horizon_color = Color(0.72, 0.82, 0.91)
+        sky.ground_bottom_color = Color(0.12, 0.16, 0.12)
+        sky.ground_horizon_color = Color(0.48, 0.55, 0.42)
+        sky.sun_angle_max = 18.0
+        sky.sun_curve = 0.12
+        environment.background_sky = sky
+        environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+        environment.ambient_light_color = Color(0.62, 0.70, 0.78)
+        environment.ambient_light_energy = 0.72
+        environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+        environment.fog_enabled = true
+        environment.fog_color = Color(0.62, 0.72, 0.78)
+        environment.fog_depth_begin = 55.0
+        environment.fog_depth_end = 190.0
+        world_environment.environment = environment
+        add_child(world_environment)
     var daylight = 0.35 + 0.65 * max(0.0, sin(day_time * PI * 2.0))
     sun.light_energy = daylight * (0.58 if weather == "Rainy" else 1.0)
     var target_sky = Color(0.55,0.60,0.66) if weather == "Rainy" else Color(1,1,1)
     sun.light_color = Color(1.0, 0.78, 0.55).linear_interpolate(target_sky, daylight)
+    if world_environment.environment:
+        world_environment.environment.fog_color = Color(0.40,0.48,0.55) if weather == "Rainy" else Color(0.62,0.72,0.78)
+        world_environment.environment.ambient_light_energy = 0.52 if weather == "Rainy" else 0.72
 
 func _on_gender(value):
     if player:
@@ -301,8 +332,11 @@ func _on_action(action):
 func _apply_graphics_quality():
     var sun = get_node_or_null("Sun")
     if sun:
-        sun.shadow_enabled = graphics_level >= 2
+        sun.shadow_enabled = graphics_level >= 1
+        sun.directional_shadow_max_distance = [45.0, 70.0, 90.0][clamp(graphics_level, 0, 2)]
     if get_viewport():
         get_viewport().msaa = Viewport.MSAA_DISABLED
+        get_viewport().shadow_atlas_size = [1024, 1536, 2048][clamp(graphics_level, 0, 2)]
     if player and player.camera:
-        player.camera.far = [85.0, 125.0, 180.0][clamp(graphics_level, 0, 2)]
+        player.camera.far = [85.0, 135.0, 190.0][clamp(graphics_level, 0, 2)]
+        player.camera.fov = [72.0, 70.0, 68.0][clamp(graphics_level, 0, 2)]
