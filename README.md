@@ -25,6 +25,7 @@ A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration gam
 - Animated cart and motorbike wheels that rotate in response to vehicle movement, with parked wheels remaining still
 - Corrected wheel spin axes so the cart and motorbike wheels rotate around their axles rather than the wheel faces
 - Vehicle dismount now uses the vehicle's rotated side direction; saving while mounted records a safe on-foot return position, and loading resets wheel-motion state
+- Save loading now bounds-checks currency, inventory counts, quest progress, graphics quality, time, weather and crop state to avoid invalid saved values breaking gameplay
 - Harvest quest progression now advances only when a successful harvest actually adds rice to inventory
 - Refined bullock-cart wheel proportions and aligned wheel spin with the local axle axis
 - Reduced per-frame environment processing by updating the dynamic sky, fog and sun lighting four times per second
