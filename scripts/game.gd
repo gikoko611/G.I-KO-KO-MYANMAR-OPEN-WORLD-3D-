@@ -141,10 +141,12 @@ func _on_action(action):
             ui.show_dialogue("ဈေးသည်: စပါးတစ်ထုပ်ကို Coins 25 နဲ့ ဝယ်ပါတယ်။ Sell Rice ကိုနှိပ်ပြီး ရောင်းနိုင်ပါတယ်။")
             dialogue_timer = 6.0
             mission_text = "ဈေးသည်နဲ့ စကားပြောပြီးပါပြီ။"
-        else:
+        elif player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
             ui.show_dialogue("ရွာလူကြီး: လယ်ကွင်းဘက်ကို သွားပါ။ Plant → Water → အချိန်စောင့် → Harvest လုပ်ပါ။")
             dialogue_timer = 6.0
             mission_text = "ရွာလူကြီးနဲ့ စကားပြောပြီးပါပြီ။"
+        else:
+            mission_text = "စကားပြောရန် ရွာလူကြီး သို့မဟုတ် ဈေးသည်အနီးသို့ သွားပါ။"
     elif action == "plant":
         if player.global_transform.origin.distance_to(Vector3(-18,0,24)) < 15.0:
             mission_text = farming.plant(inventory)
