@@ -77,4 +77,4 @@ func _on_action(action):
             inventory = data.get("inventory", inventory)
             mission_text = str(data.get("mission", mission_text))
             player.set_gender(str(data.get("gender", "Boy")))
-    ui.set_status(mission_text, coins, weather)
+    ui.set_status(mission_text, coins, weather, inventory)
