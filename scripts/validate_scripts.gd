@@ -12,7 +12,8 @@ func _init():
         "res://scripts/ambient_music.gd",
         "res://scripts/survival_system.gd",
         "res://scripts/culture_expansion.gd",
-        "res://scripts/splash_screen.gd"
+        "res://scripts/splash_screen.gd",
+        "res://scripts/open_world_expansion.gd"
     ]
     var failed = false
     for path in paths:
@@ -26,8 +27,8 @@ func _init():
                 printerr("SCRIPT_INSTANTIATE_FAILED: " + path)
                 failed = true
             else:
-                if path == "res://scripts/survival_system.gd" and instance.get_mission_count() != 150:
-                    printerr("MISSION_COUNT_FAILED: expected 150, got " + str(instance.get_mission_count()))
+                if path == "res://scripts/survival_system.gd" and instance.get_mission_count() != 165:
+                    printerr("MISSION_COUNT_FAILED: expected 165, got " + str(instance.get_mission_count()))
                     failed = true
                 else:
                     print("SCRIPT_LOAD_AND_INSTANTIATE_OK: " + path)
