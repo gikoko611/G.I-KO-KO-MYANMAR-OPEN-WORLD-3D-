@@ -316,6 +316,18 @@ func _on_action(action):
             _sync_economy()
         else:
             mission_text = "ပစ္စည်းဝယ်ရန် ရွာတစ်ရွာရှိ Market ဆိုင်အနီးသို့ သွားပါ။"
+    elif action == "equip_gear":
+        if int(inventory.get("Sword",0)) > 0:
+            survival.equipped_weapon = "Sword"
+        elif int(inventory.get("Spear",0)) > 0:
+            survival.equipped_weapon = "Spear"
+        elif int(inventory.get("Arrow",0)) > 0:
+            survival.equipped_weapon = "Arrow"
+        if int(inventory.get("Armor",0)) > 0:
+            survival.equipped_armor = "Armor"
+        elif int(inventory.get("Shield",0)) > 0:
+            survival.equipped_armor = "Shield"
+        mission_text = "Equipped: " + (survival.equipped_weapon if survival.equipped_weapon != "" else "No weapon") + " / " + (survival.equipped_armor if survival.equipped_armor != "" else "No armor")
     elif action == "skills":
         mission_text = economy.get_skill_status()
     elif action == "upgrade_skill":
@@ -560,7 +572,7 @@ func _on_action(action):
         if p.x < -28.0:
             survival.inventory = inventory
             survival.coins = coins
-            var has_hunting_gear = int(inventory.get("Spear",0)) > 0 or int(inventory.get("Arrow",0)) > 0 or int(inventory.get("Sword",0)) > 0
+            var has_hunting_gear = survival.equipped_weapon != ""
             mission_text = survival.hunt_animal("Deer", has_hunting_gear)
             inventory = survival.inventory
             coins = survival.coins
