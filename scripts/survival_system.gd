@@ -41,6 +41,39 @@ const MISSION_TYPES = [
     {"key":"repair_bridge","mm":"တံတား ပြုပြင်ရန် ပစ္စည်း စုပါ","en":"Gather supplies to repair the bridge","kind":"collect","target":"Wood","base":17}
 ]
 
+const FOREST_MISSION_TYPES = [
+        {"key":"forest_meet_hermit","mm":"ရသေ့ထံ သွားရောက်စကားပြောပါ","en":"Visit the forest hermit","kind":"talk","target":"hermit","base":18},
+        {"key":"forest_help_lumberjack","mm":"သစ်ခုတ်သူကို သစ်သား ၃ ခု ကူညီပေးပါ","en":"Help the lumberjack collect wood","kind":"collect","target":"Wood","base":22},
+        {"key":"forest_collect_bamboo","mm":"ဝါး ၃ ချောင်း စုဆောင်းပါ","en":"Collect 3 bamboo","kind":"collect","target":"Bamboo","base":18},
+        {"key":"forest_meet_hunter","mm":"မုဆိုးနှင့် တွေ့ဆုံပါ","en":"Meet the hunter","kind":"talk","target":"hunter","base":18},
+        {"key":"forest_herb_for_hermit","mm":"ရသေ့အတွက် ဆေးပင် ၂ ပင် ရှာပါ","en":"Find 2 herbs for the hermit","kind":"collect","target":"Herb","base":24},
+        {"key":"forest_repair_hunters_hut","mm":"မုဆိုးစခန်းအတွက် သစ်သား ၄ ခု စုပါ","en":"Gather 4 wood to repair the hunter camp","kind":"collect","target":"Wood","base":24},
+        {"key":"forest_find_lost_traveler","mm":"တောတွင်းခရီးသည်ကို ရှာဖွေပါ","en":"Find the lost traveler","kind":"talk","target":"lost_traveler","base":30},
+        {"key":"forest_track_deer","mm":"သမင်အကြောင်း သဲလွန်စရှာပါ","en":"Track signs of deer","kind":"explore","target":"forest","base":20},
+        {"key":"forest_gather_stones","mm":"တောထဲမှ ကျောက် ၄ တုံး စုပါ","en":"Gather 4 stones in the forest","kind":"collect","target":"Stone","base":20},
+        {"key":"forest_help_bamboo_cutter","mm":"ဝါးခုတ်သူကို ကူညီပါ","en":"Help the bamboo cutter","kind":"talk","target":"bamboo_cutter","base":22},
+        {"key":"forest_deliver_herbs","mm":"ဆေးပင်များကို ဘုန်းကြီးကျောင်းသို့ ပို့ပါ","en":"Deliver herbs to the monastery","kind":"deliver","target":"Herb","base":26},
+        {"key":"forest_monk_supplies","mm":"ဘုန်းကြီးအတွက် သစ်သား ၂ ခု ပို့ပါ","en":"Bring 2 wood to the monk","kind":"deliver","target":"Wood","base":24},
+        {"key":"forest_nun_garden","mm":"သီလရှင်ကျောင်းဥယျာဉ်အတွက် ဆေးပင် ၂ ပင် ရှာပါ","en":"Find 2 herbs for the nunnery garden","kind":"collect","target":"Herb","base":24},
+        {"key":"forest_forest_firewood","mm":"မီးဖိုအတွက် သစ်သား ၅ ခု စုပါ","en":"Collect 5 firewood for the camp","kind":"collect","target":"Wood","base":26},
+        {"key":"forest_boar_hunt","mm":"တောဝက်အမဲလိုက်ပြီး အသားရယူပါ","en":"Hunt a wild boar for meat","kind":"collect","target":"Meat","base":32},
+        {"key":"forest_deer_hide","mm":"သားရေ ၂ ခု ရယူပါ","en":"Collect 2 animal hides","kind":"collect","target":"Hide","base":32},
+        {"key":"forest_craft_spear","mm":"Workshop တွင် လှံတစ်ချောင်း ပြုလုပ်ပါ","en":"Craft a spear at the workshop","kind":"craft","target":"tool","base":30},
+        {"key":"forest_craft_fishing_rod","mm":"ငါးမျှားတံတစ်ချောင်း ပြုလုပ်ပါ","en":"Craft a fishing rod","kind":"craft","target":"tool","base":28},
+        {"key":"forest_river_fishing","mm":"မြစ်ထဲမှ ငါး ၃ ကောင် ဖမ်းပါ","en":"Catch 3 fish from the river","kind":"collect","target":"Fish","base":28},
+        {"key":"forest_forest_guard","mm":"တောစောင့်နှင့် တွေ့ဆုံပါ","en":"Meet the forest ranger","kind":"talk","target":"forest_guard","base":22},
+        {"key":"forest_clear_forest_path","mm":"တောလမ်းအတွက် သစ်သား ၃ ခု စုပါ","en":"Collect 3 wood to clear the forest path","kind":"collect","target":"Wood","base":25},
+        {"key":"forest_iron_ore","mm":"သံရိုင်း ၂ ခု ရှာဖွေပါ","en":"Find 2 iron ore","kind":"collect","target":"IronOre","base":34},
+        {"key":"forest_campfire","mm":"တောစခန်းအတွက် မီးဖိုတစ်ခု ပြုလုပ်ပါ","en":"Craft a campfire for the forest camp","kind":"craft","target":"tool","base":32},
+        {"key":"forest_help_injured_hunter","mm":"ဒဏ်ရာရမုဆိုးကို ကူညီပါ","en":"Help the injured hunter","kind":"talk","target":"hunter","base":30},
+        {"key":"forest_wildlife_observation","mm":"တောရိုင်းတိရစ္ဆာန်များကို လေ့လာပါ","en":"Observe wildlife in the forest","kind":"explore","target":"forest","base":22},
+        {"key":"forest_gather_fiber","mm":"အမျှင် ၄ ခု စုဆောင်းပါ","en":"Collect 4 fibers","kind":"collect","target":"Fiber","base":22},
+        {"key":"forest_church_carpentry","mm":"ဘုရားရှိခိုးကျောင်းအတွက် သစ်သား ၃ ခု ပို့ပါ","en":"Deliver 3 wood to the church","kind":"deliver","target":"Wood","base":28},
+        {"key":"forest_meet_pastor","mm":"ခရစ်ယာန်ဓမ္မဆရာနှင့် တွေ့ဆုံပါ","en":"Meet the Christian pastor","kind":"talk","target":"pastor","base":22},
+        {"key":"forest_bridge_materials","mm":"တောတံတားပြုပြင်ရန် ဝါး ၃ ချောင်း ပို့ပါ","en":"Deliver 3 bamboo for the forest bridge","kind":"deliver","target":"Bamboo","base":30},
+        {"key":"forest_hermit_medicine","mm":"ရသေ့အတွက် ဆေးပင် ၃ ပင် စုပါ","en":"Gather 3 medicinal herbs for the hermit","kind":"collect","target":"Herb","base":35}
+]
+
 const RECIPES = {
     "StoneAxe":{"Wood":2,"Stone":3},
     "StonePickaxe":{"Wood":2,"Stone":4},
@@ -86,6 +119,22 @@ func _generate_missions():
             }
             missions.append(mission)
             id += 1
+    for template in FOREST_MISSION_TYPES:
+        var forest_mission = {
+            "id": id,
+            "key": str(template.key),
+            "title_mm": str(template.mm),
+            "title_en": str(template.en),
+            "kind": template.kind,
+            "target": template.target,
+            "required": 1 if str(template.kind) == "talk" or str(template.kind) == "explore" or str(template.kind) == "craft" else (3 if str(template.target) in ["Wood","Bamboo","Herb","Fish","Stone","Fiber"] else 1),
+            "progress": 0,
+            "reward": int(template.base),
+            "tier": 11,
+            "completed": false
+        }
+        missions.append(forest_mission)
+        id += 1
 
 func get_mission_count():
     return missions.size()
