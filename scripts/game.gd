@@ -6,12 +6,14 @@ const UI = preload("res://scripts/touch_ui.gd")
 const SaveManager = preload("res://scripts/save_manager.gd")
 const Transport = preload("res://scripts/transport.gd")
 const Farming = preload("res://scripts/farming.gd")
+const Survival = preload("res://scripts/survival_system.gd")
 
 var player
 var ui
 var world
 var transport
 var farming
+var survival
 var day_time = 0.32
 var weather = "Sunny"
 var coins = 120
@@ -44,6 +46,9 @@ func _ready():
     transport.name = "Transport"
     add_child(transport)
     farming = Farming.new()
+    survival = Survival.new()
+    survival.inventory = inventory
+    survival.coins = coins
     _create_crop_visuals()
     ui = UI.new()
     add_child(ui)
@@ -285,6 +290,63 @@ func _on_action(action):
                     mission_text = "စပါး ၄ ထုပ်လုံး ပို့ပြီးပါပြီ။ ဈေးသည်ကို Interact လုပ်ပြီး ဆုယူပါ။"
             else:
                 mission_text = "ရောင်းရန် စပါးမရှိသေးပါ။ လယ်ကွင်းမှာ စိုက်ပျိုးပါ။"
+    elif action == "gather":
+        if player.global_transform.origin.x < -25.0:
+            inventory["Wood"] = int(inventory.get("Wood",0)) + 2
+            inventory["Stone"] = int(inventory.get("Stone",0)) + 1
+            inventory["Fiber"] = int(inventory.get("Fiber",0)) + 1
+            inventory["Bamboo"] = int(inventory.get("Bamboo",0)) + 1
+            survival.record_event("collect", "Wood", 2)
+            mission_text = "တောထဲမှ Wood +2, Stone +1, Fiber +1, Bamboo +1 ရရှိပါပြီ။"
+        else:
+            mission_text = "သစ်တော Workshop ဘက်သို့ သွားပြီး Gather နှိပ်ပါ။"
+    elif action == "fish":
+        var p = player.global_transform.origin
+        if p.x > 10.5 and p.x < 21.5:
+            survival.inventory = inventory
+            survival.coins = coins
+            mission_text = survival.fish_at_river(int(inventory.get("FishingRod",0)) > 0)
+            inventory = survival.inventory
+            coins = survival.coins
+        else:
+            mission_text = "ငါးမျှားရန် မြစ်ကမ်းနားသို့ သွားပါ။"
+    elif action == "hunt":
+        var p = player.global_transform.origin
+        if p.x < -28.0:
+            survival.inventory = inventory
+            survival.coins = coins
+            mission_text = survival.hunt_animal("Deer", false)
+            inventory = survival.inventory
+            coins = survival.coins
+        else:
+            mission_text = "အမဲလိုက်ရန် တောအုပ်ဘက်သို့ သွားပါ။ လက်နက်လိုအပ်ပါတယ်။"
+    elif action == "craft":
+        var p = player.global_transform.origin
+        if p.distance_to(Vector3(-45,0,-15)) < 18.0:
+            survival.inventory = inventory
+            survival.coins = coins
+            mission_text = survival.craft("FishingRod")
+            inventory = survival.inventory
+            coins = survival.coins
+        else:
+            mission_text = "ကိရိယာပြုလုပ်ရန် တောရွာ Workshop သို့ သွားပါ။"
+    elif action == "mode":
+        var next_mode = Survival.MODE_FREE_ROAM if survival.game_mode == Survival.MODE_MISSION else Survival.MODE_MISSION
+        survival.set_mode(next_mode)
+        mission_text = "Free Roam Mode" if next_mode == Survival.MODE_FREE_ROAM else "Mission Mode"
+    elif action == "language":
+        survival.set_language(Survival.LANG_EN if survival.language == Survival.LANG_MM else Survival.LANG_MM)
+        mission_text = "Language: " + survival.language
+    elif action == "mission":
+        if survival.active_mission.empty():
+            var next_id = 0
+            for entry in survival.missions:
+                if not entry.completed:
+                    next_id = int(entry.id)
+                    break
+            mission_text = survival.accept_mission(next_id) if next_id > 0 else "Mission အားလုံး ပြီးဆုံးပါပြီ။"
+        else:
+            mission_text = survival._mission_text(survival.active_mission)
     elif action == "map":
         map_visible = not map_visible
         ui.set_map_info(player.global_transform.origin, map_visible, mission_text)
@@ -316,7 +378,7 @@ func _on_action(action):
         if player.is_mounted() and is_instance_valid(player.mounted_vehicle):
             var vehicle_basis = player.mounted_vehicle.global_transform.basis
             save_position = player.mounted_vehicle.global_transform.origin + vehicle_basis.xform(Vector3(2.0,0.0,0.0)) + Vector3(0,0.2,0)
-        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data()})
+        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state()})
         mission_text = "Game သိမ်းပြီးပါပြီ။" if saved else "Save မအောင်မြင်ပါ။ Storage permission နှင့် နေရာလွတ်ကို စစ်ပါ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -346,6 +408,9 @@ func _on_action(action):
             player.yaw = player.rotation.y
             player.camera_pivot.rotation_degrees.x = float(data.get("player_pitch", player.camera_pivot.rotation_degrees.x))
             transport.load_save_data(data.get("vehicle_state", {}))
+            survival.load_state(data.get("survival_state", {}))
+            survival.inventory = inventory
+            survival.coins = coins
             var loaded_crop_phase = str(data.get("crop_phase", "empty"))
             farming.phase = loaded_crop_phase if loaded_crop_phase in ["empty", "planted", "growing", "ready"] else "empty"
             farming.growth_seconds = clamp(float(data.get("crop_growth", 0.0)), 0.0, farming.growth_required)
