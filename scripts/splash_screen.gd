@@ -29,10 +29,7 @@ func _ready():
     emblem.translation = Vector3(0,1.7,0)
     add_child(emblem)
     var ring = MeshInstance.new()
-    var torus = TorusMesh.new()
-    torus.inner_radius = 1.55
-    torus.outer_radius = 1.78
-    ring.mesh = torus
+    ring.mesh = _create_torus_mesh(1.55, 1.78)
     var gold = SpatialMaterial.new()
     gold.albedo_color = Color(0.95,0.65,0.16)
     gold.metallic = 0.82
@@ -107,6 +104,33 @@ func _ready():
     add_child(timer)
     timer.connect("timeout", self, "_start_game")
     timer.start()
+
+func _create_torus_mesh(inner_radius, outer_radius):
+    var surface = SurfaceTool.new()
+    surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+    var major_radius = (inner_radius + outer_radius) * 0.5
+    var tube_radius = (outer_radius - inner_radius) * 0.5
+    var segments = 48
+    var sides = 10
+    var tau = PI * 2.0
+    for i in range(segments):
+        var u0 = tau * float(i) / float(segments)
+        var u1 = tau * float(i + 1) / float(segments)
+        for j in range(sides):
+            var v0 = tau * float(j) / float(sides)
+            var v1 = tau * float(j + 1) / float(sides)
+            var p00 = Vector3((major_radius + tube_radius * cos(v0)) * cos(u0), tube_radius * sin(v0), (major_radius + tube_radius * cos(v0)) * sin(u0))
+            var p10 = Vector3((major_radius + tube_radius * cos(v0)) * cos(u1), tube_radius * sin(v0), (major_radius + tube_radius * cos(v0)) * sin(u1))
+            var p11 = Vector3((major_radius + tube_radius * cos(v1)) * cos(u1), tube_radius * sin(v1), (major_radius + tube_radius * cos(v1)) * sin(u1))
+            var p01 = Vector3((major_radius + tube_radius * cos(v1)) * cos(u0), tube_radius * sin(v1), (major_radius + tube_radius * cos(v1)) * sin(u0))
+            surface.add_vertex(p00)
+            surface.add_vertex(p10)
+            surface.add_vertex(p11)
+            surface.add_vertex(p00)
+            surface.add_vertex(p11)
+            surface.add_vertex(p01)
+    surface.generate_normals()
+    return surface.commit()
 
 func powered_layer_add(layer, node):
     layer.add_child(node)
