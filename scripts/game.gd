@@ -21,6 +21,7 @@ var expansion
 var pickup_refresh = 0.0
 var water_refresh = 0.0
 var visited_villages = {}
+var collected_pickups = {}
 var day_time = 0.32
 var weather = "Sunny"
 var coins = 120
@@ -137,6 +138,10 @@ func _update_world_pickups():
         if not is_instance_valid(item):
             continue
         if pos.distance_to(item.global_transform.origin) <= 2.4:
+            var pickup_id = str(item.get_meta("pickup_id", ""))
+            if collected_pickups.has(pickup_id):
+                item.queue_free()
+                continue
             var kind = str(item.get_meta("pickup_type", "Coin"))
             var value = int(item.get_meta("pickup_value", 5))
             if kind == "Gem":
@@ -149,6 +154,7 @@ func _update_world_pickups():
                 survival.record_event("collect", "Coin", 1)
                 mission_text = "ရွှေဒင်္ဂါး ရရှိပါပြီ။ Coins +" + str(value)
             survival.coins = coins
+            collected_pickups[pickup_id] = true
             item.queue_free()
 
 func _update_village_visits():
@@ -579,7 +585,7 @@ func _on_action(action):
         if player.is_mounted() and is_instance_valid(player.mounted_vehicle):
             var vehicle_basis = player.mounted_vehicle.global_transform.basis
             save_position = player.mounted_vehicle.global_transform.origin + vehicle_basis.xform(Vector3(2.0,0.0,0.0)) + Vector3(0,0.2,0)
-        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state()})
+        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state(), "visited_villages": visited_villages, "collected_pickups": collected_pickups})
         mission_text = "Game သိမ်းပြီးပါပြီ။" if saved else "Save မအောင်မြင်ပါ။ Storage permission နှင့် နေရာလွတ်ကို စစ်ပါ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -609,6 +615,8 @@ func _on_action(action):
             player.yaw = player.rotation.y
             player.camera_pivot.rotation_degrees.x = float(data.get("player_pitch", player.camera_pivot.rotation_degrees.x))
             transport.load_save_data(data.get("vehicle_state", {}))
+            visited_villages = data.get("visited_villages", {})
+            collected_pickups = data.get("collected_pickups", {})
             survival.load_state(data.get("survival_state", {}))
             survival.inventory = inventory
             survival.coins = coins
