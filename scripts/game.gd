@@ -74,7 +74,7 @@ func _ready():
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
     ui.connect("gender_selected", self, "_on_gender")
-    ui.set_status(mission_text + " | " + farming.get_status() + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
+    ui.set_status(mission_text + " | " + farming.get_status() + " | HP " + str(survival.player_health) + " | Stamina " + str(survival.player_stamina) + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
     _apply_graphics_quality()
     var MusicScript = preload("res://scripts/ambient_music.gd")
@@ -103,7 +103,7 @@ func _process(delta):
     if hud_refresh >= 0.5:
         hud_refresh = 0.0
         if ui:
-            ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
+            ui.set_status(mission_text + " | HP " + str(survival.player_health) + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     environment_refresh += delta
     if environment_refresh >= 0.25:
@@ -156,6 +156,11 @@ func _update_world_pickups():
                 coins += value
                 survival.record_event("collect", "Gem", 1)
                 mission_text = "လျှို့ဝှက်ကျောက်မျက် ရရှိပါပြီ။ Gem +1 | Coins +" + str(value)
+            elif kind == "Treasure":
+                inventory["Treasure"] = int(inventory.get("Treasure",0)) + 1
+                coins += value
+                survival.record_event("collect", "Treasure", 1)
+                mission_text = "Treasure Chest ဖွင့်ပြီး Treasure +1 | Gold +" + str(value)
             else:
                 coins += value
                 survival.record_event("collect", "Coin", 1)
@@ -281,7 +286,7 @@ func _near_village_shop():
         var center = village.position
         if Vector2(p.x,p.z).distance_to(Vector2(center.x,center.z)) <= 70.0:
             return true
-    return false
+    return Vector2(p.x,p.z).distance_to(Vector2(18,18)) <= 28.0
 
 func _sync_economy():
     economy.inventory = inventory
@@ -555,7 +560,8 @@ func _on_action(action):
         if p.x < -28.0:
             survival.inventory = inventory
             survival.coins = coins
-            mission_text = survival.hunt_animal("Deer", false)
+            var has_hunting_gear = int(inventory.get("Spear",0)) > 0 or int(inventory.get("Arrow",0)) > 0 or int(inventory.get("Sword",0)) > 0
+            mission_text = survival.hunt_animal("Deer", has_hunting_gear)
             inventory = survival.inventory
             coins = survival.coins
             economy.grant_xp("Hunting", 22)
