@@ -21,6 +21,8 @@ var inventory = {
 var coins = 120
 var player_health = 100
 var player_stamina = 100
+var equipped_weapon = ""
+var equipped_armor = ""
 var workshop_level = 1
 var fishing_level = 1
 var hunting_level = 1
@@ -230,7 +232,7 @@ func hunt_animal(animal_name, has_weapon):
         danger = 38
     elif str(animal_name) == "Deer":
         danger = 12
-    var weapon_bonus = 0.22 if int(inventory.get("Sword",0)) > 0 else (0.18 if int(inventory.get("Spear", 0)) > 0 else 0.08)
+    var weapon_bonus = 0.22 if equipped_weapon == "Sword" else (0.18 if equipped_weapon == "Spear" else 0.08)
     var success = randf() < min(0.82, 0.55 + hunting_level * 0.025 + weapon_bonus)
     if success:
         var meat = 2 if str(animal_name) == "Boar" else 1
@@ -240,7 +242,7 @@ func hunt_animal(animal_name, has_weapon):
         hunting_level += 1
         record_event("collect", "Meat", meat)
         return _say("အမဲလိုက်မှု အောင်မြင်ပါပြီ။ အသား " + str(meat) + "၊ သားရေ ၁ ရရှိပါပြီ။", "Hunt successful. Gained " + str(meat) + " meat and 1 hide.")
-    var armor_reduction = 0.45 if int(inventory.get("Armor",0)) > 0 else (0.20 if int(inventory.get("Shield",0)) > 0 else 0.0)
+    var armor_reduction = 0.45 if equipped_armor == "Armor" else (0.20 if equipped_armor == "Shield" else 0.0)
     var actual_damage = int(ceil(danger * (1.0 - armor_reduction)))
     player_health = max(1, player_health - actual_damage)
     return _say("တောကောင်က ပြန်တိုက်ခိုက်ခဲ့ပါတယ်။ Health -" + str(danger), "The wild animal fought back. Health -" + str(danger))
@@ -291,7 +293,7 @@ func save_state():
         "language": language, "game_mode": game_mode, "inventory": inventory,
         "coins": coins, "player_health": player_health, "player_stamina": player_stamina,
         "workshop_level": workshop_level, "fishing_level": fishing_level,
-        "hunting_level": hunting_level, "completed_missions": completed_missions,
+        "hunting_level": hunting_level, "equipped_weapon": equipped_weapon, "equipped_armor": equipped_armor, "completed_missions": completed_missions,
         "active_mission_id": int(active_mission.get("id", 0))
     }
 
@@ -310,6 +312,8 @@ func load_state(data):
     workshop_level = max(1, int(data.get("workshop_level", 1)))
     fishing_level = max(1, int(data.get("fishing_level", 1)))
     hunting_level = max(1, int(data.get("hunting_level", 1)))
+    equipped_weapon = str(data.get("equipped_weapon", ""))
+    equipped_armor = str(data.get("equipped_armor", ""))
     completed_missions = data.get("completed_missions", [])
     active_mission = {}
     var active_id = int(data.get("active_mission_id", 0))
