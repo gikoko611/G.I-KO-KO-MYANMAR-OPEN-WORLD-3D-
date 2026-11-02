@@ -13,7 +13,8 @@ func _init():
         "res://scripts/survival_system.gd",
         "res://scripts/culture_expansion.gd",
         "res://scripts/splash_screen.gd",
-        "res://scripts/open_world_expansion.gd"
+        "res://scripts/open_world_expansion.gd",
+        "res://scripts/economy_rpg.gd"
     ]
     var failed = false
     for path in paths:
@@ -27,7 +28,10 @@ func _init():
                 printerr("SCRIPT_INSTANTIATE_FAILED: " + path)
                 failed = true
             else:
-                if path == "res://scripts/survival_system.gd" and instance.get_mission_count() != 165:
+                if path == "res://scripts/economy_rpg.gd" and (instance.level != 1 or instance.story_stage != 0):
+                    printerr("ECONOMY_RPG_INIT_FAILED")
+                    failed = true
+                elif path == "res://scripts/survival_system.gd" and instance.get_mission_count() != 165:
                     printerr("MISSION_COUNT_FAILED: expected 165, got " + str(instance.get_mission_count()))
                     failed = true
                 else:
