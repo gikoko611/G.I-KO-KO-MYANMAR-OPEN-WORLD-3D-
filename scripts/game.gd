@@ -11,6 +11,7 @@ const Culture = preload("res://scripts/culture_expansion.gd")
 const OpenWorldExpansion = preload("res://scripts/open_world_expansion.gd")
 const EconomyRPG = preload("res://scripts/economy_rpg.gd")
 const CompanionScript = preload("res://scripts/companion_system.gd")
+const InteriorSystem = preload("res://scripts/interior_system.gd")
 
 var player
 var ui
@@ -22,6 +23,7 @@ var culture
 var expansion
 var economy
 var companion
+var interiors
 var pickup_refresh = 0.0
 var water_refresh = 0.0
 var visited_villages = {}
@@ -57,6 +59,10 @@ func _ready():
     expansion.name = "OpenWorldExpansion"
     add_child(expansion)
     expansion.build_world()
+    interiors = InteriorSystem.new()
+    interiors.name = "InteriorSystem"
+    add_child(interiors)
+    interiors.build_world(expansion.village_centers)
     player = PlayerScript.new()
     player.name = "Player"
     add_child(player)
@@ -313,6 +319,11 @@ func _on_gender(value):
         player.set_gender(value)
 
 func _on_action(action):
+    if action == "interact" and interiors and interiors.try_interact(player):
+        mission_text = interiors.last_message
+        ui.show_dialogue(mission_text)
+        dialogue_timer = 5.0
+        return
     if action == "companion":
         var companion_mode = companion.cycle_mode()
         survival.record_event("companion", "meet", 1)
