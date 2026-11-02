@@ -1,4 +1,4 @@
-name: Android ARMv7 Build
+name: Android Multi-ABI Build
 
 concurrency:
   group: gi-koko-myanmar-open-world-armv7-interiors
@@ -110,14 +110,14 @@ jobs:
             exit 1
           fi
 
-      - name: Export Android ARMv7 debug APK
+      - name: Export Android universal multi-ABI debug APK
         shell: bash
         run: |
           set -euxo pipefail
           mkdir -p build
-          godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk > /tmp/godot-export.log 2>&1 || { cat /tmp/godot-export.log; exit 1; }
-          test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
-          APK_SIZE=$(stat -c%s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk)
+          godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk > /tmp/godot-export.log 2>&1 || { cat /tmp/godot-export.log; exit 1; }
+          test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
+          APK_SIZE=$(stat -c%s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk)
           echo "APK_SIZE_BYTES=$APK_SIZE"
           if [ "$APK_SIZE" -gt 314572800 ]; then
             echo "APK exceeds 300 MB target"
@@ -131,21 +131,24 @@ jobs:
           path: build/*-source.zip
           if-no-files-found: error
 
-      - name: Verify APK package, signature, and ARMv7 ABI
+      - name: Verify APK package, signature, and Android ABIs
         shell: bash
         run: |
           set -euxo pipefail
           AAPT="$ANDROID_HOME/build-tools/30.0.3/aapt"
           APKSIGNER="$ANDROID_HOME/build-tools/30.0.3/apksigner"
-          "$AAPT" dump badging build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk > /tmp/apk-badging.txt
+          "$AAPT" dump badging build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk > /tmp/apk-badging.txt
           sed -n '1,8p' /tmp/apk-badging.txt
-          "$APKSIGNER" verify build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk
-          unzip -Z1 build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | grep -E "^lib/armeabi-v7a/.*\\.so$" | tee /tmp/armv7-libs.txt
-          test -s /tmp/armv7-libs.txt
-          if unzip -Z1 build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D.apk | grep -q "^lib/arm64-v8a/"; then
-            echo "Unexpected ARM64 libraries found in ARMv7-only APK"
-            exit 1
-          fi
+          "$APKSIGNER" verify build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
+          APK=build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
+          unzip -Z1 "$APK" | grep -E "^lib/(armeabi-v7a|arm64-v8a|x86|x86_64)/.*\\.so$" | sort -u | tee /tmp/android-abi-libs.txt
+          for ABI in armeabi-v7a arm64-v8a x86 x86_64; do
+            if ! grep -q "^lib/$ABI/" /tmp/android-abi-libs.txt; then
+              echo "Missing native libraries for ABI: $ABI"
+              exit 1
+            fi
+          done
+          echo "Verified ABIs: armeabi-v7a, arm64-v8a, x86, x86_64"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
