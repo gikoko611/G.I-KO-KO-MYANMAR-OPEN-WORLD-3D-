@@ -10,6 +10,7 @@ const Survival = preload("res://scripts/survival_system.gd")
 const Culture = preload("res://scripts/culture_expansion.gd")
 const OpenWorldExpansion = preload("res://scripts/open_world_expansion.gd")
 const EconomyRPG = preload("res://scripts/economy_rpg.gd")
+const CompanionScript = preload("res://scripts/companion_system.gd")
 
 var player
 var ui
@@ -20,6 +21,7 @@ var survival
 var culture
 var expansion
 var economy
+var companion
 var pickup_refresh = 0.0
 var water_refresh = 0.0
 var visited_villages = {}
@@ -59,6 +61,11 @@ func _ready():
     player.name = "Player"
     add_child(player)
     player.translation = Vector3(0, 0.1, 9)
+    companion = CompanionScript.new()
+    companion.name = "Companion"
+    add_child(companion)
+    companion.set_target(player)
+    companion.translation = Vector3(-2.5, 0.1, 12.0)
     transport = Transport.new()
     transport.name = "Transport"
     add_child(transport)
@@ -74,7 +81,7 @@ func _ready():
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
     ui.connect("gender_selected", self, "_on_gender")
-    ui.set_status(mission_text + " | " + farming.get_status() + " | HP " + str(survival.player_health) + " | Stamina " + str(survival.player_stamina) + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
+    ui.set_status(mission_text + " | " + farming.get_status() + " | HP " + str(survival.player_health) + " | Stamina " + str(survival.player_stamina) + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + " | " + companion.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
     _apply_graphics_quality()
     var MusicScript = preload("res://scripts/ambient_music.gd")
@@ -103,7 +110,7 @@ func _process(delta):
     if hud_refresh >= 0.5:
         hud_refresh = 0.0
         if ui:
-            ui.set_status(mission_text + " | HP " + str(survival.player_health) + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
+            ui.set_status(mission_text + " | HP " + str(survival.player_health) + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + " | " + companion.get_status() + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     day_time = fmod(day_time + delta * 0.003, 1.0)
     environment_refresh += delta
     if environment_refresh >= 0.25:
@@ -125,15 +132,19 @@ func _update_water_state():
         player.set_swimming(in_lake)
         if in_lake:
             survival.record_event("explore", "lake", 1)
+            if companion and companion.is_near_player(): survival.record_event("companion", "river", 1)
             mission_text = "ရေကန်ထဲ ရောက်ပါပြီ။ Joystick နဲ့ ရေကူးပြီး Dive ခလုတ်နဲ့ ရေအောက်ငုပ်နိုင်ပါတယ်။"
         else:
             mission_text = "ရေကန်ကမ်းပေါ် ပြန်ရောက်ပါပြီ။"
     if abs(pos.x - 440.0) < 18.0 and abs(pos.z - 245.0) < 20.0:
         survival.record_event("explore", "cave", 1)
+        if companion and companion.is_near_player(): survival.record_event("companion", "cave", 1)
     if abs(pos.x - 230.0) < 12.0 and abs(pos.z - 240.0) < 14.0:
         survival.record_event("explore", "waterfall", 1)
     if abs(pos.x) > 390.0 and abs(pos.z) > 230.0:
         survival.record_event("explore", "mountain", 1)
+    if pos.x < -300.0 and companion and companion.is_near_player():
+        survival.record_event("explore", "hermit_trail", 1)
     if abs(pos.x - 16.0) < 7.0 and abs(pos.z - 7.0) < 10.0:
         survival.record_event("explore", "bridge", 1)
 
@@ -180,6 +191,7 @@ func _update_village_visits():
             if not visited_villages.has(village_name):
                 visited_villages[village_name] = true
                 survival.record_event("explore", "village", 1)
+                if companion and companion.is_near_player(): survival.record_event("companion", "village", 1)
                 mission_text = village_name + " သို့ ရောက်ရှိပါပြီ။ ရွာအသစ်တစ်ရွာ ရှာဖွေတွေ့ရှိပါပြီ။"
 
 func _nearest_group_node(group_name, max_distance):
@@ -301,11 +313,29 @@ func _on_gender(value):
         player.set_gender(value)
 
 func _on_action(action):
-    if action == "shop_sell":
+    if action == "companion":
+        var companion_mode = companion.cycle_mode()
+        survival.record_event("companion", "meet", 1)
+        if companion_mode == "WORK":
+            survival.record_event("companion", "work", 1)
+            mission_text = "မောင်လှက အလုပ်ကူညီမည့်အနေအထားဖြစ်ပါပြီ။ Gather လုပ်သည့်အခါ ပစ္စည်းပိုရနိုင်ပါတယ်။"
+        elif companion_mode == "FOLLOW":
+            mission_text = "မောင်လှက သင့်နောက်ကို လိုက်ပါမည်။ အမဲလိုက်ရာတွင်လည်း ကူညီပါမည်။"
+        else:
+            mission_text = "မောင်လှ အနားယူနေပါသည်။ Buddy ကို ထပ်နှိပ်၍ ပြန်ခေါ်နိုင်ပါသည်။"
+    elif action == "family_path":
+        mission_text = economy.choose_family_path()
+    elif action == "hermit_path":
+        mission_text = economy.choose_hermit_path(companion.bond)
+        if economy.story_choice == "HERMIT":
+            survival.record_event("companion", "renounce", 1)
+            economy.companion_bond_ready = companion.bond >= 10
+    elif action == "shop_sell":
         if _near_village_shop():
             _sync_economy()
             mission_text = economy.sell_bag()
             _sync_economy()
+            if companion and companion.is_near_player(): survival.record_event("companion", "market", 1)
         else:
             mission_text = "ရွာတိုင်းရှိ Market ဆိုင်အနီးသို့ သွားပါ။"
     elif action.begins_with("buy_"):
@@ -338,6 +368,8 @@ func _on_action(action):
         _sync_economy()
         mission_text = economy.advance_story()
         _sync_economy()
+        if economy.story_stage >= 11:
+            survival.record_event("companion", "hermit_ending", 1)
     elif action == "ride":
         mission_text = transport.toggle_ride(player)
     elif action == "dive":
@@ -539,6 +571,16 @@ func _on_action(action):
     elif action == "gather":
         if player.global_transform.origin.x < -25.0:
             inventory["Wood"] = int(inventory.get("Wood",0)) + 2
+            var buddy_bonus = companion.help_work() if companion else 0
+            if buddy_bonus > 0:
+                inventory["Wood"] = int(inventory.get("Wood",0)) + 1
+                inventory["Bamboo"] = int(inventory.get("Bamboo",0)) + 1
+                survival.record_event("companion", "work", 1)
+                if companion.bond >= 10:
+                    survival.record_event("companion", "bond10", 1)
+                    economy.companion_bond_ready = true
+                if companion.bond >= 50:
+                    survival.record_event("companion", "bond50", 1)
             inventory["Stone"] = int(inventory.get("Stone",0)) + 1
             inventory["Fiber"] = int(inventory.get("Fiber",0)) + 1
             inventory["Bamboo"] = int(inventory.get("Bamboo",0)) + 1
@@ -573,7 +615,17 @@ func _on_action(action):
             survival.inventory = inventory
             survival.coins = coins
             var has_hunting_gear = survival.equipped_weapon != ""
-            mission_text = survival.hunt_animal("Deer", has_hunting_gear)
+            var buddy_bonus = companion.help_hunt_bonus() if companion else 0.0
+            mission_text = survival.hunt_animal("Deer", has_hunting_gear, buddy_bonus)
+            if buddy_bonus > 0.0:
+                survival.record_event("companion", "hunt", 1)
+                survival.record_event("companion", "assisted_hunt", 1)
+                if companion.bond >= 10:
+                    survival.record_event("companion", "bond10", 1)
+                    economy.companion_bond_ready = true
+                if companion.bond >= 50:
+                    survival.record_event("companion", "bond50", 1)
+            if companion and companion.is_near_player(): survival.record_event("companion", "rescue", 1)
             inventory = survival.inventory
             coins = survival.coins
             economy.grant_xp("Hunting", 22)
@@ -596,6 +648,7 @@ func _on_action(action):
                         break
                 if can_make:
                     mission_text = survival.craft(recipe_name)
+                    if recipe_name == "Campfire" and companion and companion.is_near_player(): survival.record_event("companion", "camp", 1)
                     break
             inventory = survival.inventory
             coins = survival.coins
@@ -659,7 +712,7 @@ func _on_action(action):
         if player.is_mounted() and is_instance_valid(player.mounted_vehicle):
             var vehicle_basis = player.mounted_vehicle.global_transform.basis
             save_position = player.mounted_vehicle.global_transform.origin + vehicle_basis.xform(Vector3(2.0,0.0,0.0)) + Vector3(0,0.2,0)
-        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state(), "economy_state": economy.save_state(), "visited_villages": visited_villages, "collected_pickups": collected_pickups})
+        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state(), "economy_state": economy.save_state(), "companion_state": companion.save_state(), "visited_villages": visited_villages, "collected_pickups": collected_pickups})
         mission_text = "Game သိမ်းပြီးပါပြီ။" if saved else "Save မအောင်မြင်ပါ။ Storage permission နှင့် နေရာလွတ်ကို စစ်ပါ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -693,6 +746,7 @@ func _on_action(action):
             collected_pickups = data.get("collected_pickups", {})
             survival.load_state(data.get("survival_state", {}))
             economy.load_state(data.get("economy_state", {}))
+            companion.load_state(data.get("companion_state", {}))
             economy.inventory = inventory
             economy.coins = coins
             survival.inventory = inventory
