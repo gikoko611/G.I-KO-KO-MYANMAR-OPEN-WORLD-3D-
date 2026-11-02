@@ -3,8 +3,10 @@ config_version=4
 
 [application]
 config/name="G.I KO KO - Myanmar Open World 3D"
-run/main_scene="res://scenes/main.tscn"
-config/description="Explore Myanmar countryside, farm, meet villagers and live a rural adventure."
+run/main_scene="res://scenes/splash.tscn"
+config/description="Explore, farm and survive in a detailed Myanmar open world."
+
+icon="res://icon.png"
 
 [rendering]
 quality/driver/driver_name="GLES2"
