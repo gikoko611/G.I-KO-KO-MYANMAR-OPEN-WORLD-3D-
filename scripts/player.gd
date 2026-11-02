@@ -32,6 +32,7 @@ func _ready():
     camera.translation = Vector3(0, 1.1, 4.2)
     camera.rotation_degrees.x = -10
     camera.current = true
+    camera.far = 1200.0
     camera_pivot.add_child(camera)
     var shape = CapsuleShape.new()
     shape.radius = 0.36
