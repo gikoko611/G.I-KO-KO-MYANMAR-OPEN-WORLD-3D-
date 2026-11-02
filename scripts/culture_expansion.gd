@@ -102,6 +102,7 @@ func _build_forest_camps():
     _box("HunterCampRoof", hunter + Vector3(0,2.7,0), Vector3(8,0.3,6), Color(0.25,0.14,0.08))
     _person("Forest Hunter", hunter + Vector3(4,0,2), Color(0.25,0.30,0.20))
     _person("Forest Ranger", hunter + Vector3(-4,0,1), Color(0.18,0.28,0.34))
+    _person("Lost Traveler", Vector3(-65,0,-26), Color(0.42,0.28,0.18))
     _cylinder("HunterCampfire", hunter + Vector3(0,0.18,-2.4), 0.65, 0.35, Color(0.22,0.16,0.12))
 
 func _build_religious_places():
