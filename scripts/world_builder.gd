@@ -75,6 +75,9 @@ func build_world():
     _bamboo_grove(Vector3(-58,0,18))
     _stilt_house(Vector3(38,0,-38))
     _village_well(Vector3(3,0,28))
+    _workshop(Vector3(-45,0,-15))
+    _animal(Vector3(-48,0,8), Color(0.48,0.32,0.18), "WildDeer")
+    _animal(Vector3(-55,0,-5), Color(0.24,0.18,0.14), "WildBoar")
     _animal(Vector3(6,0,28), Color(0.18,0.12,0.09), "VillageDog")
     _animal(Vector3(7.5,0,-12), Color(0.72,0.70,0.62), "VillageGoat")
     _animal(Vector3(-17,0,-8), Color(0.90,0.88,0.82), "VillageDuck")
@@ -407,3 +410,15 @@ func _village_well(pos):
     water.height = 0.05
     _cylinder("WellWater", water, pos + Vector3(0,0.78,0), Color(0.12,0.42,0.58))
     _box("WellBeam", pos + Vector3(0,2.1,0), Vector3(2.4,0.12,0.12), Color(0.28,0.16,0.08))
+
+
+func _workshop(pos):
+    _box("WorkshopFloor", pos + Vector3(0,0.12,0), Vector3(9,0.24,7), Color(0.30,0.20,0.12))
+    _box("WorkshopBackWall", pos + Vector3(0,1.7,-3.2), Vector3(9,3.2,0.25), Color(0.42,0.28,0.16))
+    _box("WorkshopSideWall", pos + Vector3(-4.3,1.7,0), Vector3(0.25,3.2,6.5), Color(0.42,0.28,0.16))
+    _box("WorkshopRoof", pos + Vector3(0,3.4,0), Vector3(9.5,0.25,7.5), Color(0.26,0.15,0.09))
+    _box("WorkshopBench", pos + Vector3(0,1.0,0.5), Vector3(4.5,0.22,1.0), Color(0.34,0.20,0.10))
+    _box("WorkshopAnvil", pos + Vector3(1.3,1.45,0.5), Vector3(0.8,0.65,0.65), Color(0.20,0.22,0.24))
+    _box("WorkshopForge", pos + Vector3(-1.6,0.7,-1.0), Vector3(1.5,1.2,1.2), Color(0.28,0.16,0.10))
+    for i in range(4):
+        _box("WorkshopToolRack", pos + Vector3(-3.0 + i*1.8,2.0,-3.0), Vector3(0.12,1.1,0.12), Color(0.20,0.13,0.08))
