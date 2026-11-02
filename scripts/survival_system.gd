@@ -230,7 +230,7 @@ func hunt_animal(animal_name, has_weapon):
         danger = 38
     elif str(animal_name) == "Deer":
         danger = 12
-    var weapon_bonus = 0.18 if int(inventory.get("Spear", 0)) > 0 else 0.08
+    var weapon_bonus = 0.22 if int(inventory.get("Sword",0)) > 0 else (0.18 if int(inventory.get("Spear", 0)) > 0 else 0.08)
     var success = randf() < min(0.82, 0.55 + hunting_level * 0.025 + weapon_bonus)
     if success:
         var meat = 2 if str(animal_name) == "Boar" else 1
@@ -240,7 +240,9 @@ func hunt_animal(animal_name, has_weapon):
         hunting_level += 1
         record_event("collect", "Meat", meat)
         return _say("အမဲလိုက်မှု အောင်မြင်ပါပြီ။ အသား " + str(meat) + "၊ သားရေ ၁ ရရှိပါပြီ။", "Hunt successful. Gained " + str(meat) + " meat and 1 hide.")
-    player_health = max(1, player_health - danger)
+    var armor_reduction = 0.45 if int(inventory.get("Armor",0)) > 0 else (0.20 if int(inventory.get("Shield",0)) > 0 else 0.0)
+    var actual_damage = int(ceil(danger * (1.0 - armor_reduction)))
+    player_health = max(1, player_health - actual_damage)
     return _say("တောကောင်က ပြန်တိုက်ခိုက်ခဲ့ပါတယ်။ Health -" + str(danger), "The wild animal fought back. Health -" + str(danger))
 
 func craft(item_name):
