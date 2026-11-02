@@ -216,7 +216,7 @@ func load_state(data):
             properties[key] = bool(saved_properties.get(key,false))
     story_stage = clamp(int(data.get("story_stage",0)),0,11)
     story_choice = str(data.get("story_choice","UNDECIDED"))
-    if story_choice not in ["UNDECIDED","FAMILY","HERMIT"]:
+    if not (story_choice in ["UNDECIDED","FAMILY","HERMIT"]):
         story_choice = "UNDECIDED"
     companion_bond_ready = bool(data.get("companion_bond_ready",false))
     total_sales = max(0,int(data.get("total_sales",0)))
