@@ -94,6 +94,43 @@ const FUN_MISSION_TYPES = [
     {"key":"fun_fruit_party","mm":"သစ်သီး ၁၀ လုံး စုပါ","en":"Collect 10 fruits","kind":"collect","target":"Fruit","base":70,"required":10}
 ]
 
+
+const COMPANION_MISSION_TYPES = [
+    {"key":"buddy_first_meet","mm":"မောင်လှနှင့် မိတ်ဆွေဖြစ်အောင် စကားပြောပါ","en":"Meet your companion","kind":"companion","target":"meet","required":1,"base":35},
+    {"key":"buddy_first_work","mm":"မိတ်ဆွေနှင့်အတူ အလုပ် ၅ ကြိမ်လုပ်ပါ","en":"Work together 5 times","kind":"companion","target":"work","required":5,"base":60},
+    {"key":"buddy_gather_wood","mm":"မိတ်ဆွေနှင့်အတူ Wood ၁၅ ခု စုပါ","en":"Gather 15 wood with your companion","kind":"collect","target":"Wood","required":15,"base":75},
+    {"key":"buddy_forest_hunt","mm":"မိတ်ဆွေနှင့်အတူ အမဲလိုက် ၃ ကြိမ်လုပ်ပါ","en":"Hunt together 3 times","kind":"companion","target":"hunt","required":3,"base":85},
+    {"key":"buddy_bond_10","mm":"မိတ်ဆွေ Bond ၁၀ ရရှိပါ","en":"Build 10 companion bond","kind":"companion","target":"bond10","required":1,"base":100},
+    {"key":"buddy_river_trip","mm":"မိတ်ဆွေနှင့် မြစ်ကမ်းသို့ ခရီးသွားပါ","en":"Take your companion to the river","kind":"companion","target":"river","required":1,"base":55},
+    {"key":"buddy_cave_trip","mm":"မိတ်ဆွေနှင့် လျှို့ဝှက်ဂူကို စူးစမ်းပါ","en":"Explore the hidden cave together","kind":"companion","target":"cave","required":1,"base":90},
+    {"key":"buddy_market","mm":"မိတ်ဆွေနှင့်အတူ ဈေးသို့ သွားပြီး ကုန်ပစ္စည်းရောင်းပါ","en":"Sell goods together at the market","kind":"companion","target":"market","required":1,"base":65},
+    {"key":"buddy_protect","mm":"မိတ်ဆွေကူညီမှုဖြင့် အမဲလိုက်မှု ၅ ကြိမ်အောင်မြင်ပါ","en":"Complete 5 assisted hunts","kind":"companion","target":"assisted_hunt","required":5,"base":120},
+    {"key":"buddy_long_journey","mm":"မိတ်ဆွေနှင့် ရွာ ၅ ရွာ လှည့်လည်ပါ","en":"Travel through 5 villages with your companion","kind":"companion","target":"village","required":5,"base":110},
+    {"key":"buddy_camp","mm":"မိတ်ဆွေနှင့် တောစခန်းတစ်ခု တည်ဆောက်ပါ","en":"Build a forest camp with your companion","kind":"companion","target":"camp","required":1,"base":100},
+    {"key":"buddy_fishing","mm":"မိတ်ဆွေနှင့် ငါး ၁၀ ကောင် ဖမ်းပါ","en":"Catch 10 fish during your journeys","kind":"collect","target":"Fish","required":10,"base":90},
+    {"key":"buddy_rescue","mm":"အန္တရာယ်ရှိချိန် မိတ်ဆွေ၏အကူအညီကို ရယူပါ","en":"Rely on your companion in danger","kind":"companion","target":"rescue","required":1,"base":120},
+    {"key":"buddy_gem","mm":"မိတ်ဆွေနှင့်အတူ Gem ၅ လုံး ရှာပါ","en":"Find 5 gems together","kind":"collect","target":"Gem","required":5,"base":150},
+    {"key":"buddy_lifelong","mm":"မိတ်ဆွေ Bond ၅၀ ရောက်အောင် တည်ဆောက်ပါ","en":"Build a lifelong friendship (Bond 50)","kind":"companion","target":"bond50","required":1,"base":200}
+]
+
+const HERMIT_MISSION_TYPES = [
+    {"key":"hermit_path_intro","mm":"ရသေ့ထံ ပြန်သွားပြီး တောလမ်းအကြောင်း မေးပါ","en":"Ask the hermit about the forest path","kind":"talk","target":"hermit","required":1,"base":40},
+    {"key":"hermit_herbs_10","mm":"ဆေးဖက်ဝင်အပင် ၁၀ ပင် စုဆောင်းပါ","en":"Gather 10 medicinal herbs","kind":"collect","target":"Herb","required":10,"base":80},
+    {"key":"hermit_forest_walk","mm":"တောနက်ထဲသို့ ခရီးရှည်ထွက်ပါ","en":"Walk deep into the forest","kind":"explore","target":"hermit_trail","required":1,"base":60},
+    {"key":"hermit_waterfall","mm":"ရေတံခွန်အနီးမှာ တိတ်ဆိတ်စွာ နားနေပါ","en":"Rest by the waterfall","kind":"explore","target":"waterfall","required":1,"base":65},
+    {"key":"hermit_cave","mm":"ဂူအတွင်းရှိ လျှို့ဝှက်နေရာကို ရှာပါ","en":"Find the hidden chamber in the cave","kind":"explore","target":"cave","required":1,"base":90},
+    {"key":"hermit_shelter_wood","mm":"တောတွင်းတဲအတွက် Wood ၂၀ စုပါ","en":"Collect 20 wood for a forest shelter","kind":"collect","target":"Wood","required":20,"base":100},
+    {"key":"hermit_fruit","mm":"တောသီး ၁၅ လုံး စုဆောင်းပါ","en":"Gather 15 wild fruits","kind":"collect","target":"Fruit","required":15,"base":85},
+    {"key":"hermit_clean_river","mm":"မြစ်နှင့်ရေကန်ပတ်ဝန်းကျင်ကို စူးစမ်းပါ","en":"Explore the river and lake","kind":"explore","target":"lake","required":1,"base":70},
+    {"key":"hermit_help_wildlife","mm":"တောရိုင်းတိရစ္ဆာန်များကို မထိခိုက်စေဘဲ လေ့လာပါ","en":"Observe wildlife peacefully","kind":"explore","target":"forest","required":3,"base":90},
+    {"key":"hermit_monk_visit","mm":"ဘုန်းကြီးကျောင်းသို့ နောက်ဆုံးတစ်ကြိမ် သွားရောက်ပါ","en":"Make a final visit to the monastery","kind":"talk","target":"monk","required":1,"base":80},
+    {"key":"hermit_silence","mm":"တောင်ပေါ်ဒေသသို့ တစ်ယောက်တည်း ခရီးထွက်ပါ","en":"Travel alone to the mountain","kind":"explore","target":"mountain","required":1,"base":90},
+    {"key":"hermit_gem","mm":"တောထဲက Gem ၃ လုံးကို ရှာဖွေပါ","en":"Find 3 forest gems","kind":"collect","target":"Gem","required":3,"base":130},
+    {"key":"hermit_campfire","mm":"တောတွင်းမှာ Campfire တစ်ခု ပြုလုပ်ပါ","en":"Craft a campfire in the forest","kind":"craft","target":"tool","required":1,"base":90},
+    {"key":"hermit_simple_life","mm":"ပစ္စည်းများကို ရောင်းပြီး ရိုးရှင်းသောဘဝကို ရွေးချယ်ပါ","en":"Sell your goods and choose a simple life","kind":"companion","target":"renounce","required":1,"base":120},
+    {"key":"hermit_final","mm":"ရသေ့နှင့်အတူ တောထဲတွင် ငြိမ်းချမ်းစွာ နေထိုင်ပါ","en":"Settle into a peaceful hermit life","kind":"companion","target":"hermit_ending","required":1,"base":250}
+]
+
 const RECIPES = {
     "StoneAxe":{"Wood":2,"Stone":3},
     "StonePickaxe":{"Wood":2,"Stone":4},
@@ -160,6 +197,22 @@ func _generate_missions():
             "id":id, "key":str(template.key), "title_mm":str(template.mm), "title_en":str(template.en),
             "kind":template.kind, "target":template.target, "required":int(template.required),
             "progress":0, "reward":int(template.base), "tier":12, "completed":false
+        })
+        id += 1
+
+
+    for template in COMPANION_MISSION_TYPES:
+        missions.append({
+            "id":id, "key":str(template.key), "title_mm":str(template.mm), "title_en":str(template.en),
+            "kind":template.kind, "target":template.target, "required":int(template.required),
+            "progress":0, "reward":int(template.base), "tier":13, "completed":false
+        })
+        id += 1
+    for template in HERMIT_MISSION_TYPES:
+        missions.append({
+            "id":id, "key":str(template.key), "title_mm":str(template.mm), "title_en":str(template.en),
+            "kind":template.kind, "target":template.target, "required":int(template.required),
+            "progress":0, "reward":int(template.base), "tier":14, "completed":false
         })
         id += 1
 
