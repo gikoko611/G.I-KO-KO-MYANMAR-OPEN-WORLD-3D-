@@ -87,6 +87,14 @@ func _ready():
     var hint = _label(root, "ဘယ်ဘက်: လှုပ်ရှား  |  ညာဘက်: ကင်မရာလှည့်", Vector2(18,-42), Vector2(460,28), 14)
     hint.modulate = Color(1,1,1,0.8)
 
+    # Scale the HUD offsets and control rectangles for different landscape sizes.
+    var viewport_size = get_viewport().size
+    var ui_scale = clamp(min(float(viewport_size.x) / 1280.0, float(viewport_size.y) / 720.0), 0.55, 1.15)
+    for control in root.get_children():
+        if control is Control:
+            control.rect_position = control.rect_position * ui_scale
+            control.rect_size = control.rect_size * ui_scale
+
 func _label(parent, text_value, pos, size, font_size):
     var l = Label.new()
     l.text = text_value
