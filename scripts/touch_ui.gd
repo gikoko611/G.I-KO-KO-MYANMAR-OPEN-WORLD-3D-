@@ -36,6 +36,7 @@ func _ready():
     _button(root, "Mission", Vector2(185,158), "mission")
     _button(root, "Mode", Vector2(280,158), "mode")
     _button(root, "MM/EN", Vector2(375,158), "language")
+    _button(root, "Forest +30", Vector2(470,158), "forest_mission")
     _button(root, "Gather", Vector2(-460,-275), "gather", true)
     _button(root, "Fish", Vector2(-360,-275), "fish", true)
     _button(root, "Hunt", Vector2(-260,-275), "hunt", true)
