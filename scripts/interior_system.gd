@@ -56,13 +56,9 @@ func _add_portal(label, kind, position, room_index):
     _box(portal, "DoorPanel", Vector3(0, 1.05, -0.08), Vector3(1.15, 2.05, 0.12), Color(0.48, 0.29, 0.13))
     _box(portal, "EntranceStep", Vector3(0, 0.08, 0.85), Vector3(2.2, 0.16, 1.8), Color(0.50, 0.43, 0.32))
     portals.append(portal)
-    var room = Spatial.new()
-    room.name = "InteriorRoom_" + str(room_index)
-    room.translation = Vector3(-1800.0 - float(room_index) * 28.0, -120.0, 0.0)
-    room.visible = false
-    add_child(room)
-    _build_room(room, kind, label)
-    rooms.append(room)
+    # Build interior geometry only when the player enters this room.
+    # Keeping all 27 interiors alive during startup is too expensive for low-RAM phones.
+    rooms.append(null)
 
 func _build_room(room, kind, label):
     var floor_color = Color(0.34, 0.22, 0.12)
@@ -156,6 +152,13 @@ func _enter_room(player, portal_index):
     outside_position = player.global_transform.origin
     current_room = portal_index
     var room = rooms[portal_index]
+    if room == null or not is_instance_valid(room):
+        room = Spatial.new()
+        room.name = "InteriorRoom_" + str(portal_index)
+        room.translation = Vector3(-1800.0 - float(portal_index) * 28.0, -120.0, 0.0)
+        add_child(room)
+        _build_room(room, str(portals[portal_index].get_meta("kind")), str(portals[portal_index].get_meta("label")))
+        rooms[portal_index] = room
     room.visible = true
     var room_origin = room.global_transform.origin
     player.global_transform.origin = room_origin + Vector3(0, 0.15, 1.5)
