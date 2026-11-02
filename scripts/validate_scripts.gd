@@ -33,7 +33,7 @@ func _init():
                     printerr("ECONOMY_RPG_INIT_FAILED")
                     failed = true
                 elif path == "res://scripts/survival_system.gd" and instance.get_mission_count() != 195:
-                    printerr("MISSION_COUNT_FAILED: expected 165, got " + str(instance.get_mission_count()))
+                    printerr("MISSION_COUNT_FAILED: expected 195, got " + str(instance.get_mission_count()))
                     failed = true
                 else:
                     print("SCRIPT_LOAD_AND_INSTANTIATE_OK: " + path)
