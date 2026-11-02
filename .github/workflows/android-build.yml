@@ -102,27 +102,40 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          godot --path . --script res://scripts/validate_scripts.gd > /tmp/gdscript-validation.log 2>&1 || { cat /tmp/gdscript-validation.log; exit 1; }
+          timeout 600s godot --path . --script res://scripts/validate_scripts.gd > /tmp/gdscript-validation.log 2>&1 || { cat /tmp/gdscript-validation.log; exit 1; }
           cat /tmp/gdscript-validation.log
-          godot --path . --editor --quit > /tmp/godot-validation.log 2>&1 || { cat /tmp/godot-validation.log; exit 1; }
+          timeout 600s godot --path . --editor --quit > /tmp/godot-validation.log 2>&1 || { cat /tmp/godot-validation.log; exit 1; }
           if grep -E "(Parse Error|SCRIPT ERROR|ERROR:.*(parse|load))" /tmp/godot-validation.log; then
             cat /tmp/godot-validation.log
             exit 1
           fi
 
-      - name: Export Android universal multi-ABI debug APK
+      - name: Export Universal multi-ABI and Redmi 9A ARMv7 APKs
         shell: bash
         run: |
           set -euxo pipefail
           mkdir -p build
-          godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk > /tmp/godot-export.log 2>&1 || { cat /tmp/godot-export.log; exit 1; }
+          cp export_presets.cfg /tmp/export_presets.universal.cfg
+          godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk > /tmp/godot-export-universal.log 2>&1 || { cat /tmp/godot-export-universal.log; exit 1; }
           test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
-          APK_SIZE=$(stat -c%s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk)
-          echo "APK_SIZE_BYTES=$APK_SIZE"
-          if [ "$APK_SIZE" -gt 314572800 ]; then
-            echo "APK exceeds 300 MB target"
-            exit 1
-          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("export_presets.cfg")
+          s = p.read_text()
+          for abi in ("arm64-v8a", "x86", "x86_64"):
+              s = s.replace(f"architectures/{abi}=true", f"architectures/{abi}=false")
+          if "architectures/armeabi-v7a=true" not in s:
+              raise SystemExit("ARMv7 architecture is not enabled")
+          p.write_text(s)
+          PY
+          godot --path . --export-debug "Android" build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Redmi-9A-ARMv7.apk > /tmp/godot-export-armv7.log 2>&1 || { cat /tmp/godot-export-armv7.log; exit 1; }
+          cp /tmp/export_presets.universal.cfg export_presets.cfg
+          test -s build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Redmi-9A-ARMv7.apk
+          for APK in build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Redmi-9A-ARMv7.apk; do
+            SIZE=$(stat -c%s "$APK")
+            echo "$APK SIZE_BYTES=$SIZE"
+            if [ "$SIZE" -gt 314572800 ]; then echo "APK exceeds 300 MB target: $APK"; exit 1; fi
+          done
 
       - name: Upload source project
         uses: actions/upload-artifact@v4
@@ -131,28 +144,39 @@ jobs:
           path: build/*-source.zip
           if-no-files-found: error
 
-      - name: Verify APK package, signature, and Android ABIs
+      - name: Verify APK package, signatures, and Android ABIs
         shell: bash
         run: |
           set -euxo pipefail
           AAPT="$ANDROID_HOME/build-tools/30.0.3/aapt"
           APKSIGNER="$ANDROID_HOME/build-tools/30.0.3/apksigner"
-          "$AAPT" dump badging build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk > /tmp/apk-badging.txt
-          sed -n '1,8p' /tmp/apk-badging.txt
-          "$APKSIGNER" verify build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
-          APK=build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
-          unzip -Z1 "$APK" | grep -E "^lib/(armeabi-v7a|arm64-v8a|x86|x86_64)/.*\\.so$" | sort -u | tee /tmp/android-abi-libs.txt
+          UNIVERSAL=build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
+          REDMI=build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Redmi-9A-ARMv7.apk
+          "$AAPT" dump badging "$UNIVERSAL" | sed -n '1,8p'
+          "$APKSIGNER" verify "$UNIVERSAL"
+          "$APKSIGNER" verify "$REDMI"
+          unzip -Z1 "$UNIVERSAL" | grep -E "^lib/(armeabi-v7a|arm64-v8a|x86|x86_64)/.*\\.so$" | sort -u > /tmp/universal-abis.txt
           for ABI in armeabi-v7a arm64-v8a x86 x86_64; do
-            if ! grep -q "^lib/$ABI/" /tmp/android-abi-libs.txt; then
-              echo "Missing native libraries for ABI: $ABI"
-              exit 1
-            fi
+            grep -q "^lib/$ABI/" /tmp/universal-abis.txt || { echo "Universal APK missing ABI: $ABI"; exit 1; }
           done
-          echo "Verified ABIs: armeabi-v7a, arm64-v8a, x86, x86_64"
+          unzip -Z1 "$REDMI" | grep -E "^lib/armeabi-v7a/.*\\.so$" | grep -q .
+          if unzip -Z1 "$REDMI" | grep -E "^lib/(arm64-v8a|x86|x86_64)/.*\\.so$"; then
+            echo "Redmi 9A APK unexpectedly contains non-ARMv7 libraries"
+            exit 1
+          fi
+          echo "Universal APK: all four ABIs verified"
+          echo "Redmi 9A APK: armeabi-v7a only verified"
 
-      - name: Upload APK
+      - name: Upload Universal APK
         uses: actions/upload-artifact@v4
         with:
           name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal-Android-APK
-          path: build/*.apk
+          path: build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal.apk
+          if-no-files-found: error
+
+      - name: Upload Redmi 9A APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Redmi-9A-ARMv7-APK
+          path: build/GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Redmi-9A-ARMv7.apk
           if-no-files-found: error
