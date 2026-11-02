@@ -7,6 +7,7 @@ const SaveManager = preload("res://scripts/save_manager.gd")
 const Transport = preload("res://scripts/transport.gd")
 const Farming = preload("res://scripts/farming.gd")
 const Survival = preload("res://scripts/survival_system.gd")
+const Culture = preload("res://scripts/culture_expansion.gd")
 
 var player
 var ui
@@ -14,6 +15,7 @@ var world
 var transport
 var farming
 var survival
+var culture
 var day_time = 0.32
 var weather = "Sunny"
 var coins = 120
@@ -38,6 +40,9 @@ func _ready():
     world = WorldBuilder.new()
     add_child(world)
     world.build_world()
+    culture = Culture.new()
+    add_child(culture)
+    culture.build_world()
     player = PlayerScript.new()
     player.name = "Player"
     add_child(player)
@@ -224,6 +229,39 @@ func _on_action(action):
             ui.show_dialogue("ဈေးသည်: စပါးတစ်ထုပ်ကို Coins 25 နဲ့ ဝယ်ပါတယ်။ Sell Rice ကိုနှိပ်ပြီး ရောင်းနိုင်ပါတယ်။")
             dialogue_timer = 6.0
             mission_text = "ဈေးသည်နဲ့ စကားပြောပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(-59,0,-43)) < 9.0:
+            survival.record_event("talk", "hermit", 1)
+            ui.show_dialogue("ရသေ့: တောထဲက ဆေးဖက်ဝင်အပင်များကို စုဆောင်းပြီး ဒုက္ခရောက်သူများကို ကူညီပါ။")
+            dialogue_timer = 6.0
+            mission_text = "ရသေ့နှင့် တွေ့ဆုံပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(-46,0,34)) < 10.0:
+            survival.record_event("talk", "lumberjack", 1)
+            survival.record_event("talk", "woodcutter", 1)
+            ui.show_dialogue("သစ်ခုတ်သူ: သစ်တောကို ထိန်းသိမ်းပြီး လိုအပ်သလောက်သာ သစ်ခုတ်ပါ။")
+            dialogue_timer = 6.0
+            mission_text = "သစ်ခုတ်သူများနှင့် တွေ့ဆုံပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(-61,0,18)) < 10.0:
+            survival.record_event("talk", "bamboo_cutter", 1)
+            ui.show_dialogue("ဝါးခုတ်သူ: ဝါးကို စုဆောင်းပြီး Workshop မှာ အသုံးပြုနိုင်ပါတယ်။")
+            dialogue_timer = 6.0
+            mission_text = "ဝါးခုတ်သူနှင့် တွေ့ဆုံပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(-53,0,-12)) < 10.0:
+            survival.record_event("talk", "hunter", 1)
+            survival.record_event("talk", "forest_guard", 1)
+            ui.show_dialogue("မုဆိုး: တောရိုင်းတိရစ္ဆာန်တွေကို လေ့လာပါ။ မလိုအပ်ဘဲ မသတ်ဖြတ်ပါနဲ့။")
+            dialogue_timer = 6.0
+            mission_text = "မုဆိုးနှင့် တောစောင့်ကို တွေ့ဆုံပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(49,0,-45)) < 12.0:
+            survival.record_event("talk", "pastor", 1)
+            ui.show_dialogue("ဓမ္မဆရာ: ရွာသူရွာသားများကို ကူညီပြီး အချင်းချင်း လေးစားကြပါစို့။")
+            dialogue_timer = 6.0
+            mission_text = "ခရစ်ယာန်ဓမ္မဆရာနှင့် တွေ့ဆုံပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(-34,0,-30)) < 12.0:
+            survival.record_event("talk", "monk", 1)
+            survival.record_event("talk", "nun", 1)
+            ui.show_dialogue("ဘုန်းကြီးကျောင်း: မေတ္တာ၊ ကရုဏာနှင့် အချင်းချင်းကူညီခြင်းကို လက်တွေ့ကျင့်သုံးပါ။")
+            dialogue_timer = 6.0
+            mission_text = "ဘုန်းကြီးနှင့် သီလရှင်တို့ကို တွေ့ဆုံပြီးပါပြီ။"
         elif player_pos.distance_to(Vector3(-5,0,-13)) < 7.0:
             ui.show_dialogue("ရွာလူကြီး: လယ်ကွင်းဘက်ကို သွားပါ။ Plant → Water → အချိန်စောင့် → Harvest လုပ်ပါ။")
             dialogue_timer = 6.0
@@ -297,6 +335,7 @@ func _on_action(action):
             inventory["Fiber"] = int(inventory.get("Fiber",0)) + 1
             inventory["Bamboo"] = int(inventory.get("Bamboo",0)) + 1
             survival.record_event("collect", "Wood", 2)
+            survival.record_event("collect", "Bamboo", 1)
             mission_text = "တောထဲမှ Wood +2, Stone +1, Fiber +1, Bamboo +1 ရရှိပါပြီ။"
         else:
             mission_text = "သစ်တော Workshop ဘက်သို့ သွားပြီး Gather နှိပ်ပါ။"
@@ -337,6 +376,16 @@ func _on_action(action):
     elif action == "language":
         survival.set_language(Survival.LANG_EN if survival.language == Survival.LANG_MM else Survival.LANG_MM)
         mission_text = "Language: " + survival.language
+    elif action == "forest_mission":
+        if survival.active_mission.empty():
+            var forest_id = 0
+            for entry in survival.missions:
+                if int(entry.id) >= 121 and not entry.completed:
+                    forest_id = int(entry.id)
+                    break
+            mission_text = survival.accept_mission(forest_id) if forest_id > 0 else "တောတွင်း Mission ၃၀ ပြီးဆုံးပါပြီ။"
+        else:
+            mission_text = survival._mission_text(survival.active_mission)
     elif action == "mission":
         if survival.active_mission.empty():
             var next_id = 0
