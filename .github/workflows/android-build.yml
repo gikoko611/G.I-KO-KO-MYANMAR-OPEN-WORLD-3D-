@@ -153,6 +153,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-ARMv7-APK
+          name: GI-KO-KO-MYANMAR-OPEN-WORLD-3D-Universal-Android-APK
           path: build/*.apk
           if-no-files-found: error
