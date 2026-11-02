@@ -87,7 +87,7 @@ func _ready():
     var MusicScript = preload("res://scripts/ambient_music.gd")
     music_controller = MusicScript.new()
     add_child(music_controller)
-    ui.show_dialogue("ဇာတ်လမ်းအစ: ဘယ်ကလာမှန်းမသိသော ခရီးသွားတစ်ယောက်အဖြစ် ဘုန်းကြီးကျောင်းမှာ နေထိုင်ပြီး ဘဝသစ်ကို စတင်ပါ။ Boy / Girl ကို ရွေးချယ်ပါ။")
+    ui.show_dialogue("ဇာတ်လမ်းအစ: ဘယ်ကလာမှန်းမသိသော ခရီးသွားတစ်ယောက်အဖြစ် ဘုန်းကြီးကျောင်းမှာ နေထိုင်ပြီး ဘဝသစ်ကို စတင်ပါ။ မောင်လှက သင့်ရဲ့ မိတ်ဆွေ၊ အဖော်ဖြစ်ပြီး အလုပ်၊ အမဲလိုက်ခရီးတွေမှာ ကူညီပါမယ်။ Boy / Girl ကို ရွေးချယ်ပါ။ Buddy ခလုတ်ဖြင့် အဖော်အနေအထားကို ပြောင်းနိုင်ပါတယ်။")
     dialogue_timer = 12.0
 
 func _process(delta):
