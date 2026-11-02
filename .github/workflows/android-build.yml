@@ -1,7 +1,7 @@
 name: Android ARMv7 Build
 
 concurrency:
-  group: gi-koko-myanmar-open-world-armv7
+  group: gi-koko-myanmar-open-world-armv7-interiors
   cancel-in-progress: true
 
 on:
