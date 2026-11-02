@@ -74,6 +74,24 @@ const FOREST_MISSION_TYPES = [
         {"key":"forest_hermit_medicine","mm":"ရသေ့အတွက် ဆေးပင် ၃ ပင် စုပါ","en":"Gather 3 medicinal herbs for the hermit","kind":"collect","target":"Herb","base":35}
 ]
 
+const FUN_MISSION_TYPES = [
+    {"key":"fun_fruit_gather","mm":"သစ်သီး ၅ လုံး ခူးပါ","en":"Collect 5 fruits","kind":"collect","target":"Fruit","base":35,"required":5},
+    {"key":"fun_gem_hunter","mm":"လျှို့ဝှက်ကျောက်မျက် ၃ လုံး ရှာပါ","en":"Find 3 hidden gems","kind":"collect","target":"Gem","base":90,"required":3},
+    {"key":"fun_coin_collector","mm":"ရွှေဒင်္ဂါး ၁၀ ခု စုပါ","en":"Collect 10 gold coins","kind":"collect","target":"Coin","base":60,"required":10},
+    {"key":"fun_lake_swimmer","mm":"ရေကန်ကို စူးစမ်းပါ","en":"Explore the swimming lake","kind":"explore","target":"lake","base":45,"required":1},
+    {"key":"fun_tree_climber","mm":"သစ်ပင်တစ်ပင် တက်ပါ","en":"Climb a tree","kind":"explore","target":"tree","base":40,"required":1},
+    {"key":"fun_village_tour","mm":"ရွာ ၃ ရွာ သွားလည်ပါ","en":"Visit 3 different villages","kind":"explore","target":"village","base":80,"required":3},
+    {"key":"fun_bridge_explorer","mm":"တံတားကြီးကို ရှာပါ","en":"Discover the long bridge","kind":"explore","target":"bridge","base":30,"required":1},
+    {"key":"fun_cave_explorer","mm":"လျှို့ဝှက်ဂူထဲ ဝင်ပါ","en":"Explore the hidden cave","kind":"explore","target":"cave","base":75,"required":1},
+    {"key":"fun_waterfall_trip","mm":"ရေတံခွန်ကို သွားလည်ပါ","en":"Visit the waterfall","kind":"explore","target":"waterfall","base":55,"required":1},
+    {"key":"fun_mountain_view","mm":"တောင်ပေါ်ဒေသကို ရောက်အောင်သွားပါ","en":"Reach the mountain region","kind":"explore","target":"mountain","base":50,"required":1},
+    {"key":"fun_fish_festival","mm":"ငါး ၅ ကောင် ဖမ်းပါ","en":"Catch 5 fish","kind":"collect","target":"Fish","base":55,"required":5},
+    {"key":"fun_forest_feast","mm":"အသား ၃ ခု ရယူပါ","en":"Collect 3 meat","kind":"collect","target":"Meat","base":45,"required":3},
+    {"key":"fun_bamboo_challenge","mm":"ဝါး ၈ ချောင်း စုပါ","en":"Collect 8 bamboo","kind":"collect","target":"Bamboo","base":50,"required":8},
+    {"key":"fun_treasure_cave","mm":"ဂူထဲက ကျောက်မျက်တစ်လုံး ရယူပါ","en":"Find a gem in the cave","kind":"collect","target":"Gem","base":100,"required":1},
+    {"key":"fun_fruit_party","mm":"သစ်သီး ၁၀ လုံး စုပါ","en":"Collect 10 fruits","kind":"collect","target":"Fruit","base":70,"required":10}
+]
+
 const RECIPES = {
     "StoneAxe":{"Wood":2,"Stone":3},
     "StonePickaxe":{"Wood":2,"Stone":4},
@@ -134,6 +152,13 @@ func _generate_missions():
             "completed": false
         }
         missions.append(forest_mission)
+        id += 1
+    for template in FUN_MISSION_TYPES:
+        missions.append({
+            "id":id, "key":str(template.key), "title_mm":str(template.mm), "title_en":str(template.en),
+            "kind":template.kind, "target":template.target, "required":int(template.required),
+            "progress":0, "reward":int(template.base), "tier":12, "completed":false
+        })
         id += 1
 
 func get_mission_count():
