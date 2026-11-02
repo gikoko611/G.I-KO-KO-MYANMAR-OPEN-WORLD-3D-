@@ -141,6 +141,7 @@ func _pickup(kind, value, pos, color, radius):
     node.translation = pos
     node.scale = Vector3(1.0,1.25,1.0)
     node.material_override = _material(color)
+    node.set_meta("pickup_id", str(kind) + "_" + str(pickup_nodes.size()))
     node.set_meta("pickup_type", kind)
     node.set_meta("pickup_value", value)
     node.add_to_group("world_pickups")
