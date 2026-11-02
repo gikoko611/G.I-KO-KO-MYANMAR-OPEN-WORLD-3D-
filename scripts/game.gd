@@ -246,6 +246,9 @@ func _on_action(action):
             dialogue_timer = 6.0
             mission_text = "သစ်ခုတ်သူများနှင့် တွေ့ဆုံပြီးပါပြီ။"
         elif player_pos.distance_to(Vector3(-61,0,18)) < 10.0:
+            if int(inventory.get("Bamboo",0)) >= 3:
+                inventory["Bamboo"] = int(inventory.get("Bamboo",0)) - 3
+                survival.record_event("deliver", "Bamboo", 3)
             survival.record_event("talk", "bamboo_cutter", 1)
             ui.show_dialogue("ဝါးခုတ်သူ: ဝါးကို စုဆောင်းပြီး Workshop မှာ အသုံးပြုနိုင်ပါတယ်။")
             dialogue_timer = 6.0
@@ -352,6 +355,8 @@ func _on_action(action):
             inventory["IronOre"] = int(inventory.get("IronOre",0)) + 1
             survival.record_event("collect", "Wood", 2)
             survival.record_event("collect", "Bamboo", 1)
+            survival.record_event("collect", "Stone", 1)
+            survival.record_event("collect", "Fiber", 1)
             survival.record_event("collect", "Herb", 1)
             survival.record_event("collect", "IronOre", 1)
             survival.record_event("explore", "forest", 1)
@@ -383,7 +388,18 @@ func _on_action(action):
         if p.distance_to(Vector3(-45,0,-15)) < 18.0:
             survival.inventory = inventory
             survival.coins = coins
-            mission_text = survival.craft("FishingRod")
+            var recipes_to_try = ["Spear", "StoneAxe", "StonePickaxe", "FishingRod", "Campfire", "HerbalMedicine", "Arrow"]
+            mission_text = "လိုအပ်သောပစ္စည်း မလုံလောက်သေးပါ။"
+            for recipe_name in recipes_to_try:
+                var recipe = Survival.RECIPES[recipe_name]
+                var can_make = true
+                for material in recipe.keys():
+                    if int(inventory.get(material, 0)) < int(recipe[material]):
+                        can_make = false
+                        break
+                if can_make:
+                    mission_text = survival.craft(recipe_name)
+                    break
             inventory = survival.inventory
             coins = survival.coins
         else:
