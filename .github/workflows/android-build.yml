@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - feature/survival-open-world-expansion
+      - fix/redmi-9a-startup-diagnostics
 
 jobs:
   export:
@@ -107,6 +108,17 @@ jobs:
           timeout 600s godot --path . --editor --quit > /tmp/godot-validation.log 2>&1 || { cat /tmp/godot-validation.log; exit 1; }
           if grep -E "(Parse Error|SCRIPT ERROR|ERROR:.*(parse|load))" /tmp/godot-validation.log; then
             cat /tmp/godot-validation.log
+            exit 1
+          fi
+
+      - name: Run startup smoke test (splash to main scene)
+        shell: bash
+        run: |
+          set -euxo pipefail
+          timeout 90s godot --path . --fixed-fps 60 --quit-after 600 > /tmp/godot-startup-smoke.log 2>&1 || { cat /tmp/godot-startup-smoke.log; exit 1; }
+          cat /tmp/godot-startup-smoke.log
+          if grep -E "(SCRIPT ERROR|Parse Error|Failed loading resource|Cannot open file)" /tmp/godot-startup-smoke.log; then
+            echo "Godot startup smoke test reported a script or resource error"
             exit 1
           fi
 
