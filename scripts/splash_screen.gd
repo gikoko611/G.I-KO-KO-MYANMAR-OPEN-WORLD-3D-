@@ -19,7 +19,9 @@ func _ready():
     var environment = Environment.new()
     environment.background_mode = Environment.BG_COLOR
     environment.background_color = Color(0.025,0.045,0.055)
-    environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+    # Godot 3.5 accepts the AmbientSource enum value; use its documented value
+    # to avoid a missing native-class constant in this export runtime.
+    environment.ambient_light_source = 2
     environment.ambient_light_color = Color(0.30,0.42,0.38)
     environment.ambient_light_energy = 0.8
     environment_node.environment = environment
