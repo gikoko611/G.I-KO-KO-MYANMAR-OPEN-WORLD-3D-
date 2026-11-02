@@ -9,6 +9,7 @@ const Farming = preload("res://scripts/farming.gd")
 const Survival = preload("res://scripts/survival_system.gd")
 const Culture = preload("res://scripts/culture_expansion.gd")
 const OpenWorldExpansion = preload("res://scripts/open_world_expansion.gd")
+const EconomyRPG = preload("res://scripts/economy_rpg.gd")
 
 var player
 var ui
@@ -18,6 +19,7 @@ var farming
 var survival
 var culture
 var expansion
+var economy
 var pickup_refresh = 0.0
 var water_refresh = 0.0
 var visited_villages = {}
@@ -64,17 +66,22 @@ func _ready():
     survival = Survival.new()
     survival.inventory = inventory
     survival.coins = coins
+    economy = EconomyRPG.new()
+    economy.inventory = inventory
+    economy.coins = coins
     _create_crop_visuals()
     ui = UI.new()
     add_child(ui)
     ui.connect("action_pressed", self, "_on_action")
     ui.connect("gender_selected", self, "_on_gender")
-    ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
+    ui.set_status(mission_text + " | " + farming.get_status() + " | Lv." + str(economy.level) + " XP " + str(economy.experience) + "/" + str(economy.experience_next) + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
     _apply_graphics_quality()
     var MusicScript = preload("res://scripts/ambient_music.gd")
     music_controller = MusicScript.new()
     add_child(music_controller)
+    ui.show_dialogue("ဇာတ်လမ်းအစ: ဘယ်ကလာမှန်းမသိသော ခရီးသွားတစ်ယောက်အဖြစ် ဘုန်းကြီးကျောင်းမှာ နေထိုင်ပြီး ဘဝသစ်ကို စတင်ပါ။ Boy / Girl ကို ရွေးချယ်ပါ။")
+    dialogue_timer = 12.0
 
 func _process(delta):
     pickup_refresh += delta
@@ -266,12 +273,55 @@ func _apply_environment():
             active_sky.sky_top_color = Color(0.12,0.32,0.58).linear_interpolate(Color(0.12,0.12,0.24), sunset_mix)
             active_sky.sky_horizon_color = Color(0.72,0.82,0.91).linear_interpolate(Color(0.92,0.42,0.22), sunset_mix)
 
+func _near_village_shop():
+    if not expansion or not player:
+        return false
+    var p = player.global_transform.origin
+    for village in expansion.village_centers:
+        var center = village.position
+        if Vector2(p.x,p.z).distance_to(Vector2(center.x,center.z)) <= 70.0:
+            return true
+    return false
+
+func _sync_economy():
+    economy.inventory = inventory
+    economy.coins = coins
+    inventory = economy.inventory
+    coins = economy.coins
+    survival.inventory = inventory
+    survival.coins = coins
+
 func _on_gender(value):
     if player:
         player.set_gender(value)
 
 func _on_action(action):
-    if action == "ride":
+    if action == "shop_sell":
+        if _near_village_shop():
+            _sync_economy()
+            mission_text = economy.sell_bag()
+            _sync_economy()
+        else:
+            mission_text = "ရွာတိုင်းရှိ Market ဆိုင်အနီးသို့ သွားပါ။"
+    elif action.begins_with("buy_"):
+        if _near_village_shop():
+            _sync_economy()
+            var item_to_buy = {"buy_sword":"Sword","buy_armor":"Armor","buy_shield":"Shield","buy_arrows":"Arrow","buy_rod":"FishingRod","buy_axe":"StoneAxe","buy_medicine":"HerbalMedicine"}.get(action,"")
+            mission_text = economy.buy_item(item_to_buy, 5 if action == "buy_arrows" else 1)
+            _sync_economy()
+        else:
+            mission_text = "ပစ္စည်းဝယ်ရန် ရွာတစ်ရွာရှိ Market ဆိုင်အနီးသို့ သွားပါ။"
+    elif action == "skills":
+        mission_text = economy.get_skill_status()
+    elif action == "upgrade_skill":
+        var skill_order = ["Farming","Hunting","Woodcutting","Fishing","Mining","Crafting","Combat"]
+        var skill_index = int(economy.level + economy.skill_points) % skill_order.size()
+        mission_text = economy.upgrade_skill(skill_order[skill_index])
+    elif action == "story":
+        _sync_economy()
+        mission_text = economy.advance_story()
+        _sync_economy()
+    elif action == "ride":
         mission_text = transport.toggle_ride(player)
     elif action == "dive":
         if player.swimming:
@@ -297,6 +347,7 @@ func _on_action(action):
             var picked = min(2, int(fruit_tree.get_meta("fruit_count",0)))
             fruit_tree.set_meta("fruit_count", int(fruit_tree.get_meta("fruit_count",0)) - picked)
             inventory["Fruit"] = int(inventory.get("Fruit",0)) + picked
+            economy.grant_xp("Farming", picked * 8)
             survival.record_event("collect", "Fruit", picked)
             mission_text = "သစ်သီး " + str(picked) + " လုံး ခူးပြီးပါပြီ။"
         elif fruit_tree:
@@ -476,6 +527,8 @@ func _on_action(action):
             inventory["Bamboo"] = int(inventory.get("Bamboo",0)) + 1
             inventory["Herb"] = int(inventory.get("Herb",0)) + 1
             inventory["IronOre"] = int(inventory.get("IronOre",0)) + 1
+            economy.grant_xp("Woodcutting", 18)
+            economy.grant_xp("Mining", 8)
             survival.record_event("collect", "Wood", 2)
             survival.record_event("collect", "Bamboo", 1)
             survival.record_event("collect", "Stone", 1)
@@ -494,6 +547,7 @@ func _on_action(action):
             mission_text = survival.fish_at_river(int(inventory.get("FishingRod",0)) > 0)
             inventory = survival.inventory
             coins = survival.coins
+            economy.grant_xp("Fishing", 20)
         else:
             mission_text = "ငါးမျှားရန် မြစ်ကမ်းနားသို့ သွားပါ။"
     elif action == "hunt":
@@ -504,6 +558,8 @@ func _on_action(action):
             mission_text = survival.hunt_animal("Deer", false)
             inventory = survival.inventory
             coins = survival.coins
+            economy.grant_xp("Hunting", 22)
+            economy.grant_xp("Combat", 10)
         else:
             mission_text = "အမဲလိုက်ရန် တောအုပ်ဘက်သို့ သွားပါ။ လက်နက်လိုအပ်ပါတယ်။"
     elif action == "craft":
@@ -585,7 +641,7 @@ func _on_action(action):
         if player.is_mounted() and is_instance_valid(player.mounted_vehicle):
             var vehicle_basis = player.mounted_vehicle.global_transform.basis
             save_position = player.mounted_vehicle.global_transform.origin + vehicle_basis.xform(Vector3(2.0,0.0,0.0)) + Vector3(0,0.2,0)
-        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state(), "visited_villages": visited_villages, "collected_pickups": collected_pickups})
+        var saved = SaveManager.save_game({"graphics_level": graphics_level, "music_enabled": music_enabled, "sound_enabled": sound_enabled,"coins": coins, "inventory": inventory, "mission": mission_text, "gender": player.gender, "day_time": day_time, "weather": weather, "player_x": save_position.x, "player_y": save_position.y, "player_z": save_position.z, "crop_phase": farming.phase, "crop_growth": farming.growth_seconds, "quest_stage": quest_stage, "quest_sell_remaining": quest_sell_remaining, "first_person": player.first_person, "player_yaw": player.rotation.y, "player_pitch": player.camera_pivot.rotation_degrees.x, "vehicle_state": transport.get_save_data(), "survival_state": survival.save_state(), "economy_state": economy.save_state(), "visited_villages: visited_villages, "collected_pickups": collected_pickups})
         mission_text = "Game သိမ်းပြီးပါပြီ။" if saved else "Save မအောင်မြင်ပါ။ Storage permission နှင့် နေရာလွတ်ကို စစ်ပါ။"
     elif action == "load":
         var data = SaveManager.load_game()
@@ -618,6 +674,9 @@ func _on_action(action):
             visited_villages = data.get("visited_villages", {})
             collected_pickups = data.get("collected_pickups", {})
             survival.load_state(data.get("survival_state", {}))
+            economy.load_state(data.get("economy_state", {}))
+            economy.inventory = inventory
+            economy.coins = coins
             survival.inventory = inventory
             survival.coins = coins
             var loaded_crop_phase = str(data.get("crop_phase", "empty"))
