@@ -25,12 +25,12 @@ The Facebook link currently points to a shared Facebook post. Replace it with th
 | Engine | Godot 3.5.2 |
 | Renderer | GLES2 |
 | Platform | Android 10+ |
-| CPU ABI | ARMv7 / `armeabi-v7a` |
+| CPU ABI | Universal APK: ARMv7, ARM64, x86 and x86_64 (if supported by export templates) |
 | Device focus | Redmi 9A-class entry-level Android devices |
 | Build | GitHub Actions Android debug APK |
 | Orientation | Landscape |
 
-The project favors procedural low-poly geometry and MultiMesh batching to reduce asset size and draw-call overhead. Actual FPS, memory use, thermal behavior and battery use must be measured on target devices.
+The Android build is configured as a multi-ABI package for ARMv7, ARM64, x86 and x86_64 devices, subject to native library support in the matching Godot export templates. Android selects a compatible native ABI at install/runtime. The project favors procedural low-poly geometry and MultiMesh batching to reduce asset size and draw-call overhead. Actual FPS, memory use, thermal behavior, GPU compatibility and battery use must be measured on target devices.
 
 ## World and exploration
 
@@ -78,6 +78,12 @@ Some life-simulation systems are prototypes rather than full real-world simulati
 
 The current HUD has many action buttons. Layout, touch target size and usability need validation on different phone aspect ratios before release.
 
+## Device compatibility
+
+The goal is broad Android compatibility, not a guarantee for every phone model. The universal package includes multiple CPU ABIs so older 32-bit ARM devices and modern 64-bit ARM devices can be supported. Very old Android releases, unsupported GPUs, vendor-specific graphics drivers, low available RAM and unusual screen aspect ratios may still prevent installation or smooth gameplay. The actual minimum Android SDK is confirmed from APK metadata during CI validation.
+
+The game uses GLES2 and includes Low/Balanced/High graphics choices. Start with Low on entry-level devices and raise quality on stronger phones.
+
 ## Build from source
 
 1. Install **Godot 3.5.2** and its matching export templates.
@@ -90,7 +96,7 @@ The current HUD has many action buttons. Layout, touch target size and usability
 
 Workflow: `.github/workflows/android-build.yml`
 
-The workflow performs GDScript/import validation, exports an Android ARMv7 debug APK, checks APK metadata and signature, verifies `armeabi-v7a` native libraries and rejects ARM64-only output, then uploads build artifacts when successful.
+The workflow performs GDScript/import validation, exports a universal Android debug APK, checks APK metadata and signature, verifies native libraries for every configured ABI, then uploads build artifacts when successful.
 
 Run status and artifacts:  
 https://github.com/gikoko611/G.I-KO-KO-MYANMAR-OPEN-WORLD-3D-/actions
