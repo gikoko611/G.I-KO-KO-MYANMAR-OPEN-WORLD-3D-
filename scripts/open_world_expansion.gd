@@ -8,6 +8,7 @@ func build_world():
     _build_ground()
     _build_roads()
     _build_villages()
+    _build_village_market(Vector3.ZERO, -1)
     _build_lake_and_waterfall()
     _build_cave()
     _build_hidden_treasures()
@@ -168,6 +169,9 @@ func _build_hidden_treasures():
     ]
     for i in range(gem_spots.size()):
         _pickup("Gem", 50 + (i % 4) * 25, gem_spots[i], Color(0.10,0.95,0.85), 0.48)
+    var treasure_spots = [Vector3(-520,0.8,-360),Vector3(-220,0.8,-180),Vector3(260,0.8,-360),Vector3(520,0.8,120),Vector3(-520,0.8,360),Vector3(320,0.8,420),Vector3(440,0.8,245),Vector3(180,0.8,240)]
+    for i in range(treasure_spots.size()):
+        _pickup("Treasure", 120 + i * 20, treasure_spots[i], Color(1.0,0.62,0.08), 0.72)
     for i in range(60):
         var x = rand_range(-640,640)
         var z = rand_range(-450,450)
