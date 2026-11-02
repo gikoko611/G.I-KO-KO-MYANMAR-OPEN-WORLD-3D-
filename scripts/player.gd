@@ -17,6 +17,11 @@ var mounted_speed = 4.0
 var sprint_enabled = false
 var first_person = false
 var animation_clock = 0.0
+var swimming = false
+var diving = false
+var climbing = false
+var climb_anchor = Vector3.ZERO
+var climb_height = 7.0
 
 func _ready():
     _build_character()
@@ -65,10 +70,29 @@ func _physics_process(delta):
         camera_pivot.rotation_degrees.x = pitch
         look_delta = Vector2.ZERO
         return
-    var current_speed = speed * (1.65 if sprint_enabled else 1.0)
-    velocity.x = direction.x * current_speed
-    velocity.z = direction.z * current_speed
-    velocity.y -= gravity * delta
+    if climbing:
+        global_transform.origin.x = climb_anchor.x
+        global_transform.origin.z = climb_anchor.z
+        velocity = Vector3(0, -input.y * 3.0, 0)
+        velocity = move_and_slide(velocity, Vector3.UP)
+        global_transform.origin.y = clamp(global_transform.origin.y, 0.1, climb_height)
+        yaw -= look_delta.x * 0.004
+        rotation.y = yaw
+        camera_pivot.rotation_degrees.x = pitch
+        look_delta = Vector2.ZERO
+        return
+    if swimming:
+        var swim_speed = 3.4 if not sprint_enabled else 4.2
+        velocity.x = direction.x * swim_speed
+        velocity.z = direction.z * swim_speed
+        var target_water_y = 0.8 if not diving else 0.12
+        velocity.y = (target_water_y - global_transform.origin.y) * 3.0
+        velocity = move_and_slide(velocity, Vector3.UP)
+    else:
+        var current_speed = speed * (1.65 if sprint_enabled else 1.0)
+        velocity.x = direction.x * current_speed
+        velocity.z = direction.z * current_speed
+        velocity.y -= gravity * delta
     if is_on_floor() and Input.is_action_just_pressed("ui_accept"):
         velocity.y = 8.0
     velocity = move_and_slide(velocity, Vector3.UP)
@@ -82,8 +106,42 @@ func set_move(value):
     move_input = value
 
 func jump_now():
-    if not is_mounted() and is_on_floor():
+    if climbing:
+        climbing = false
+    if not is_mounted() and not swimming and is_on_floor():
         velocity.y = 8.0
+
+func set_swimming(value):
+    if swimming == value:
+        return
+    swimming = value
+    diving = false
+    climbing = false
+    if swimming:
+        velocity = Vector3.ZERO
+    else:
+        global_transform.origin.y = max(0.1, global_transform.origin.y)
+        velocity = Vector3.ZERO
+
+func toggle_dive():
+    if swimming:
+        diving = not diving
+    return diving
+
+func begin_climb(anchor, height):
+    if is_mounted() or swimming:
+        return false
+    climbing = true
+    climb_anchor = Vector3(anchor.x, 0, anchor.z)
+    climb_height = max(3.0, height)
+    global_transform.origin.x = climb_anchor.x
+    global_transform.origin.z = climb_anchor.z
+    velocity = Vector3.ZERO
+    return true
+
+func end_climb():
+    climbing = false
+    velocity = Vector3.ZERO
 
 func toggle_sprint():
     sprint_enabled = not sprint_enabled
