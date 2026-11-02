@@ -1,50 +1,118 @@
-# G.I KO KO – MYANMAR OPEN WORLD 3D
+# G.I KO KO — MYANMAR OPEN WORLD 3D
 
-A Myanmar-inspired, mobile-first 3D open-world life, farming and exploration game.
+<p align="center">
+  <strong>Explore • Build • Farm • Survive • Live Your Story</strong><br>
+  <em>Powered by I KO KO</em>
+</p>
 
-## Target
-- Godot 3.5.2, GLES2
-- Android 10+, ARMv7 (armeabi-v7a)
-- Designed for low-memory Android devices; compressed/procedural assets and chunk-ready world layout
-- APK size target: under 300 MB (must be measured from the actual build)
+A Myanmar-inspired 3D open-world life simulation and survival RPG for Android. Explore rural villages, work for a living, grow crops, trade resources, discover hidden places, build relationships and choose your own path.
 
-## Current playable foundation
-- Procedural Myanmar countryside: village, rice fields, river, hills, bridge, monastery/stupa landmark
-- First-person / third-person camera toggle, sprint, jump and touch-friendly controls with keyboard fallback
-- Boy: Myanmar shirt + longyi; Girl: Myanmar blouse + htamein
-- Rideable Myanmar water buffalo, traditional two-ox bullock cart, horse, elephant, river boat and rideable Myanmar motorbike
-- Rice farming loop: buy seeds and water, go to the rice field, plant crops, water, wait for growth, harvest and sell rice
-- Story Chapters 1–2: meet the village elder, farm and trade rice, visit the pagoda, then deliver water to the monastery
-- NPC trading: rice sales, seed purchases, paid water purchases and free well refills; proximity checks at village NPCs
-- World map panel with player coordinates, nearest landmark marker and mission objective
-- Game settings: Low / Balanced / High graphics presets with configurable shadow distance and camera draw distance, mobile MSAA disabled, and music/audio mute toggles
-- Original synthesized ambient background music generated locally in-game; no external music download required. Separate sound effects are not implemented yet
-- More complete local saves: inventory, currency, quest state, crop growth, weather, time, player position and camera orientation, graphics/audio preferences, and vehicle positions; backup recovery on interrupted saves
-- Expanded countryside props: monastery, stilt house, lotus pond, bamboo grove, village well and rural animals with modeled heads, muzzles, ears, legs and tails
-- Day/night cycle, weather toggle, animal wandering with lightweight leg gait and idle animation, NPC idle animation, and procedural vehicle body motion
-- Animated cart and motorbike wheels that rotate in response to vehicle movement, with parked wheels remaining still
-- Corrected wheel spin axes so the cart and motorbike wheels rotate around their axles rather than the wheel faces
-- Vehicle steering now turns the mounted vehicle toward the movement direction, and dismounting aligns the player heading with the vehicle
-- Extended the river crossing with a solid approach road joined to the village path and a full-width bridge deck with collision
-- Added invisible river-edge collision barriers while preserving the bridge opening, preventing the player from walking directly into the river
-- Matched the bridge deck collision height to the approach road so the player can cross without a raised collision step
-- Kept wandering animals within a small home area and on their original river bank; moved the goat spawn onto safe ground
-- Save restoration now clamps player and vehicle positions to the playable world bounds and normalizes vehicle rotation
-- Reduced mobile UI work by refreshing the live map only while it is open, at half-second intervals
-- Vehicle dismount now uses the vehicle's rotated side direction; saving while mounted records a safe on-foot return position, and loading resets wheel-motion state
-- Save loading now bounds-checks currency, inventory counts, quest progress, graphics quality, time, weather and crop state to avoid invalid saved values breaking gameplay
-- Harvest quest progression now advances only when a successful harvest actually adds rice to inventory
-- Refined bullock-cart wheel proportions and aligned wheel spin with the local axle axis
-- Reduced per-frame environment processing by updating the dynamic sky, fog and sun lighting four times per second
-- Adjusted player leg geometry to better align the visible feet with the capsule collision and ground plane
-- Refined touch gesture zones so lower-left movement and right-side camera swipes do not overlap the HUD action buttons
-- Android workflow now runs a Godot editor/import validation pass before export, then checks APK metadata, signature, ARMv7 native libraries, and absence of ARM64 libraries
-- Character gender and outfit colors selectable through in-game HUD buttons
+> **Project status:** Active development. Features listed below describe the current source implementation; visual polish, device performance and gameplay behavior still require testing on physical Android hardware.
 
-## Build
-Open with Godot 3.5.2. For Android, install matching export templates and Android SDK/JDK, configure the Android export preset, then export the Android preset.
+## Project links
 
-GitHub Actions workflow: Android ARMv7 Build (manual workflow dispatch). It exports a debug APK, checks the 300 MB size target, verifies that ARMv7 native libraries are present and ARM64 libraries are absent, and verifies the APK signature before uploading the APK and source ZIP. The current source changes still require a fresh build and runtime validation.
+- **GitHub repository:** https://github.com/gikoko611/G.I-KO-KO-MYANMAR-OPEN-WORLD-3D-
+- **Developer GitHub profile:** https://github.com/gikoko611
+- **Facebook:** [G.I KO KO — Facebook update](https://www.facebook.com/1194405357098288_122123590029411562)
+- **Public contact email:** `ADD_PUBLIC_GMAIL_ADDRESS_HERE`
 
-## Important
-This is an actively developed game foundation, not a claim of AAA production quality. Replace procedural placeholder meshes with optimized authored assets in later content passes. Always test FPS, memory, touch controls and APK size on the target phone.
+The Facebook link currently points to a shared Facebook post. Replace it with the official Facebook Page/Profile URL when the public page link is confirmed. Replace the email placeholder with an address intended for public contact.
+
+## Target platform
+
+| Component | Target |
+|---|---|
+| Engine | Godot 3.5.2 |
+| Renderer | GLES2 |
+| Platform | Android 10+ |
+| CPU ABI | ARMv7 / `armeabi-v7a` |
+| Device focus | Redmi 9A-class entry-level Android devices |
+| Build | GitHub Actions Android debug APK |
+| Orientation | Landscape |
+
+The project favors procedural low-poly geometry and MultiMesh batching to reduce asset size and draw-call overhead. Actual FPS, memory use, thermal behavior and battery use must be measured on target devices.
+
+## World and exploration
+
+- Large procedural countryside map with 12 named Myanmar-inspired villages.
+- Approximately 1,200 low-poly house visuals generated in batches.
+- Village roads, bridges, canals, rice fields, hills, forests, a lake, waterfall, cave and hidden treasure locations.
+- Collectible coins, gems, treasure and fruit trees.
+- Day/night lighting and weather variation.
+- First-person and third-person camera modes, walking, sprinting, jumping, swimming, diving and tree climbing prototypes.
+- Rideable vehicles include motorcycle, bullock cart, buffalo, horse, elephant and boat.
+
+### Enterable buildings
+
+The interior system adds door-based entry and exit for:
+- One sample house in each of the 12 villages.
+- A market interior in each of the 12 villages.
+- The monastery.
+- A Myanmar school classroom.
+- A pagoda prayer hall.
+- The hidden cave.
+
+Approach an entrance and press **Interact** to enter. Press **Interact** again while inside to return outside. The 1,200 house visuals are not all individually enterable; the current implementation provides representative enterable homes in each village. Interior rooms use lightweight procedural geometry.
+
+## Life simulation and survival
+
+- Choose a Boy or Girl character with Myanmar-inspired clothing.
+- Start as a stranger and build a new life around the monastery and villages.
+- Gather wood, bamboo, stone, fiber, herbs and ore; fish, hunt and collect fruit.
+- Plant, water and harvest rice.
+- Sell gathered resources and valuables; buy seeds, tools, fishing gear, medicine and equipment.
+- Basic XP, levels and skill progression across farming, hunting, woodcutting, fishing, mining, crafting and combat.
+- Companion character with Follow, Work and Rest modes; the companion can provide limited gathering and hunting bonuses.
+- Branching story choices for a family route or a hermit route.
+- Crafting, inventory, missions, save/load, day/night and weather systems.
+
+Some life-simulation systems are prototypes rather than full real-world simulations. For example, family progression is currently represented by story state and does not yet provide a complete spouse/children NPC system. Combat gear and skill effects also require further balancing and runtime verification.
+
+## Controls
+
+- Left-side touch joystick: movement.
+- Right-side touch area: camera look.
+- Action buttons: Interact, Jump, Sprint, Ride, View, Gather, Fish, Hunt, Craft, Plant, Water, Harvest, Market, Buddy, Dive, Climb, Fruit, Story and other actions.
+- **Interact at a marked entrance** to enter a building; interact again to exit.
+- Boy/Girl selection is available from the character controls.
+
+The current HUD has many action buttons. Layout, touch target size and usability need validation on different phone aspect ratios before release.
+
+## Build from source
+
+1. Install **Godot 3.5.2** and its matching export templates.
+2. Open the repository project in Godot.
+3. Configure the Android export template and Android SDK/JDK for Godot 3.
+4. Select the Android ARMv7 export preset.
+5. Export a debug APK, or use the repository's GitHub Actions workflow.
+
+### GitHub Actions
+
+Workflow: `.github/workflows/android-build.yml`
+
+The workflow performs GDScript/import validation, exports an Android ARMv7 debug APK, checks APK metadata and signature, verifies `armeabi-v7a` native libraries and rejects ARM64-only output, then uploads build artifacts when successful.
+
+Run status and artifacts:  
+https://github.com/gikoko611/G.I-KO-KO-MYANMAR-OPEN-WORLD-3D-/actions
+
+## Development roadmap
+
+- Improve interior room detail, doors, furniture interaction and NPC schedules.
+- Add a more complete school/learning loop, household needs, cooking and personal-care activities.
+- Expand marriage, family and companion storylines with interactable NPCs.
+- Add shopkeeper NPCs, item-by-item trading UI and live-animal trading where appropriate.
+- Improve equipment visuals, combat feedback, skill effects and mission pacing.
+- Optimize world visibility, level-of-detail and collision for low-memory ARMv7 phones.
+- Test touch UI, save/load, FPS, memory, APK size and thermal performance on Redmi 9A.
+
+## Credits and contact
+
+**Developer:** G.I KO KO  
+**Branding:** Powered by I KO KO  
+**Source:** https://github.com/gikoko611/G.I-KO-KO-MYANMAR-OPEN-WORLD-3D-  
+**Facebook update:** https://www.facebook.com/1194405357098288_122123590029411562  
+**Email:** `ADD_PUBLIC_GMAIL_ADDRESS_HERE`
+
+## License
+
+No license has been added yet. Unless a license file is added, all rights remain with the repository owner and reuse/redistribution permissions are not automatically granted.
