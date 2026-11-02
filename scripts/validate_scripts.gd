@@ -19,7 +19,13 @@ func _init():
             printerr("SCRIPT_LOAD_FAILED: " + path)
             failed = true
         else:
-            print("SCRIPT_LOAD_OK: " + path)
+            var instance = resource.new()
+            if instance == null:
+                printerr("SCRIPT_INSTANTIATE_FAILED: " + path)
+                failed = true
+            else:
+                print("SCRIPT_LOAD_AND_INSTANTIATE_OK: " + path)
+                instance.free()
     if failed:
         quit(1)
     else:
