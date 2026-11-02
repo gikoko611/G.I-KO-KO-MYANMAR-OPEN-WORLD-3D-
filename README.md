@@ -82,7 +82,7 @@ The current HUD has many action buttons. Layout, touch target size and usability
 
 The goal is broad Android compatibility, not a guarantee for every phone model. The universal package includes multiple CPU ABIs so older 32-bit ARM devices and modern 64-bit ARM devices can be supported. Very old Android releases, unsupported GPUs, vendor-specific graphics drivers, low available RAM and unusual screen aspect ratios may still prevent installation or smooth gameplay. The actual minimum Android SDK is confirmed from APK metadata during CI validation.
 
-The game uses GLES2 and includes Low/Balanced/High graphics choices. Start with Low on entry-level devices and raise quality on stronger phones.
+The game uses GLES2, includes Low/Balanced/High graphics choices, and scales touch HUD offsets and control sizes for different landscape screen dimensions. Start with Low on entry-level devices and raise quality on stronger phones.
 
 ## Build from source
 
