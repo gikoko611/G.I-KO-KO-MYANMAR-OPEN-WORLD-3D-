@@ -2,6 +2,9 @@ name: Android ARMv7 Build
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/survival-open-world-expansion
 
 jobs:
   export:
@@ -91,10 +94,12 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
-      - name: Validate Godot project and import resources
+      - name: Validate every GDScript and import resources
         shell: bash
         run: |
           set -euxo pipefail
+          godot --path . --script res://scripts/validate_scripts.gd > /tmp/gdscript-validation.log 2>&1 || { cat /tmp/gdscript-validation.log; exit 1; }
+          cat /tmp/gdscript-validation.log
           godot --path . --editor --quit > /tmp/godot-validation.log 2>&1 || { cat /tmp/godot-validation.log; exit 1; }
           if grep -E "(Parse Error|SCRIPT ERROR|ERROR:.*(parse|load))" /tmp/godot-validation.log; then
             cat /tmp/godot-validation.log
