@@ -8,6 +8,7 @@ const Transport = preload("res://scripts/transport.gd")
 const Farming = preload("res://scripts/farming.gd")
 const Survival = preload("res://scripts/survival_system.gd")
 const Culture = preload("res://scripts/culture_expansion.gd")
+const OpenWorldExpansion = preload("res://scripts/open_world_expansion.gd")
 
 var player
 var ui
@@ -16,6 +17,10 @@ var transport
 var farming
 var survival
 var culture
+var expansion
+var pickup_refresh = 0.0
+var water_refresh = 0.0
+var visited_villages = {}
 var day_time = 0.32
 var weather = "Sunny"
 var coins = 120
@@ -43,6 +48,10 @@ func _ready():
     culture = Culture.new()
     add_child(culture)
     culture.build_world()
+    expansion = OpenWorldExpansion.new()
+    expansion.name = "OpenWorldExpansion"
+    add_child(expansion)
+    expansion.build_world()
     player = PlayerScript.new()
     player.name = "Player"
     add_child(player)
@@ -67,6 +76,15 @@ func _ready():
     add_child(music_controller)
 
 func _process(delta):
+    pickup_refresh += delta
+    if pickup_refresh >= 0.25:
+        pickup_refresh = 0.0
+        _update_world_pickups()
+        _update_village_visits()
+    water_refresh += delta
+    if water_refresh >= 0.15:
+        water_refresh = 0.0
+        _update_water_state()
     if dialogue_timer > 0.0:
         dialogue_timer -= delta
         if dialogue_timer <= 0.0 and ui:
@@ -89,6 +107,75 @@ func _process(delta):
             map_refresh = 0.0
             ui.set_map_info(player.global_transform.origin, true, mission_text)
 
+
+func _update_water_state():
+    if not player or not is_instance_valid(player):
+        return
+    var pos = player.global_transform.origin
+    var in_lake = abs(pos.x - 180.0) < 46.0 and abs(pos.z - 240.0) < 33.0
+    if in_lake != player.swimming:
+        player.set_swimming(in_lake)
+        if in_lake:
+            survival.record_event("explore", "lake", 1)
+            mission_text = "ရေကန်ထဲ ရောက်ပါပြီ။ Joystick နဲ့ ရေကူးပြီး Dive ခလုတ်နဲ့ ရေအောက်ငုပ်နိုင်ပါတယ်။"
+        else:
+            mission_text = "ရေကန်ကမ်းပေါ် ပြန်ရောက်ပါပြီ။"
+    if abs(pos.x - 440.0) < 18.0 and abs(pos.z - 245.0) < 20.0:
+        survival.record_event("explore", "cave", 1)
+    if abs(pos.x - 230.0) < 12.0 and abs(pos.z - 240.0) < 14.0:
+        survival.record_event("explore", "waterfall", 1)
+    if abs(pos.x) > 390.0 and abs(pos.z) > 230.0:
+        survival.record_event("explore", "mountain", 1)
+    if abs(pos.x - 16.0) < 7.0 and abs(pos.z - 7.0) < 10.0:
+        survival.record_event("explore", "bridge", 1)
+
+func _update_world_pickups():
+    if not player:
+        return
+    var pos = player.global_transform.origin
+    for item in get_tree().get_nodes_in_group("world_pickups"):
+        if not is_instance_valid(item):
+            continue
+        if pos.distance_to(item.global_transform.origin) <= 2.4:
+            var kind = str(item.get_meta("pickup_type", "Coin"))
+            var value = int(item.get_meta("pickup_value", 5))
+            if kind == "Gem":
+                inventory["Gem"] = int(inventory.get("Gem",0)) + 1
+                coins += value
+                survival.record_event("collect", "Gem", 1)
+                mission_text = "လျှို့ဝှက်ကျောက်မျက် ရရှိပါပြီ။ Gem +1 | Coins +" + str(value)
+            else:
+                coins += value
+                survival.record_event("collect", "Coin", 1)
+                mission_text = "ရွှေဒင်္ဂါး ရရှိပါပြီ။ Coins +" + str(value)
+            survival.coins = coins
+            item.queue_free()
+
+func _update_village_visits():
+    if not expansion or not player:
+        return
+    var pos = player.global_transform.origin
+    for village in expansion.village_centers:
+        var village_pos = village.position
+        if Vector2(pos.x, pos.z).distance_to(Vector2(village_pos.x, village_pos.z)) < 62.0:
+            var village_name = str(village.name)
+            if not visited_villages.has(village_name):
+                visited_villages[village_name] = true
+                survival.record_event("explore", "village", 1)
+                mission_text = village_name + " သို့ ရောက်ရှိပါပြီ။ ရွာအသစ်တစ်ရွာ ရှာဖွေတွေ့ရှိပါပြီ။"
+
+func _nearest_group_node(group_name, max_distance):
+    var nearest = null
+    var best = max_distance
+    var pos = player.global_transform.origin
+    for node in get_tree().get_nodes_in_group(group_name):
+        if not is_instance_valid(node):
+            continue
+        var distance = pos.distance_to(node.global_transform.origin)
+        if distance < best:
+            best = distance
+            nearest = node
+    return nearest
 
 func _create_crop_visuals():
     for i in range(4):
@@ -180,6 +267,36 @@ func _on_gender(value):
 func _on_action(action):
     if action == "ride":
         mission_text = transport.toggle_ride(player)
+    elif action == "dive":
+        if player.swimming:
+            var diving_now = player.toggle_dive()
+            mission_text = "ရေအောက်ငုပ်နေပါပြီ။" if diving_now else "ရေပေါ်ပြန်တက်နေပါပြီ။"
+        else:
+            mission_text = "Dive လုပ်ရန် ရေကန်ထဲ ဝင်ပါ။"
+    elif action == "climb":
+        if player.climbing:
+            player.end_climb()
+            mission_text = "သစ်ပင်ပေါ်မှ ဆင်းလိုက်ပါပြီ။"
+        else:
+            var tree = _nearest_group_node("climb_trees", 5.5)
+            if tree:
+                player.begin_climb(tree.global_transform.origin, float(tree.get_meta("tree_height",7.0)))
+                survival.record_event("explore", "tree", 1)
+                mission_text = "သစ်ပင်တက်နေပါပြီ။ Joystick ကို အပေါ်/အောက် ဆွဲပြီး တက်ဆင်းပါ။ Jump ကိုနှိပ်၍ ဆင်းနိုင်ပါတယ်။"
+            else:
+                mission_text = "တက်နိုင်သော သစ်ပင်အနီးသို့ သွားပါ။"
+    elif action == "fruit":
+        var fruit_tree = _nearest_group_node("fruit_trees", 5.5)
+        if fruit_tree and int(fruit_tree.get_meta("fruit_count",0)) > 0:
+            var picked = min(2, int(fruit_tree.get_meta("fruit_count",0)))
+            fruit_tree.set_meta("fruit_count", int(fruit_tree.get_meta("fruit_count",0)) - picked)
+            inventory["Fruit"] = int(inventory.get("Fruit",0)) + picked
+            survival.record_event("collect", "Fruit", picked)
+            mission_text = "သစ်သီး " + str(picked) + " လုံး ခူးပြီးပါပြီ။"
+        elif fruit_tree:
+            mission_text = "ဒီသစ်ပင်မှာ သစ်သီးကုန်သွားပါပြီ။"
+        else:
+            mission_text = "သစ်သီးပင်အနီးသို့ သွားပြီး Fruit နှိပ်ပါ။"
     elif action == "jump":
         player.jump_now()
         mission_text = "ခုန်လိုက်ပါပြီ။"
@@ -415,7 +532,7 @@ func _on_action(action):
         if survival.active_mission.empty():
             var forest_id = 0
             for entry in survival.missions:
-                if int(entry.id) >= 121 and not entry.completed:
+                if int(entry.id) >= 121 and int(entry.id) <= 150 and not entry.completed:
                     forest_id = int(entry.id)
                     break
             mission_text = survival.accept_mission(forest_id) if forest_id > 0 else "တောတွင်း Mission ၃၀ ပြီးဆုံးပါပြီ။"
@@ -484,9 +601,9 @@ func _on_action(action):
             var loaded_weather = str(data.get("weather", weather))
             weather = "Rainy" if loaded_weather == "Rainy" else "Sunny"
             player.translation = Vector3(
-                clamp(float(data.get("player_x", 0)), -70.0, 70.0),
+                clamp(float(data.get("player_x", 0)), -680.0, 680.0),
                 clamp(float(data.get("player_y", 0.1)), 0.1, 10.0),
-                clamp(float(data.get("player_z", 9)), -70.0, 70.0)
+                clamp(float(data.get("player_z", 9)), -480.0, 480.0)
             )
             player.rotation.y = float(data.get("player_yaw", player.rotation.y))
             player.yaw = player.rotation.y
