@@ -30,6 +30,7 @@ func _ready():
     add_child(emblem)
     var ring = MeshInstance.new()
     ring.mesh = _create_torus_mesh(1.55, 1.78)
+    ring.rotation_degrees.x = 90.0 # Face the camera instead of lying flat
     var gold = SpatialMaterial.new()
     gold.albedo_color = Color(0.95,0.65,0.16)
     gold.metallic = 0.82
