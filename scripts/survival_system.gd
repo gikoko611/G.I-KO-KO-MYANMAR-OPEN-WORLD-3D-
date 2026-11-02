@@ -272,7 +272,7 @@ func fish_at_river(has_rod):
         return _say("ငါး " + str(amount) + " ကောင် ရရှိပါပြီ။", "Caught " + str(amount) + " fish.")
     return _say("ငါး မမိသေးပါ။ ထပ်ကြိုးစားပါ။", "No bite yet. Try again.")
 
-func hunt_animal(animal_name, has_weapon):
+func hunt_animal(animal_name, has_weapon, helper_bonus=0.0):
     if not has_weapon and int(inventory.get("Spear", 0)) <= 0 and int(inventory.get("Arrow", 0)) <= 0:
         return _say("အမဲလိုက်ရန် လှံ သို့မဟုတ် မြား လိုအပ်ပါတယ်။", "You need a spear or arrows to hunt.")
     if player_stamina < 12:
@@ -286,7 +286,7 @@ func hunt_animal(animal_name, has_weapon):
     elif str(animal_name) == "Deer":
         danger = 12
     var weapon_bonus = 0.22 if equipped_weapon == "Sword" else (0.18 if equipped_weapon == "Spear" else 0.08)
-    var success = randf() < min(0.82, 0.55 + hunting_level * 0.025 + weapon_bonus)
+    var success = randf() < min(0.92, 0.55 + hunting_level * 0.025 + weapon_bonus + float(helper_bonus))
     if success:
         var meat = 2 if str(animal_name) == "Boar" else 1
         inventory["Meat"] = int(inventory.get("Meat", 0)) + meat
@@ -296,7 +296,7 @@ func hunt_animal(animal_name, has_weapon):
         record_event("collect", "Meat", meat)
         return _say("အမဲလိုက်မှု အောင်မြင်ပါပြီ။ အသား " + str(meat) + "၊ သားရေ ၁ ရရှိပါပြီ။", "Hunt successful. Gained " + str(meat) + " meat and 1 hide.")
     var armor_reduction = 0.45 if equipped_armor == "Armor" else (0.20 if equipped_armor == "Shield" else 0.0)
-    var actual_damage = int(ceil(danger * (1.0 - armor_reduction)))
+    var actual_damage = int(ceil(danger * (1.0 - armor_reduction) * (0.85 if float(helper_bonus) > 0.0 else 1.0)))
     player_health = max(1, player_health - actual_damage)
     return _say("တောကောင်က ပြန်တိုက်ခိုက်ခဲ့ပါတယ်။ Health -" + str(danger), "The wild animal fought back. Health -" + str(danger))
 
