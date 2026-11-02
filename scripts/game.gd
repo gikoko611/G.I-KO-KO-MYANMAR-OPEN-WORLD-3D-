@@ -229,6 +229,11 @@ func _on_action(action):
             ui.show_dialogue("ဈေးသည်: စပါးတစ်ထုပ်ကို Coins 25 နဲ့ ဝယ်ပါတယ်။ Sell Rice ကိုနှိပ်ပြီး ရောင်းနိုင်ပါတယ်။")
             dialogue_timer = 6.0
             mission_text = "ဈေးသည်နဲ့ စကားပြောပြီးပါပြီ။"
+        elif player_pos.distance_to(Vector3(-65,0,-26)) < 9.0:
+            survival.record_event("talk", "lost_traveler", 1)
+            ui.show_dialogue("ခရီးသည်: လမ်းပျောက်နေခဲ့တာပါ။ ကူညီပေးလို့ ကျေးဇူးတင်ပါတယ်။")
+            dialogue_timer = 6.0
+            mission_text = "ပျောက်ဆုံးနေသော ခရီးသည်ကို ရှာတွေ့ပြီးပါပြီ။"
         elif player_pos.distance_to(Vector3(-59,0,-43)) < 9.0:
             survival.record_event("talk", "hermit", 1)
             ui.show_dialogue("ရသေ့: တောထဲက ဆေးဖက်ဝင်အပင်များကို စုဆောင်းပြီး ဒုက္ခရောက်သူများကို ကူညီပါ။")
@@ -252,11 +257,20 @@ func _on_action(action):
             dialogue_timer = 6.0
             mission_text = "မုဆိုးနှင့် တောစောင့်ကို တွေ့ဆုံပြီးပါပြီ။"
         elif player_pos.distance_to(Vector3(49,0,-45)) < 12.0:
+            if int(inventory.get("Wood",0)) >= 3:
+                inventory["Wood"] = int(inventory.get("Wood",0)) - 3
+                survival.record_event("deliver", "Wood", 3)
             survival.record_event("talk", "pastor", 1)
             ui.show_dialogue("ဓမ္မဆရာ: ရွာသူရွာသားများကို ကူညီပြီး အချင်းချင်း လေးစားကြပါစို့။")
             dialogue_timer = 6.0
             mission_text = "ခရစ်ယာန်ဓမ္မဆရာနှင့် တွေ့ဆုံပြီးပါပြီ။"
         elif player_pos.distance_to(Vector3(-34,0,-30)) < 12.0:
+            if int(inventory.get("Herb",0)) >= 2:
+                inventory["Herb"] = int(inventory.get("Herb",0)) - 2
+                survival.record_event("deliver", "Herb", 2)
+            elif int(inventory.get("Wood",0)) >= 2:
+                inventory["Wood"] = int(inventory.get("Wood",0)) - 2
+                survival.record_event("deliver", "Wood", 2)
             survival.record_event("talk", "monk", 1)
             survival.record_event("talk", "nun", 1)
             ui.show_dialogue("ဘုန်းကြီးကျောင်း: မေတ္တာ၊ ကရုဏာနှင့် အချင်းချင်းကူညီခြင်းကို လက်တွေ့ကျင့်သုံးပါ။")
@@ -334,8 +348,13 @@ func _on_action(action):
             inventory["Stone"] = int(inventory.get("Stone",0)) + 1
             inventory["Fiber"] = int(inventory.get("Fiber",0)) + 1
             inventory["Bamboo"] = int(inventory.get("Bamboo",0)) + 1
+            inventory["Herb"] = int(inventory.get("Herb",0)) + 1
+            inventory["IronOre"] = int(inventory.get("IronOre",0)) + 1
             survival.record_event("collect", "Wood", 2)
             survival.record_event("collect", "Bamboo", 1)
+            survival.record_event("collect", "Herb", 1)
+            survival.record_event("collect", "IronOre", 1)
+            survival.record_event("explore", "forest", 1)
             mission_text = "တောထဲမှ Wood +2, Stone +1, Fiber +1, Bamboo +1 ရရှိပါပြီ။"
         else:
             mission_text = "သစ်တော Workshop ဘက်သို့ သွားပြီး Gather နှိပ်ပါ။"
