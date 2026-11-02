@@ -19,11 +19,7 @@ func _ready():
     var environment = Environment.new()
     environment.background_mode = Environment.BG_COLOR
     environment.background_color = Color(0.025,0.045,0.055)
-    # Godot 3.5 accepts the AmbientSource enum value; use its documented value
-    # to avoid a missing native-class constant in this export runtime.
-    environment.ambient_light_source = 2
-    environment.ambient_light_color = Color(0.30,0.42,0.38)
-    environment.ambient_light_energy = 0.8
+    # Keep the splash environment minimal and compatible with Godot 3.5 GLES2.
     environment_node.environment = environment
     add_child(environment_node)
 
@@ -32,7 +28,7 @@ func _ready():
     add_child(emblem)
     var ring = MeshInstance.new()
     ring.mesh = _create_torus_mesh(1.55, 1.78)
-    ring.rotation_degrees.x = 90.0 # Face the camera instead of lying flat
+    ring.rotation_degrees.x = 90.0
     var gold = SpatialMaterial.new()
     gold.albedo_color = Color(0.95,0.65,0.16)
     gold.metallic = 0.82
