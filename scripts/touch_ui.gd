@@ -107,7 +107,7 @@ func set_status(message, coins, weather, inventory):
         status_label.text = str(message)
         coin_label.text = "Coins: " + str(coins)
         weather_label.text = "Weather: " + str(weather)
-        inventory_label.text = "Bag: Rice " + str(inventory.get("Rice",0)) + " | Seed " + str(inventory.get("Seed",0)) + " | Water " + str(inventory.get("Water",0))
+        inventory_label.text = "Bag: Rice " + str(inventory.get("Rice",0)) + " | Seed " + str(inventory.get("Seed",0)) + " | Water " + str(inventory.get("Water",0)) + " | Gem " + str(inventory.get("Gem",0)) + " | Fruit " + str(inventory.get("Fruit",0))
 
 func show_dialogue(message):
     if dialogue_label:
@@ -158,16 +158,18 @@ func set_map_info(position, visible, mission):
     if map_label:
         map_label.visible = visible
         if visible:
-            var locations = [["Elder",Vector2(-5,-13)],["Market",Vector2(8,18)],["Farm",Vector2(-18,24)],["Well",Vector2(3,28)],["Pagoda",Vector2(28,-22)],["Monastery",Vector2(-34,-30)]]
-            var nearest_name = "Unknown"
+            var nearest_name = "Main Village"
             var nearest_distance = 99999.0
-            for location in locations:
-                var distance = Vector2(position.x, position.z).distance_to(location[1])
-                if distance < nearest_distance:
-                    nearest_distance = distance
-                    nearest_name = str(location[0])
+            var expansion = get_parent().get_node_or_null("OpenWorldExpansion")
+            if expansion:
+                for village in expansion.village_centers:
+                    var village_pos = village.position
+                    var distance = Vector2(position.x, position.z).distance_to(Vector2(village_pos.x, village_pos.z))
+                    if distance < nearest_distance:
+                        nearest_distance = distance
+                        nearest_name = str(village.name)
             var marker_text = "📍 Nearest: " + nearest_name + " (" + str(int(nearest_distance)) + "m)"
-            map_label.text = "WORLD MAP\nX: " + str(int(position.x)) + "  Z: " + str(int(position.z)) + "\n" + marker_text + "\nELDER • MARKET • FARM • WELL\nPAGODA • MONASTERY\nObjective: " + str(mission)
+            map_label.text = "MYANMAR OPEN WORLD MAP\n12 VILLAGES • 1,200 HOMES\nX: " + str(int(position.x)) + "  Z: " + str(int(position.z)) + "\n" + marker_text + "\nLAKE • WATERFALL • CAVE • FOREST\nObjective: " + str(mission)
 
 func set_settings_info(visible, quality, music, sound):
     if settings_label:
