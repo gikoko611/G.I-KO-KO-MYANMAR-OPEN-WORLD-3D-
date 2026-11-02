@@ -68,10 +68,17 @@ func _build_villages():
             var center = Vector3(x,0,z)
             village_centers.append({"name":village_names[index],"position":center})
             _village_sign(center, village_names[index], index)
+            _build_village_market(center, index)
             _house_batch(center, "walls", Vector3(5,2.2,4), 1.1, Color(0.75,0.62,0.43))
             _house_batch(center, "floors", Vector3(5.5,0.22,4.5), 0.12, Color(0.34,0.20,0.10))
             _house_batch(center, "roofs", Vector3(6.2,0.36,5.2), 2.48, Color(0.38,0.19,0.08))
             index += 1
+
+func _build_village_market(center, index):
+    var shop_pos = center + Vector3(18,0,18)
+    _box("VillageMarket_" + str(index), shop_pos + Vector3(0,1.0,0), Vector3(8,2.0,6), Color(0.55,0.32,0.12))
+    _box("VillageMarketRoof_" + str(index), shop_pos + Vector3(0,2.4,0), Vector3(9,0.5,7), Color(0.72,0.18,0.12))
+    _box("VillageMarketCounter_" + str(index), shop_pos + Vector3(0,0.55,3.2), Vector3(7,1.1,0.6), Color(0.34,0.19,0.08))
 
 func _house_batch(center, part, size, y, color):
     var multimesh = MultiMesh.new()
