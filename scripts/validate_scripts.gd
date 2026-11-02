@@ -15,7 +15,8 @@ func _init():
         "res://scripts/splash_screen.gd",
         "res://scripts/open_world_expansion.gd",
         "res://scripts/economy_rpg.gd",
-        "res://scripts/companion_system.gd"
+        "res://scripts/companion_system.gd",
+        "res://scripts/interior_system.gd"
     ]
     var failed = false
     for path in paths:
