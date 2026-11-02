@@ -10,7 +10,9 @@ func _init():
         "res://scripts/transport.gd",
         "res://scripts/farming.gd",
         "res://scripts/ambient_music.gd",
-        "res://scripts/survival_system.gd"
+        "res://scripts/survival_system.gd",
+        "res://scripts/culture_expansion.gd",
+        "res://scripts/splash_screen.gd"
     ]
     var failed = false
     for path in paths:
