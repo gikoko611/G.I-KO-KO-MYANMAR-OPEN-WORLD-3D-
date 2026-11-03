@@ -1,7 +1,7 @@
 extends Spatial
 
 const WorldBuilder = preload("res://scripts/world_builder.gd")
-const PlayerScript = preload("res://scripts/player.gd")
+
 const UI = preload("res://scripts/touch_ui.gd")
 const SaveManager = preload("res://scripts/save_manager.gd")
 const Transport = preload("res://scripts/transport.gd")
@@ -32,6 +32,10 @@ var map_visible = false
 var settings_visible = false
 
 func _ready():
+    var PlayerScript = load("res://scripts/player.gd")
+    if PlayerScript == null:
+        push_error("Failed to load scripts/player.gd")
+        return
     randomize()
     world = WorldBuilder.new()
     add_child(world)
