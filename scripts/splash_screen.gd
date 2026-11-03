@@ -36,17 +36,31 @@ func _ready():
     ring.material_override = gold
     emblem.add_child(ring)
 
-    var icon_plane = MeshInstance.new()
-    var quad = QuadMesh.new()
-    quad.size = Vector2(2.75,2.75)
-    icon_plane.mesh = quad
-    var icon_material = SpatialMaterial.new()
-    icon_material.albedo_texture = load("res://icon.png")
-    icon_material.flags_unshaded = true
-    icon_material.params_cull_mode = SpatialMaterial.CULL_DISABLED
-    icon_plane.material_override = icon_material
-    icon_plane.translation = Vector3(0,0,0.06)
-    emblem.add_child(icon_plane)
+    # Build the centre crest from native meshes so startup never depends on
+    # an unimported PNG resource on a clean Android/GitHub build.
+    var crest = MeshInstance.new()
+    var crest_mesh = SphereMesh.new()
+    crest_mesh.radius = 0.48
+    crest_mesh.height = 0.96
+    crest.mesh = crest_mesh
+    crest.scale = Vector3(0.78, 1.35, 0.28)
+    crest.translation = Vector3(0, 0, 0.08)
+    var crest_material = SpatialMaterial.new()
+    crest_material.albedo_color = Color(1.0, 0.72, 0.20)
+    crest_material.metallic = 0.72
+    crest_material.roughness = 0.28
+    emblem.add_child(crest)
+    for side in [-1, 1]:
+        var wing = MeshInstance.new()
+        var wing_mesh = SphereMesh.new()
+        wing_mesh.radius = 0.72
+        wing_mesh.height = 0.42
+        wing.mesh = wing_mesh
+        wing.scale = Vector3(1.35, 0.42, 0.22)
+        wing.translation = Vector3(side * 0.82, 0.08, 0.04)
+        wing.rotation_degrees.z = side * -18.0
+        wing.material_override = crest_material
+        emblem.add_child(wing)
 
     var title_layer = CanvasLayer.new()
     add_child(title_layer)
