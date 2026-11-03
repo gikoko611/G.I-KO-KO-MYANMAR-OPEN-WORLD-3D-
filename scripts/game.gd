@@ -273,7 +273,7 @@ func _apply_environment():
         sky.sun_angle_max = 18.0
         sky.sun_curve = 0.12
         environment.background_sky = sky
-        environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+        # Use Godot 3.5 default ambient source; avoid unavailable enum constants.
         environment.ambient_light_color = Color(0.62, 0.70, 0.78)
         environment.ambient_light_energy = 0.72
         environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
