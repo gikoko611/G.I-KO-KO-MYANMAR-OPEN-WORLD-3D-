@@ -90,7 +90,7 @@ func _mat(color):
     var is_gold = color.r > 0.76 and color.g > 0.42 and color.b < 0.48
     m.roughness = 0.28 if is_water else (0.48 if is_gold else 0.88)
     m.metallic = 0.16 if is_water else (0.42 if is_gold else 0.0)
-    m.specular = 0.82 if is_water else 0.58
+    # Godot 3.5 SpatialMaterial does not expose a writable 'specular' property.
     return m
 
 func _box(label, pos, size, color):
