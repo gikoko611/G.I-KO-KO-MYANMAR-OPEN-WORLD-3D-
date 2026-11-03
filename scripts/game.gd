@@ -1,12 +1,17 @@
 extends Spatial
 
-const WorldBuilder = preload("res://scripts/world_builder.gd")
 
-const UI = preload("res://scripts/touch_ui.gd")
-const SaveManager = preload("res://scripts/save_manager.gd")
-const Transport = preload("res://scripts/transport.gd")
-const Farming = preload("res://scripts/farming.gd")
 
+
+
+
+
+
+var WorldBuilder
+var UI
+var SaveManager
+var Transport
+var Farming
 var player
 var ui
 var world
@@ -32,6 +37,14 @@ var map_visible = false
 var settings_visible = false
 
 func _ready():
+    WorldBuilder = load("res://scripts/world_builder.gd")
+    UI = load("res://scripts/touch_ui.gd")
+    SaveManager = load("res://scripts/save_manager.gd")
+    Transport = load("res://scripts/transport.gd")
+    Farming = load("res://scripts/farming.gd")
+    if WorldBuilder == null or UI == null or SaveManager == null or Transport == null or Farming == null:
+        push_error("One or more game scripts failed to load. Check the script-specific errors above.")
+        return
     var PlayerScript = load("res://scripts/player.gd")
     if PlayerScript == null:
         push_error("Failed to load scripts/player.gd")
@@ -56,7 +69,10 @@ func _ready():
     ui.set_status(mission_text + " | " + farming.get_status() + (" | Mission: Sell " + str(quest_sell_remaining) if quest_stage == 2 else ""), coins, weather, inventory)
     _apply_environment()
     _apply_graphics_quality()
-    var MusicScript = preload("res://scripts/ambient_music.gd")
+    var MusicScript = load("res://scripts/ambient_music.gd")
+    if MusicScript == null:
+        push_error("Failed to load scripts/ambient_music.gd")
+        return
     music_controller = MusicScript.new()
     add_child(music_controller)
 
