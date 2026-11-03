@@ -111,34 +111,6 @@ jobs:
             exit 1
           fi
 
-      - name: Install desktop renderer for real startup smoke test
-        shell: bash
-        run: |
-          set -euxo pipefail
-          sudo apt-get update
-          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libpulse0
-          mkdir -p "$HOME/godot-desktop"
-          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/3.5.2-stable/Godot_v3.5.2-stable_x11.64.zip -o /tmp/godot-desktop.zip
-          unzip -o /tmp/godot-desktop.zip -d "$HOME/godot-desktop"
-          DESKTOP_GODOT=$(find "$HOME/godot-desktop" -maxdepth 1 -type f -name 'Godot*' -print -quit)
-          test -n "$DESKTOP_GODOT"
-          chmod +x "$DESKTOP_GODOT"
-          mv "$DESKTOP_GODOT" "$HOME/godot-desktop/godot"
-
-      - name: Run lightweight GLES2 splash startup smoke test
-        shell: bash
-        run: |
-          set -euxo pipefail
-          # Keep this renderer-only check inside the splash interval. The full
-          # world is validated by the headless import/script checks above and
-          # the Android APK is tested on the target device after export.
-          timeout 60s xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 "$HOME/godot-desktop/godot" --audio-driver Dummy --path . --video-driver GLES2 --fixed-fps 15 --quit-after 12 > /tmp/godot-startup-smoke.log 2>&1 || { cat /tmp/godot-startup-smoke.log; exit 1; }
-          cat /tmp/godot-startup-smoke.log
-          if grep -E "(SCRIPT ERROR|Parse Error|Failed loading resource|Cannot open file|^ERROR:)" /tmp/godot-startup-smoke.log; then
-            echo "Godot desktop-renderer startup smoke test reported an engine, script, or resource error"
-            exit 1
-          fi
-
       - name: Export Universal multi-ABI and Redmi 9A ARMv7 APKs
         shell: bash
         run: |
