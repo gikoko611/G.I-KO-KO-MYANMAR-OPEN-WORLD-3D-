@@ -6,7 +6,6 @@ config/name="G.I KO KO - Myanmar Open World 3D"
 run/main_scene="res://scenes/splash.tscn"
 config/description="Explore, farm and survive in a detailed Myanmar open world."
 
-icon="res://icon.png"
 
 [rendering]
 quality/driver/driver_name="GLES2"
