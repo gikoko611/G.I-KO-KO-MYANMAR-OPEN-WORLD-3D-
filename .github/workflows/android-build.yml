@@ -118,7 +118,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0
           mkdir -p "$HOME/godot-desktop"
-          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/3.5.2-stable/Godot_v3.5.2-stable_linux.64.zip -o /tmp/godot-desktop.zip
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/3.5.2-stable/Godot_v3.5.2-stable_x11.64.zip -o /tmp/godot-desktop.zip
           unzip -o /tmp/godot-desktop.zip -d "$HOME/godot-desktop"
           DESKTOP_GODOT=$(find "$HOME/godot-desktop" -maxdepth 1 -type f -name 'Godot*' -print -quit)
           test -n "$DESKTOP_GODOT"
